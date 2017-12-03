@@ -1,19 +1,17 @@
 #!/usr/bin/env python
 # coding: utf-8
-
 from copy import deepcopy
 from flask import Flask, request, send_from_directory, current_app, render_template, Response, jsonify
 from flask_cors import CORS
-from os.path import abspath, dirname
+from os import listdir
+from os.path import realpath, abspath, dirname
 from config.env import env
 from controllers.ros_controller import ROSController
+from controllers.vector_map_loader import VectorMap
 from prepare import kill_web_video_server
 import traceback
-
 from pprint import PrettyPrinter
 pp = PrettyPrinter(indent=2).pprint
-
-
 initial_rtm_status = {
     "initialization": {
         "initialization": {
@@ -59,7 +57,7 @@ initial_rtm_status = {
     },
     "rosbag": {
         "rosbag": {
-            "enable": True,
+            "enable": False,
             "mode": "off"
         },
         "play": {
@@ -78,8 +76,6 @@ initial_rtm_status = {
         }
     }
 }
-
-
 flask = Flask(__name__)
 CORS(flask)
 with flask.app_context():
@@ -127,12 +123,31 @@ def getResources(type, path):
         return api_response(500, {"type": type, "path": path})
 
 
+@flask.route("/getVectorMapViewData")
+def getVectorMapViewData():
+    pathDir = realpath("./app/controllers/res/map/vectors/")+"/"
+    vectorMap = VectorMap()
+    vectorMap.load(pathDir)
+    return api_response(code=200, message=vectorMap.getViewData())
+
+
+@flask.route('/getPCDFileNames')
+def getPCDFileNames():
+    pathDir = realpath("./app/controllers/res/map/points/")
+    return api_response(code=200, message=listdir(pathDir))
+
+
+@flask.route('/getPCDFile/<filename>')
+def getPCDFile(filename):
+    pathDir = realpath("./app/controllers/res/map/points")
+    return send_from_directory(
+        directory=pathDir, filename=filename, as_attachment=True)
+
+
 @flask.route('/roslaunch/<domain>/<target>/<mode>')
 def roslaunch(domain, target, mode):
     print("roslaunch", domain, target, mode)
-
     flask.rtm_status[domain][target]["mode"] = mode
-
     try:
         if (domain, target) == ("rosbag", "play"):
             if mode == "on":
