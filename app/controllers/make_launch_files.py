@@ -213,7 +213,6 @@ def create_sensing_launch_file(rosbag=True):
     hdl32e = SubElement(launch, "include", {"file": "$(find velodyne_pointcloud)/launch/velodyne_hdl32e.launch"})
     SubElement(hdl32e, "arg", {"name": "calibration", "value": "$(arg velodyne_calib)"})
 
-
     if not rosbag:
         # launch.append(Comment("Javad Delta 3"))
         # SubElement(launch, "node", {"pkg": "javad_navsat_driver", "type": "gnss.sh", "name": "javad_driver"})
@@ -594,14 +593,14 @@ def create_rosbag_launch_file():
 
 
 if __name__ == '__main__':
-    create_initialization_launch_file()
+    # create_initialization_launch_file()
     create_map_launch_file()
-    create_localization_launch_file()
-    create_detection_launch_file()
-    create_sensing_launch_file()
+    # create_localization_launch_file()
+    # create_detection_launch_file()
+    # create_sensing_launch_file()
     create_mission_launch_file()
-    create_motion_launch_file()
-    create_gateway_launch_file()
-    create_gateway_on_launch_file()
-    create_gateway_off_launch_file()
+    # create_motion_launch_file()
+    # create_gateway_launch_file()
+    # create_gateway_on_launch_file()
+    # create_gateway_off_launch_file()
     create_rosbag_launch_file()

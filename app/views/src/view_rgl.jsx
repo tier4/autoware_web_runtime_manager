@@ -37,6 +37,8 @@ class Wrapper extends React.Component {
 
 export default class ViewRGL extends React.Component {
     render() {
+        console.log("ViewRGL.render", this.props.structure.onButtonIDs);
+
         const dndStyle = {
             position: 'absolute',
             left: '5px',
@@ -44,30 +46,44 @@ export default class ViewRGL extends React.Component {
             color: "white",
             cursor: 'pointer'
         };
+
         const layout = [];
         const viewComponents = [];
-        //console.log(this.props.structure.contents);
-        for(const content of this.props.structure.contents){
-            //console.log(content);
-            if(content.isVisible){
-                layout.push(content.layout);
-                viewComponents.push((
-                    <Wrapper
-                        key={content.layout.i}
-                        id={content.layout.i}
-                        style={{backgroundColor: "lightslategray"}}
-                    >
-                        <content.component
-                            parentId={content.layout.i}
-                            width={this.props.width}
-                            height={this.props.height}
-                            ros={getROSConnection()}
-                            stop={false}
-                        />
-                    </Wrapper>
-                ));
+
+        for(const contentID in this.props.structure.contents) {
+            const onButtonIDs = this.props.structure.onButtonIDs;
+            const content = this.props.structure.contents[contentID];
+            const triggerButtonIDs = content.triggerButtonIDs;
+            if( onButtonIDs.includes(triggerButtonIDs.open) ) {
+                if( onButtonIDs.includes(triggerButtonIDs.close) ) {
+                    continue;
+                }
+                else {
+                    const visualizationObjects = {};
+                    for(const visibleObjectID of content.visibleObjectIDs) {
+                        visualizationObjects[visibleObjectID] = content.visualizationObjects[visibleObjectID];
+                    }
+                    layout.push(content.layout);
+                    viewComponents.push((
+                        <Wrapper
+                            key={content.layout.i}
+                            id={content.layout.i}
+                            style={{backgroundColor: "lightslategray"}}
+                        >
+                            <content.component
+                                parentId={content.layout.i}
+                                width={this.props.width}
+                                height={this.props.height}
+                                viewInstance={content.viewInstance}
+                                visualizationObjects={visualizationObjects}
+                                stop={false}
+                            />
+                        </Wrapper>
+                    ));
+                }
             }
         }
+
         //console.log("viewComponents", viewComponents);
         return (
             <div>
