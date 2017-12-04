@@ -81,7 +81,6 @@ export default class ButtonRGL extends React.Component {
     initializeButtonRGLState() {
         const date = new Date();
         const url = WEB_UI_URL+"/getRTMStatus?date="+date.getTime().toString();
-        console.log(url);
         fetch(url)
         .then((response) => {
             if(!response.ok) {
@@ -90,28 +89,49 @@ export default class ButtonRGL extends React.Component {
             return response.json();
         })
         .then((json) => {
+            console.log("initializeButtonRGLState", json);
+            const structure = this.props.structure;
             for(const domain of Object.keys(json)){
                 for(const label of Object.keys(json[domain])){
                     const index = this.props.structure.nodes.findIndex(function(x) { return x.domain == domain && x.label == label });
-                    const structure = this.props.structure;
                     structure.nodes[index].physics = json[domain][label]["enable"];
-                    this.props.updateStructure(structure);
                 }
             }
             for(const domain of Object.keys(json)){
                 for(const label of Object.keys(json[domain])){
                     const index = this.props.structure.nodes.findIndex(function(x) { return x.domain == domain && x.label == label });
                     if(json[domain][label]["mode"]=="on"){
-                        const structure = this.props.structure;
                         structure.nodes = this.getUpdatedNodes(
                             this.props.structure.nodes[index].id,
                             !this.props.structure.nodes[index].chosen,
                             this.props.structure.nodes,
                             this.props.structure.edges);
-                        this.props.updateStructure(structure);
                     }
                 }
             }
+            this.props.updateStructure(structure);
+//            for(const domain of Object.keys(json)){
+//                for(const label of Object.keys(json[domain])){
+//                    const index = this.props.structure.nodes.findIndex(function(x) { return x.domain == domain && x.label == label });
+//                    const structure = this.props.structure;
+//                    structure.nodes[index].physics = json[domain][label]["enable"];
+//                    this.props.updateStructure(structure);
+//                }
+//            }
+//            for(const domain of Object.keys(json)){
+//                for(const label of Object.keys(json[domain])){
+//                    const index = this.props.structure.nodes.findIndex(function(x) { return x.domain == domain && x.label == label });
+//                    if(json[domain][label]["mode"]=="on"){
+//                        const structure = this.props.structure;
+//                        structure.nodes = this.getUpdatedNodes(
+//                            this.props.structure.nodes[index].id,
+//                            !this.props.structure.nodes[index].chosen,
+//                            this.props.structure.nodes,
+//                            this.props.structure.edges);
+//                        this.props.updateStructure(structure);
+//                    }
+//                }
+//            }
         })
         .catch((e) => { console.error(e);} );
     }
