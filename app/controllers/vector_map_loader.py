@@ -65,9 +65,7 @@ class VectorMap(object):
         points = self.loadCSV(path)
         for pid in points:
             points[pid]["lat"] = self.getDegreeFromDMMSS(points[pid]["B"])
-
-            points[pid]["lng"] = self.getDegreeFromDMMSS(points[pid]["L"])
-            # points[pid]["lng"] = self.getDegreeFromDMMSS_APEX1204(points[pid]["L"])
+            points[pid]["lng"] = self.getDegreeFromDMMSS_APEX1204(points[pid]["L"])
 
             points[pid]["Bx"] = float(points[pid]["Bx"])
             points[pid]["Ly"] = float(points[pid]["Ly"])
