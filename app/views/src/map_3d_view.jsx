@@ -2,6 +2,8 @@ import React from 'react';
 import ReactResizeDetector from 'react-resize-detector';
 import { WEB_UI_URL } from "./dotenv";
 import RosView from "./rosView";
+import { CONST } from "./const";
+
 
 export default class Map3DView extends React.Component {
     constructor() {
@@ -16,11 +18,20 @@ export default class Map3DView extends React.Component {
     }
     runViewInstance(props) {
         const viewInstance = props.viewInstance;
+        const visualizationObjectIDs = Object.keys(props.visualizationObjects);
         viewInstance.elementID = props.parentId;
         viewInstance.width = parseInt(props.width);
         viewInstance.height = parseInt(props.height);
         viewInstance.visualizationObjects = props.visualizationObjects;
-        viewInstance.run();
+        viewInstance.prepare();
+        if(visualizationObjectIDs.includes(CONST.VISUALIZATION_OBJECT.VEHICLE)) {
+            viewInstance.onGetVehiclePose();
+        }
+        else {
+            if(visualizationObjectIDs.includes(CONST.VISUALIZATION_OBJECT.POINTS_MAP)) {
+                viewInstance.onGetPointsMap();
+            }
+        }
         this.setState({viewInstance: viewInstance});
     }
     componentDidMount() {

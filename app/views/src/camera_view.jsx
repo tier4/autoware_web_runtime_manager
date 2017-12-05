@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactResizeDetector from 'react-resize-detector';
 import { ROSVIDEO_URL } from "./dotenv";
+import { CONST } from "./const"
 
 export default class CameraView extends React.Component {
     constructor(props) {
@@ -11,7 +12,7 @@ export default class CameraView extends React.Component {
         };
     }
     render() {
-        const url = ROSVIDEO_URL+"/stream?topic=/image_raw&width="+this.state.width+"&height="+this.state.height+"&type=mjpeg&quality=20";
+        const url = ROSVIDEO_URL+"/stream?topic="+this.props.visualizationObjects[CONST.VISUALIZATION_OBJECT.IMAGE_RAW].topics[CONST.TOPIC.IMAGE_RAW.NAME].name+"&width="+this.state.width+"&height="+this.state.height+"&type=mjpeg&quality=20";
         return (
             <div>
                 <ReactResizeDetector handleWidth handleHeight onResize={(w, h)=>this.onDetectParentResize(w, h)}/>

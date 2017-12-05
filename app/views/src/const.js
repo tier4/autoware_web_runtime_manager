@@ -77,13 +77,22 @@ const CONST = {
         POINTS_MAP: "PointsMap",
         VECTOR_MAP: "VectorMap",
         POINTS_RAW: "PointsRaw",
+        IMAGE_RAW: "ImageRaw",
         VEHICLE: "Vehicle",
         WAYPOINTS: "Waypoints",
         TARGETS: "Targets"
     },
     TOPIC: {
         VECTOR_MAP: "/vector_map",
-        POINTS_RAW: "/downsampled_points_raw",
+        POINTS_RAW: {
+//            NAME: "/downsampled_points_raw",
+            NAME: "/vlp16_1/velodyne_points",
+            MESSAGE_TYPE: "sensor_msgs/PointCloud2",
+        },
+        IMAGE_RAW: {
+            NAME: "/camera0/image_raw",  // /imageraw
+            MESSAGE_TYPE: "sensor_msgs/Image",
+        },
         TF: "/tf",
         VEHICLE_POSE: "/ndt_pose",
         WAYPOINTS: "/lane_waypoints_array",

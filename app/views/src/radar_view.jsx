@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactResizeDetector from 'react-resize-detector';
 import { WEB_UI_URL } from "./dotenv";
-
+import RosView from "./rosView";
 
 export default class RadarView extends React.Component {
     constructor() {
@@ -9,78 +9,40 @@ export default class RadarView extends React.Component {
         this.state = {};
     }
     render() {
+        // console.log("RadarView.render()", this.props);
         return (
             <ReactResizeDetector handleWidth handleHeight onResize={(w, h)=>this.onDetectParentResize(w, h)} />
         );
     }
+    runViewInstance(props) {
+//            far: 2000,
+//            cameraPose: {x: -30, y: -20, z: 30},
+        const viewInstance = props.viewInstance;
+        viewInstance.elementID = props.parentId;
+        viewInstance.width = parseInt(props.width);
+        viewInstance.height = parseInt(props.height);
+        viewInstance.visualizationObjects = props.visualizationObjects;
+        viewInstance.prepare();
+        viewInstance.onGetPointsRaw();
+        this.setState({viewInstance: viewInstance});
+    }
     componentDidMount() {
-        //console.log("PointsRawView.componentDidMount", this.props, this.state);
-        this.setState({points_raw: this.rosViewer(this.props.parentId, parseInt(this.props.width), parseInt(this.props.height))});
-        // if(this.props.stop){
-        //     this.state.points_raw.stop();
-        // }
-        // else{
-        //     this.state.points_raw.start();
-        // }
+        console.log("RadarView.componentDidMount()", this.props);
+        this.runViewInstance(this.props);
+    }
+    componentWillReceiveProps(nextProps) {
+        console.log("RadarView.componentWillReceiveProps()", nextProps);
+        this.runViewInstance(nextProps);
     }
     onDetectParentResize(w, h) {
-        // console.log(["onDetectResize", w, h, this.state.points_raw]);
-        if(typeof this.state.points_raw === 'undefined'){
-            this.setState({points_raw: this.rosViewer(this.props.parentId, w, h)});
-        }
-        else{
-            this.state.points_raw.resize(w, h);
+        console.log("RadarView.onDetectParentResize", w, h);
+
+        if(typeof this.state.viewInstance !== 'undefined'){
+            this.state.viewInstance.resize(w, h);
         }
     }
-    startView() {
-        this.state.points_raw.start()
-    }
-    stopView() {
-        this.state.points_raw.stop()
-    }
-    rosViewer(id, width, height) {
-        // Connect to ROS.
-        var ros = this.props.ros;
-
-        // Create the main viewer.
-        var viewer = new ROS3D.Viewer({
-            divID : id,
-            width : width,
-            height : height,
-            far: 2000,
-            cameraPose: {x: -30, y: -20, z: 30},
-            cameraZoomSpeed: 2.0,
-            antialias : true
-        });
-
-        viewer.addObject(new ROS3D.Grid());
-
-        // Setup a client to listen to TFs.
-        var tfClient = new ROSLIB.TFClient({
-            ros : ros,
-            angularThres : 0.0001,
-            transThres : 0.0001,
-            rate : 5.0,
-            fixedFrame : '/base_link'
-        });
-
-        var cloudClient = new ROS3D.PointCloud2({
-            ros: ros,
-            tfClient: tfClient,
-            rootObject: viewer.scene,
-            max_pts: 100000,
-            topic: '/downsampled_points_raw'
-        });
-
-        // Setup the URDF client.
-        var urdfClient = new ROS3D.UrdfClient({
-            ros : ros,
-            tfClient : tfClient,
-            path : WEB_UI_URL+"/",
-            rootObject : viewer.scene,
-            loader : ROS3D.COLLADA_LOADER
-        });
-
-        return viewer;
+    componentWillUnmount(){
+        console.log("RadarView.componentWillUnmount");
+        this.props.viewInstance.reset();
     }
 }
