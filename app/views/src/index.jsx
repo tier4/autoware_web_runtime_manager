@@ -24,34 +24,45 @@ class Index extends React.Component {
             buttonRGL: {
                 nodeWidth: 4,
                 nodeHeight: 3,
-                cols: 25,
-                rowHeight: 8,
+                cols: 21,
+                rowHeight: 7,
                 nodes: [
-                    {id: 1, x: 0,  y: 4, w: 4, h: 3, physics: false, chosen: false, domain: CONST.BUTTON.INITIALIZATION.DOMAIN, label: CONST.BUTTON.INITIALIZATION.LABEL, display: "Initialization", span: (<span>Initialization</span>)},
-                    {id: 2, x: 5,  y: 0, w: 4, h: 3, physics: false, chosen: false, domain: CONST.BUTTON.MAP.DOMAIN, label: CONST.BUTTON.MAP.LABEL, display: "Map", span: (<span>Map</span>)},
-                    {id: 3, x: 10, y: 0, w: 4, h: 3, physics: false, chosen: false, domain: CONST.BUTTON.LOCALIZATION.DOMAIN, label: CONST.BUTTON.LOCALIZATION.LABEL, display: "Localization", span: (<span>Localization</span>)},
-                    {id: 4, x: 15, y: 0, w: 4, h: 3, physics: false, chosen: false, domain: CONST.BUTTON.MISSION.DOMAIN, label: CONST.BUTTON.MISSION.DOMAIN, display: "Mission", span: (<span>Mission Planning</span>)},
-                    {id: 5, x: 20, y: 0, w: 4, h: 3, physics: false, chosen: false, domain: "motion", label: 'motion', display: "Motion", span: (<span>Motion Planning</span>)},
-                    {id: 6, x: 5,  y: 4, w: 4, h: 3, physics: false, chosen: false, domain: "sensing", label: 'sensing', display: "Sensing", span: (<span>Sensing</span>)},
-                    {id: 7, x: 15, y: 4, w: 4, h: 3, physics: false, chosen: false, domain: "detection", label: 'detection', display: "Detection", span: (<span>Detection</span>)},
-                    {id: 8, x: 0,  y: 0, w: 2, h: 3, physics: false, chosen: false, domain: "rosbag", label: 'rosbag', display: "ROSBAG", span: (<span>ROSBAG</span>)},
-                    {id: 9, x: 2,  y: 0, w: 2, h: 3, physics: false, chosen: false, domain: "rosbag", label: 'play', display: "Play", span: (<span>play</span>)},
-                    {id: 10, x: 20, y: 4, w: 3, h: 3, physics: false, chosen: false, domain: "gateway", label: 'gateway', display: "Vehicle Gateway", span: (<span>Vehicle Gateway</span>)},
-                    {id: 11, x: 23, y: 4, w: 1, h: 3, physics: false, chosen: false, domain: "gateway", label: 'on', display: "On", span: (<span>On</span>)},
+                    {id: 1, x: 0,  y: 0, w: 4, h: 3, physics: false, chosen: false, domain: CONST.BUTTON.INITIALIZATION.DOMAIN, label: CONST.BUTTON.INITIALIZATION.LABEL, display: "Initialization", span: (<span>Initialization</span>)},
+                    {id: 2, x: 4,  y: 0, w: 4, h: 3, physics: false, chosen: false, domain: CONST.BUTTON.MAP.DOMAIN, label: CONST.BUTTON.MAP.LABEL, display: "Map", span: (<span>Map</span>)},
+                    {id: 3, x: 8, y: 0, w: 4, h: 3, physics: false, chosen: false, domain: CONST.BUTTON.LOCALIZATION.DOMAIN, label: CONST.BUTTON.LOCALIZATION.LABEL, display: "Localization", span: (<span>Localization</span>)},
+                    {id: 4, x: 12, y: 0, w: 4, h: 3, physics: false, chosen: false, domain: CONST.BUTTON.MISSION.DOMAIN, label: CONST.BUTTON.MISSION.DOMAIN, display: "Mission", span: (<span>Mission</span>)},
+                    {id: 5, x: 16, y: 0, w: 4, h: 3, physics: false, chosen: false, domain: "motion", label: 'motion', display: "Motion", span: (<span>Motion</span>)},
+                    {id: 6, x: 4,  y: 3, w: 4, h: 3, physics: false, chosen: false, domain: "sensing", label: 'sensing', display: "Sensing", span: (<span>Sensing</span>)},
+                    {id: 7, x: 12, y: 3, w: 4, h: 3, physics: false, chosen: false, domain: "detection", label: 'detection', display: "Detection", span: (<span>Detection</span>)},
+                    {id: 8, x: 0,  y: 3, w: 2, h: 3, physics: false, chosen: false, domain: "rosbag", label: 'rosbag', display: "ROSBAG", span: (<span>ROSBAG</span>)},
+                    {id: 9, x: 2,  y: 3, w: 2, h: 3, physics: false, chosen: false, domain: "rosbag", label: 'play', display: "Play", span: (<span>play</span>)},
+                    {id: 10, x: 16, y: 3, w: 2, h: 3, physics: false, chosen: false, domain: "gateway", label: 'gateway', display: "Gateway", span: (<span>Gateway</span>)},
+                    {id: 11, x: 18, y: 3, w: 2, h: 3, physics: false, chosen: false, domain: "gateway", label: 'on', display: "On", span: (<span>On</span>)},
                 ],
-                edges: [
-                    {from: 1, to: 2, physics: true,  label: "Initialization -> Map"},
-                    {from: 1, to: 8, physics: true,  label: "Initialization -> ROSBAG"},
-                    {from: 2, to: 3, physics: true,  label: "Map -> Localization"},
-                    {from: 3, to: 4, physics: true,  label: "Localization -> Mission Planning"},
-                    {from: 4, to: 5, physics: true,  label: "Mission Planning -> Motion Planning"},
-                    {from: 1, to: 6, physics: true,  label: "Initialization -> Sensing"},
-                    {from: 6, to: 3, physics: true,  label: "Sensing -> Localization"},
-                    // {from: 6, to: 7, physics: true,  label: "Sensing -> Detection"},
-                    {from: 7, to: 5, physics: false, label: "Detection -> Motion Planning"},
-                    {from: 8, to: 9, physics: true,  label: "ROSBAG -> Play"},
-                    {from: 5, to: 10, physics: true,  label: "Mission Planning -> Vehicle Gateway"},
-                    {from: 10, to: 11, physics: true,  label: "Vehicle Gateway -> On"},
+                edges: [ // physics -> needToOpen, close -> haveToClose
+                    {from: 1, to: 2, physics: true, open: true, close: false, label: "Initialization -> Map"},
+                    {from: 1, to: 8, physics: true, open: true, close: false, label: "Initialization -> ROSBAG"},
+                    {from: 2, to: 3, physics: true, open: true, close: false, label: "Map -> Localization"},
+                    {from: 3, to: 4, physics: true, open: true, close: false, label: "Localization -> Mission Planning"},
+                    {from: 4, to: 5, physics: true, open: true, close: false, label: "Mission Planning -> Motion Planning"},
+                    {from: 1, to: 6, physics: true, open: true, close: false, label: "Initialization -> Sensing"},
+                    {from: 6, to: 3, physics: true, open: true, close: false, label: "Sensing -> Localization"},
+//                    {from: 6, to: 7, physics: true, open: false, close: false, label: "Sensing -> Detection"},
+//                    {from: 7, to: 5, physics: false, open: false, close: false, label: "Detection -> Motion Planning"},
+                    {from: 8, to: 9, physics: true, open: true, close: false, label: "ROSBAG -> Play"},
+                    {from: 5, to: 10, physics: true, open: true, close: false, label: "Mission -> Gateway"},
+                    {from: 10, to: 11, physics: true, open: true, close: false, label: "Gateway -> GatewayOn"},
+
+                    {from: 11, to: 10, physics: false, open: false, close: true, label: "GatewayOn -> Gateway"},
+                    {from: 11, to: 9, physics: false, open: false, close: true, label: "GatewayOn -> ROSBAGPlay"},
+                    {from: 11, to: 8, physics: false, open: false, close: true, label: "GatewayOn -> ROSBAG"},
+//                    {from: 11, to: 7, physics: false, open: false, close: true, label: "GatewayOn -> Detection"},
+                    {from: 11, to: 6, physics: false, open: false, close: true, label: "GatewayOn -> Sensing"},
+                    {from: 11, to: 5, physics: false, open: false, close: true, label: "GatewayOn -> Motion"},
+                    {from: 11, to: 4, physics: false, open: false, close: true, label: "GatewayOn -> Mission"},
+                    {from: 11, to: 3, physics: false, open: false, close: true, label: "GatewayOn -> Localization"},
+                    {from: 11, to: 2, physics: false, open: false, close: true, label: "GatewayOn -> Map"},
+                    {from: 11, to: 1, physics: false, open: false, close: true, label: "GatewayOn -> Initialization"},
                 ]
             },
             viewRGL: {
@@ -165,29 +176,67 @@ class Index extends React.Component {
                         },
                         visibleObjectIDs: [],
                     },
-                    "camera": {
+                    [CONST.VIEW_CONTENT.CAMERA]: {
                         triggerButtonIDs: {
                             open: 6,
                             close: null,
                         },
                         layout: {
-                            i: "camera",
+                            i: CONST.VIEW_CONTENT.CAMERA,
                             x: 0, y: 12, w: 10, h: 13,
                             isDraggable: false,
                             isResizable: false,
                         },
                         component: CameraView,
                         viewInstance: null,
-                        visualizationObjects: {},
+                        visualizationObjects: {
+                            [CONST.VISUALIZATION_OBJECT.IMAGE_RAW]: {
+                                buttonID: 6,
+                                topics: {
+                                    [CONST.TOPIC.IMAGE_RAW.NAME]: {
+                                        name : CONST.TOPIC.IMAGE_RAW.NAME,
+                                        messageType : CONST.TOPIC.IMAGE_RAW.MESSAGE_TYPE,
+                                    }
+                                },
+                            },
+                        },
                         visibleObjectIDs: [],
                     },
-//                    "radar": {
-//                        triggerButtonIDs: {
-//                            open: 6,
-//                            close: 3,
-//                        },
-//                        component: RadarView
-//                    },
+                    [CONST.VIEW_CONTENT.RADAR]: {
+                        triggerButtonIDs: {
+                            open: 6,
+                            close: 3,
+                        },
+                        layout: {
+                            i: CONST.VIEW_CONTENT.RADAR,
+                            x: 10, y: 0, w: 14, h: 25,
+                            isDraggable: false,
+                            isResizable: false,
+                        },
+                        component: RadarView,
+                        viewInstance: new RosView(),
+                        visualizationObjects: {
+                            [CONST.VISUALIZATION_OBJECT.POINTS_RAW]: {
+                                buttonID: 6,
+                                topics: {
+                                    [CONST.TOPIC.POINTS_RAW.NAME]: {
+                                        name: CONST.TOPIC.POINTS_RAW.NAME,
+                                        messageType: CONST.TOPIC.POINTS_RAW.MESSAGE_TYPE,
+                                    }
+                                },
+                            },
+                            "Vehicle": {
+                                buttonID: 6,
+                                topics: {
+                                    tf: {
+                                        name: "/tf",
+                                        messageType: "tf2_msgs/TFMessage"
+                                    },
+                                },
+                            },
+                        },
+                        visibleObjectIDs: [],
+                    },
                 },
             },
         };

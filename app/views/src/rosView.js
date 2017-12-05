@@ -63,7 +63,7 @@ export default class RosView {
         this.sceneData = {};
     }
 
-    run() {
+    prepare() {
         if(this.ros === null) {
             this.ros = getROSConnection();
         }
@@ -71,31 +71,11 @@ export default class RosView {
         this.visualizationObjectIDs = Object.keys(this.visualizationObjects);
         this.setUpTopics();
 
-        console.log("run", this.visualizationObjectIDs, Object.keys(this.topics), Object.keys(this.sceneData));
+        console.log("prepare", this.visualizationObjectIDs, Object.keys(this.topics), Object.keys(this.sceneData));
 
         this.prepareScene();
 
-        this.setCameraPosition();
-
-        if(this.visualizationObjectIDs.includes("Vehicle")) {
-            this.onGetVehiclePose();
-        }
-        else {
-            if(this.visualizationObjectIDs.includes("PointsMap")) {
-                this.onGetPointsMap();
-            }
-//            else {
-//                if(visualizationObjectIDs.includes("VectorMap")) {
-//                    this.onGetVectorMap(this.topics.vectorMap.instance);
-//                }
-//            }
-        }
-    }
-
-    set cameraPosition(position) {
-        this.camera.position.x = position.x;
-        this.camera.position.y = position.y;
-        this.camera.position.z = position.z;
+        this.updateCameraPosition();
     }
 
     resize(width, height) {
@@ -117,16 +97,16 @@ export default class RosView {
         }
     }
 
-    setCameraPosition() {
+    updateCameraPosition() {
         if(this.vehiclePose !== null) {
-            console.log("setCameraPosition <- vehiclePose");
+            console.log("updateCameraPosition <- vehiclePose");
             this.camera.position.x = this.vehiclePose.position.x + this.initialCameraPosition.x;
             this.camera.position.y = this.vehiclePose.position.y + this.initialCameraPosition.y;
             this.camera.position.z = this.vehiclePose.position.z + this.initialCameraPosition.z;
         }
         else{
             if(this.pointsMapViewPosition !== null) {
-                console.log("setCameraPosition <- pointsMapViewPosition");
+                console.log("updateCameraPosition <- pointsMapViewPosition");
                 this.camera.position.x = this.pointsMapViewPosition.x;
                 this.camera.position.y = this.pointsMapViewPosition.y;
                 this.camera.position.z = this.pointsMapViewPosition.z + 2000;
@@ -136,7 +116,7 @@ export default class RosView {
                     this.pointsMapViewPosition.z );
             }
             else{
-                console.log("setCameraPosition <- initialCameraPosition");
+                console.log("updateCameraPosition <- initialCameraPosition");
                 this.camera.position.x = this.initialCameraPosition.x;
                 this.camera.position.y = this.initialCameraPosition.y;
                 this.camera.position.z = this.initialCameraPosition.z;
@@ -222,7 +202,7 @@ export default class RosView {
                 if(!this.sceneData.vehicleCollada.isAdded){
 //                    console.log("scene.add vehicleCollada");
                     this.scene.add(this.sceneData.vehicleCollada.threeJSObject);
-                    this.setCameraPosition()
+                    this.updateCameraPosition()
                     this.sceneData.vehicleCollada.isAdded = true;
                 }
             }
@@ -319,9 +299,9 @@ export default class RosView {
             console.log("getPointsMap");
 
             let that = this;
-            let setCameraPositionFlag = true;
+            let updateCameraPositionFlag = true;
             const callback = (args) => {
-                if(setCameraPositionFlag) {
+                if(updateCameraPositionFlag) {
                     const x = args.geometry.attributes.position.array[0];
                     const y = args.geometry.attributes.position.array[1];
                     const z = args.geometry.attributes.position.array[2];
@@ -330,8 +310,8 @@ export default class RosView {
                         y: y + that.initialCameraPosition.y,
                         z: z + that.initialCameraPosition.z,
                     }
-                    that.setCameraPosition()
-                    setCameraPositionFlag = false;
+                    that.updateCameraPosition()
+                    updateCameraPositionFlag = false;
                 }
             };
             this.getPointsMap(0.1, callback.bind(this));
@@ -340,6 +320,33 @@ export default class RosView {
         const topicIDs = Object.keys(this.topics);
         if(!sceneDataIDs.includes("vectorMap") && topicIDs.includes("vectorMap")) {
             this.getVectorMap(this.topics.vectorMap.instance);
+        }
+    }
+
+    onGetPointsRaw() {
+        console.log("onGetPointsRaw");
+
+        this.vehiclePose = {position: {x: 0, y: 0, z: 0}, orientation: {x: 0, y: 0, z:0, w: 0}};
+
+        const sceneDataIDs = Object.keys(this.sceneData);
+        const topicIDs = Object.keys(this.topics);
+        if(this.tfBaseLinkToVelodyne == null && topicIDs.includes("tf")) {
+            this.getTFBaseLinkToVelodyne(this.topics.tf.instance);
+        }
+
+        if(!sceneDataIDs.includes("vehicleCollada")) {
+            this.sceneData.vehicleCollada = CONST.OBJECT_IS_LOADING;
+            this.getVehicleCollada();
+        }
+
+        if(!sceneDataIDs.includes("pointsRaw") && this.visualizationObjectIDs.includes(CONST.VISUALIZATION_OBJECT.POINTS_RAW)) {
+            console.log("getPointsRaw", this.topics);
+
+            let that = this;
+            const callback = (args) => {
+            }
+
+            this.getPointsRaw(this.topics[CONST.TOPIC.POINTS_RAW.NAME].instance, 0.4, callback.bind(this))
         }
     }
 
@@ -541,8 +548,8 @@ export default class RosView {
         } );
     }
 
-    getPointsRaw(topic, pointSize=0.4) {
-        console.log("getPointsRaw");
+    getPointsRaw(topic, pointSize=0.4, callback=(args)=>{}) {
+        console.log("getPointsRaw", topic);
         let that = this;
         topic.subscribe(function(message) {
             let positions = [];
@@ -565,6 +572,7 @@ export default class RosView {
                     colors.push( 1, 0, 0 );
                 }
             }
+
             var geometry = new THREE.BufferGeometry();
             geometry.addAttribute( 'position', new THREE.Float32BufferAttribute( positions, 3 ) );
             geometry.addAttribute( 'color', new THREE.Float32BufferAttribute( colors, 3 ) );
@@ -586,6 +594,8 @@ export default class RosView {
                 that.sceneData.pointsRaw.threeJSObject.position.y = that.vehiclePose.position.y + that.tfBaseLinkToVelodyne.translation.y;
                 that.sceneData.pointsRaw.threeJSObject.position.z = that.vehiclePose.position.z + that.tfBaseLinkToVelodyne.translation.z;
             }
+
+//            callback();
 
         });
     }

@@ -55,10 +55,7 @@ export default class ViewRGL extends React.Component {
             const content = this.props.structure.contents[contentID];
             const triggerButtonIDs = content.triggerButtonIDs;
             if( onButtonIDs.includes(triggerButtonIDs.open) ) {
-                if( onButtonIDs.includes(triggerButtonIDs.close) ) {
-                    continue;
-                }
-                else {
+                if( !onButtonIDs.includes(triggerButtonIDs.close) ) {
                     const visualizationObjects = {};
                     for(const visibleObjectID of content.visibleObjectIDs) {
                         visualizationObjects[visibleObjectID] = content.visualizationObjects[visibleObjectID];

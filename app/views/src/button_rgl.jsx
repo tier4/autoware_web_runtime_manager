@@ -110,28 +110,6 @@ export default class ButtonRGL extends React.Component {
                 }
             }
             this.props.updateStructure(structure);
-//            for(const domain of Object.keys(json)){
-//                for(const label of Object.keys(json[domain])){
-//                    const index = this.props.structure.nodes.findIndex(function(x) { return x.domain == domain && x.label == label });
-//                    const structure = this.props.structure;
-//                    structure.nodes[index].physics = json[domain][label]["enable"];
-//                    this.props.updateStructure(structure);
-//                }
-//            }
-//            for(const domain of Object.keys(json)){
-//                for(const label of Object.keys(json[domain])){
-//                    const index = this.props.structure.nodes.findIndex(function(x) { return x.domain == domain && x.label == label });
-//                    if(json[domain][label]["mode"]=="on"){
-//                        const structure = this.props.structure;
-//                        structure.nodes = this.getUpdatedNodes(
-//                            this.props.structure.nodes[index].id,
-//                            !this.props.structure.nodes[index].chosen,
-//                            this.props.structure.nodes,
-//                            this.props.structure.edges);
-//                        this.props.updateStructure(structure);
-//                    }
-//                }
-//            }
         })
         .catch((e) => { console.error(e);} );
     }
@@ -188,19 +166,43 @@ export default class ButtonRGL extends React.Component {
         );
     }
     getToNodePhysics(toNodeId, nodes, edges){
-        const fromNodeIds = edges.filter(
-            (value) => { return value.physics && value.to === toNodeId; }
+        //close
+        const closeFromNodeIDs = edges.filter(
+            (value) => { return value.close && value.to === toNodeId; }
         ).map(
             (value, index, array) => { return value.from; }
         );
-        if(fromNodeIds.length==0){
+
+        if(closeFromNodeIDs.length==1){
+            if(nodes[nodes.findIndex(node => node.id === closeFromNodeIDs[0])].chosen){
+                return false;
+            }
+        }
+        if(1 < closeFromNodeIDs.length) {
+            const physics = nodes.filter(
+                (value) => { return closeFromNodeIDs.includes(value.id); }
+            ).reduce(
+                (previousValue, currentValue, index, array) => {
+                    return previousValue.chosen || currentValue.chosen;
+                }
+            );
+            if(physics){ return physics; }
+        }
+
+        //open
+        const openFromNodeIDs = edges.filter(
+            (value) => { return value.open && value.to === toNodeId; }
+        ).map(
+            (value, index, array) => { return value.from; }
+        );
+        if(openFromNodeIDs.length==0){
             return true;
         }
-        if(fromNodeIds.length==1){
-            return nodes[nodes.findIndex(node => node.id === fromNodeIds[0])].chosen;
+        if(openFromNodeIDs.length==1){
+            return nodes[nodes.findIndex(node => node.id === openFromNodeIDs[0])].chosen;
         }
         return nodes.filter(
-            (value) => { return fromNodeIds.indexOf(value.id) >= 0; }
+            (value) => { return openFromNodeIDs.includes(value.id); }
         ).reduce(
             (previousValue, currentValue, index, array) => {
                 return previousValue.chosen && currentValue.chosen;
