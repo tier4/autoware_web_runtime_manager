@@ -85,12 +85,13 @@ const CONST = {
     TOPIC: {
         VECTOR_MAP: "/vector_map",
         POINTS_RAW: {
-//            NAME: "/downsampled_points_raw",
-            NAME: "/vlp16_1/velodyne_points",
+            NAME: "/downsampled_points_raw",
+//            NAME: "/vlp16_1/velodyne_points",
             MESSAGE_TYPE: "sensor_msgs/PointCloud2",
         },
         IMAGE_RAW: {
-            NAME: "/camera0/image_raw",  // /imageraw
+            NAME: "/image_raw",
+//            NAME: "/camera0/image_raw",
             MESSAGE_TYPE: "sensor_msgs/Image",
         },
         TF: "/tf",
