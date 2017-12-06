@@ -35,11 +35,11 @@ export default class Map3DView extends React.Component {
         this.setState({viewInstance: viewInstance});
     }
     componentDidMount() {
-        console.log("Map3DView.componentDidMount()", this.props);
+        console.log("Map3DView.componentDidMount", this.props);
         this.runViewInstance(this.props);
     }
     componentWillReceiveProps(nextProps) {
-        console.log("Map3DView.componentWillReceiveProps()", nextProps);
+        console.log("Map3DView.componentWillReceiveProps", nextProps);
         this.runViewInstance(nextProps);
     }
     onDetectParentResize(w, h) {

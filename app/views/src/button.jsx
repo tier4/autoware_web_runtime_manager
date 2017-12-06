@@ -45,7 +45,7 @@ export default class Button extends React.Component {
         );
     }
     getStyle() {
-        const fontSize = Math.min(parseInt(this.props.height, 10)/1.5, parseInt(this.props.width, 10)/10) + "px";
+        const fontSize = Math.min(parseInt(this.props.height, 10)/1.25, parseInt(this.props.width, 10)/9) + "px";
         //console.log("fontSize", fontSize, this.props.height, this.props.width, Math.min(10*parseInt(this.props.height, 10), parseInt(this.props.width, 10)));
         const style = Object.assign(
             {},

@@ -42,11 +42,11 @@ export default class RosView {
                 }
             }
         }
-        console.log(this.topics);
+//        console.log(this.topics);
     }
 
     reset() {
-        console.log("rosView.reset");
+//        console.log("rosView.reset");
         delete this.stats;
         delete this.camera;
         delete this.renderer;
@@ -71,7 +71,7 @@ export default class RosView {
         this.visualizationObjectIDs = Object.keys(this.visualizationObjects);
         this.setUpTopics();
 
-        console.log("prepare", this.visualizationObjectIDs, Object.keys(this.topics), Object.keys(this.sceneData));
+//        console.log("prepare", this.visualizationObjectIDs, Object.keys(this.topics), Object.keys(this.sceneData));
 
         this.prepareScene();
 
@@ -292,11 +292,11 @@ export default class RosView {
     }
 
     onGetPointsMap() {
-        console.log("onGetPointsMap");
+//        console.log("onGetPointsMap");
 
         let sceneDataIDs = Object.keys(this.sceneData);
         if(!sceneDataIDs.includes("pointsMap") && this.visualizationObjectIDs.includes("PointsMap")) {
-            console.log("getPointsMap");
+//            console.log("getPointsMap");
 
             let that = this;
             let updateCameraPositionFlag = true;
@@ -324,7 +324,7 @@ export default class RosView {
     }
 
     onGetPointsRaw() {
-        console.log("onGetPointsRaw");
+//        console.log("onGetPointsRaw");
 
         this.vehiclePose = {position: {x: 0, y: 0, z: 0}, orientation: {x: 0, y: 0, z:0, w: 0}};
 
@@ -340,7 +340,7 @@ export default class RosView {
         }
 
         if(!sceneDataIDs.includes("pointsRaw") && this.visualizationObjectIDs.includes(CONST.VISUALIZATION_OBJECT.POINTS_RAW)) {
-            console.log("getPointsRaw", this.topics);
+//            console.log("getPointsRaw", this.topics);
 
             let that = this;
             const callback = (args) => {
@@ -351,7 +351,7 @@ export default class RosView {
     }
 
     onGetVehiclePose() {
-        console.log("onGetVehiclePose");
+//        console.log("onGetVehiclePose");
 
         const topicIDs = Object.keys(this.topics);
         let sceneDataIDs = Object.keys(this.sceneData);
@@ -408,6 +408,7 @@ export default class RosView {
     }
 
     getPointsMap(pointSize=0.1, callback=(args)=>{return null}) {
+//        console.log("getPointsMap");
         let that = this;
         const xhttpPCDs = new XMLHttpRequest();
         xhttpPCDs.onreadystatechange = function() {
@@ -452,7 +453,7 @@ export default class RosView {
     }
 
     getVectorMap(topic) {
-        console.log("getVectorMap");
+//        console.log("getVectorMap");
 
         let that = this;
         const ARROW=0;
@@ -549,7 +550,7 @@ export default class RosView {
     }
 
     getPointsRaw(topic, pointSize=0.4, callback=(args)=>{}) {
-        console.log("getPointsRaw", topic);
+//        console.log("getPointsRaw", topic);
         let that = this;
         topic.subscribe(function(message) {
             let positions = [];
@@ -601,7 +602,7 @@ export default class RosView {
     }
 
     getWaypoints(topic) {
-        console.log("getWaypoints");
+//        console.log("getWaypoints");
 
         let that = this;
         that.sceneData.waypoints = {
@@ -628,7 +629,7 @@ export default class RosView {
                 const textMaterial = new THREE.MeshBasicMaterial( { color: 0xFFFFFF, overdraw: 0.2 } );
                 for( const waypoint of message.lanes[0].waypoints ) {
                     const position = waypoint.pose.pose.position;
-                    console.log(waypoint);
+//                    console.log(waypoint);
                     const velocity = (Math.round(waypoint.twist.twist.linear.x*10)/10).toFixed(1).toString();
                     const textGeometry = new THREE.TextGeometry(velocity, {
                         font: font,
@@ -653,7 +654,7 @@ export default class RosView {
     }
 
     getNextTarget(topic) {
-        console.log("getNextTarget");
+//        console.log("getNextTarget");
 
         let that = this;
         topic.subscribe(function(message) {
@@ -667,7 +668,7 @@ export default class RosView {
     }
 
     getTrajectoryCircle(topic) {
-        console.log("getTrajectoryCircle");
+//        console.log("getTrajectoryCircle");
 
         let that = this;
         topic.subscribe(function(message) {
