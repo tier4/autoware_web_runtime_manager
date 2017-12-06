@@ -51,11 +51,27 @@ export default class ButtonRGL extends React.Component {
     getButtons() {
         const buttons = [];
         for(const node of this.props.structure.nodes) {
+            let buttonState = null;
+            if(node.on) {
+                buttonState = "on"
+            }
+            else{
+                buttonState = "off"
+            }
+            if(node.isLoading) {
+                buttonState = "disabled"
+            }
+            if(node.isKilling) {
+                buttonState = "disabled"
+            }
+            if(!node.enabled) {
+                buttonState = "disabled"
+            }
             buttons.push((
                 <GridSizeWrapper key={node.id}>
                     <Button
                         span={node.span}
-                        buttonState={node.physics ? (node.chosen ? "on" : "off") : "disabled"}
+                        buttonState={buttonState}
                         onClick={this.onClickButton.bind(this, node.id)}
                     />
                 </GridSizeWrapper>
@@ -94,7 +110,7 @@ export default class ButtonRGL extends React.Component {
             for(const domain of Object.keys(json)){
                 for(const label of Object.keys(json[domain])){
                     const index = this.props.structure.nodes.findIndex(function(x) { return x.domain == domain && x.label == label });
-                    structure.nodes[index].physics = json[domain][label]["enable"];
+                    structure.nodes[index].enabled = json[domain][label]["enable"];
                 }
             }
             for(const domain of Object.keys(json)){
@@ -103,9 +119,8 @@ export default class ButtonRGL extends React.Component {
                     if(json[domain][label]["mode"]=="on"){
                         structure.nodes = this.getUpdatedNodes(
                             this.props.structure.nodes[index].id,
-                            !this.props.structure.nodes[index].chosen,
-                            this.props.structure.nodes,
-                            this.props.structure.edges);
+                            !this.props.structure.nodes[index].on,
+                            this.props.structure.nodes);
                     }
                 }
             }
@@ -113,26 +128,28 @@ export default class ButtonRGL extends React.Component {
         })
         .catch((e) => { console.error(e);} );
     }
-    onClickButton(nodeId) {
-        const index = this.props.structure.nodes.findIndex(node => node.id === nodeId);
-        if(this.props.structure.nodes[index].physics) {
+    onClickButton(nodeID) {
+        const index = this.props.structure.nodes.findIndex(node => node.id === nodeID);
+        if(this.props.structure.nodes[index].enabled) {
             const structure = this.props.structure;
             structure.nodes = this.getUpdatedNodes(
-                nodeId,
-                !this.props.structure.nodes[index].chosen,
-                this.props.structure.nodes,
-                this.props.structure.edges);
+                nodeID,
+                !this.props.structure.nodes[index].on,
+                this.props.structure.nodes);
 
             const nodeDomain = structure.nodes[index].domain;
             const nodeLabel = structure.nodes[index].label;
             const nodeDisplay = structure.nodes[index].display;
-            const url = WEB_UI_URL+"/roslaunch/"+nodeDomain+"/"+nodeLabel+"/"+(this.props.structure.nodes[index].chosen ? "on" : "off");
+            const url = WEB_UI_URL+"/roslaunch/"+nodeDomain+"/"+nodeLabel+"/"+(this.props.structure.nodes[index].on ? "on" : "off");
+
             structure.nodes[index].span = (<ROSLaunchRequest
                 url={url}
                 errorCallback={() => { return (<span>error</span>); }}
-                isLoadingCallback={() => { return (<span>{(this.props.structure.nodes[index].chosen ? "loading.." : "killing..")}</span>); }}
+                isLoadingCallback={() => {
+                    return (<span>{(this.props.structure.nodes[index].on ? "loading.." : "killing..")}</span>); }
+                }
                 responseCallback={() => {
-                    if(index==0 && !this.props.structure.nodes[index].chosen) {
+                    if(index==0 && !this.props.structure.nodes[index].on) {
                         location.reload();
                     }
                     return (<span>{nodeDisplay}</span>);
@@ -140,83 +157,76 @@ export default class ButtonRGL extends React.Component {
                 defaultCallback={() => { return (<span>{nodeDisplay}</span>); }}
             />);
 
+            /*
+            let that = this;
+            const xhttpRequest = new XMLHttpRequest();
+            xhttpRequest.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                    structure.nodes[index].isLoading = false;
+                    structure.nodes[index].on = !structure.nodes[index].on;
+                    if(index==0 && structure.nodes[index].on) {
+                        location.reload();
+                    }
+                    that.props.updateStructure(structure);
+                }
+            };
+            if(structure.nodes[index].on){
+                structure.nodes[index].isLoading = true;
+            }
+            else{
+                structure.nodes[index].isKilling = true;
+            }
+            xhttpRequest.open("GET", url, true);
+            xhttpRequest.send();
+            */
+
             this.props.updateStructure(structure);
         }
     }
-    getUpdatedNodes(nodeId, chosen, nodes, edges) {
-        const index = nodes.findIndex(node => node.id === nodeId);
-        nodes[index].chosen = chosen;
-        if(chosen) {
-            const toNodeIds = this.getToNodeIds(nodeId, edges);
-            for(const toNodeId of toNodeIds) {
-                const toNodeIndex = nodes.findIndex(node => node.id === toNodeId);
-                nodes[toNodeIndex].physics = this.getToNodePhysics(toNodeId, nodes, edges);
-            }
-        }
-        else {
-            nodes = this.getDisabledNodes(nodeId, nodes, edges)
-        }
-        return nodes;
-    }
-    getToNodeIds(fromNodeId, edges){
-        return edges.filter(
-            (value) => { return value.from === fromNodeId; }
-        ).map(
-            (value, index, array) => { return value.to; }
-        );
-    }
-    getToNodePhysics(toNodeId, nodes, edges){
-        //close
-        const closeFromNodeIDs = edges.filter(
-            (value) => { return value.close && value.to === toNodeId; }
-        ).map(
-            (value, index, array) => { return value.from; }
-        );
-
-        if(closeFromNodeIDs.length==1){
-            if(nodes[nodes.findIndex(node => node.id === closeFromNodeIDs[0])].chosen){
-                return false;
-            }
-        }
-        if(1 < closeFromNodeIDs.length) {
-            const physics = nodes.filter(
-                (value) => { return closeFromNodeIDs.includes(value.id); }
-            ).reduce(
-                (previousValue, currentValue, index, array) => {
-                    return previousValue.chosen || currentValue.chosen;
+    getUpdatedNodes(nodeID, on, nodes) {
+        const index = nodes.findIndex(node => node.id === nodeID);
+        nodes[index].on = on;
+        let changeFlag = true;
+        while(changeFlag) {
+            changeFlag=false;
+            for(const nodeIndex in nodes) {
+                const node = nodes[nodeIndex];
+                let enabled = true;
+                for(const requiredNodeID of node.required.forEnable.off) {
+                    if(nodes[nodes.findIndex(node => node.id === requiredNodeID)].on) {
+                        enabled = false;
+                        break;
+                    }
                 }
-            );
-            if(physics){ return physics; }
-        }
-
-        //open
-        const openFromNodeIDs = edges.filter(
-            (value) => { return value.open && value.to === toNodeId; }
-        ).map(
-            (value, index, array) => { return value.from; }
-        );
-        if(openFromNodeIDs.length==0){
-            return true;
-        }
-        if(openFromNodeIDs.length==1){
-            return nodes[nodes.findIndex(node => node.id === openFromNodeIDs[0])].chosen;
-        }
-        return nodes.filter(
-            (value) => { return openFromNodeIDs.includes(value.id); }
-        ).reduce(
-            (previousValue, currentValue, index, array) => {
-                return previousValue.chosen && currentValue.chosen;
-            }
-        );
-    }
-    getDisabledNodes(fromNodeId, nodes, edges) {
-        const toNodeIds = this.getToNodeIds(fromNodeId, edges);
-        for(const toNodeId of toNodeIds) {
-            const toNodeIndex = nodes.findIndex(node => node.id === toNodeId);
-            nodes[toNodeIndex].physics = this.getToNodePhysics(toNodeId, nodes, edges);
-            if(!nodes[toNodeIndex].physics) {
-                nodes[toNodeIndex].chosen = false;
-                nodes = this.getDisabledNodes(nodes[toNodeIndex].id, nodes, edges);
+                if(enabled) {
+                    for(const requiredNodeID of node.required.forEnable.disable) {
+                        if(nodes[nodes.findIndex(node => node.id === requiredNodeID)].enabled) {
+                            enabled = false;
+                            break;
+                        }
+                    }
+                    if(enabled) {
+                        for(const requiredNodeID of node.required.forEnable.enable) {
+                            if(!nodes[nodes.findIndex(node => node.id === requiredNodeID)].enabled) {
+                                enabled = false;
+                                break;
+                            }
+                        }
+                        if(enabled) {
+                            for(const requiredNodeID of node.required.forEnable.on) {
+                                if(!nodes[nodes.findIndex(node => node.id === requiredNodeID)].on) {
+                                    enabled = false;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+                if(node.enabled != enabled) {
+                    nodes[nodeIndex].enabled = enabled;
+                    changeFlag=true;
+                    break;
+                }
             }
         }
         return nodes;
