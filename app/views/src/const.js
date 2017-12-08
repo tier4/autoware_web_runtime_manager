@@ -95,7 +95,10 @@ const CONST = {
             MESSAGE_TYPE: "sensor_msgs/Image",
         },
         TF: "/tf",
-        VEHICLE_POSE: "/ndt_pose",
+        VEHICLE_POSE: {
+            NAME: "/current_pose",
+            MESSAGE_TYPE: "geometry_msgs/PoseStamped"
+        },
         WAYPOINTS: "/lane_waypoints_array",
         NEXT_TARGET: "/downsampled_next_target_mark",
         TRAJECTORY_CIRCLE: "/downsampled_trajectory_circle_mark"

@@ -120,8 +120,8 @@ class Index extends React.Component {
                                 topics: {
                                     vehiclePose: {
                                         ros: null,
-                                        name : "/ndt_pose",
-                                        messageType : 'geometry_msgs/PoseStamped',
+                                        name : CONST.TOPIC.VEHICLE_POSE.NAME,
+                                        messageType : CONST.TOPIC.VEHICLE_POSE.MESSAGE_TYPE,
                                     },
                                 }
                             }
@@ -172,8 +172,8 @@ class Index extends React.Component {
                                         messageType: "tf2_msgs/TFMessage"
                                     },
                                     vehiclePose: {
-                                        name : "/ndt_pose",
-                                        messageType : 'geometry_msgs/PoseStamped',
+                                        name : CONST.TOPIC.VEHICLE_POSE.NAME,
+                                        messageType : CONST.TOPIC.VEHICLE_POSE.MESSAGE_TYPE,
                                     },
                                 },
                             },
