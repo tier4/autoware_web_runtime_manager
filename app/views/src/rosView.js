@@ -28,7 +28,7 @@ export default class RosView {
         this.pointsMapViewPosition = null;
         this.vehiclePose = null;  // {position: {x: 0, y: 0, z: 0}, orientation: {x: 0, y: 0, z:0, w: 0}};
 
-        this.initialCameraPosition = {x: 0, y: 0, z: 300};
+        this.initialCameraPosition = {x: 0.0, y: 0.0, z: 300.0};
     }
 
     setUpTopics() {
@@ -109,7 +109,7 @@ export default class RosView {
                 console.log("updateCameraPosition <- pointsMapViewPosition");
                 this.camera.position.x = this.pointsMapViewPosition.x;
                 this.camera.position.y = this.pointsMapViewPosition.y;
-                this.camera.position.z = this.pointsMapViewPosition.z + 2000;
+                this.camera.position.z = this.pointsMapViewPosition.z + 2000.0;
                 this.controls.target.set(
                     this.pointsMapViewPosition.x,
                     this.pointsMapViewPosition.y,
@@ -155,7 +155,7 @@ export default class RosView {
         if( this.controls === null ) {
             this.controls = new THREE.OrbitControls( this.camera, this.renderer.domElement );
             this.controls.addEventListener( 'change', this.render.bind(this) );
-            this.controls.target.set( 0, 0, 0 );
+            this.controls.target.set( 0.0, 0.0, 0.0 );
 
             this.animate();
         }
@@ -209,35 +209,36 @@ export default class RosView {
         }
         if(sceneDataIDs.includes("waypoints")) {
             if(topicIDs.includes("waypoints")) {
-                for(const meshName in this.sceneData.waypoints.arrow) {
-                    if(!this.sceneData.waypoints.arrow[meshName].isAdded) {
-//                        console.log("scene.add waypoints arrow", meshName);
-                        this.scene.add(this.sceneData.waypoints.arrow[meshName].threeJSObject)
-                        this.sceneData.waypoints.arrow[meshName].isAdded = true;
+                if(this.sceneData.waypoints !== CONST.OBJECT_IS_LOADING) {
+                    if(!this.sceneData.waypoints.isAdded) {
+                        console.log("scene.add waypoints");
+                        this.scene.remove(this.scene.getObjectByName("waypoints"));
+
+                        const meshes = new THREE.Group();
+                        meshes.name = "waypoints";
+
+                        for(const meshName in this.sceneData.waypoints.arrow) {
+                            meshes.add(this.sceneData.waypoints.arrow[meshName])
+                        }
+                        for(const meshName in this.sceneData.waypoints.text) {
+                            meshes.add(this.sceneData.waypoints.text[meshName])
+                        }
+                        this.scene.add(meshes);
+                        this.sceneData.waypoints.isAdded = true;
                     }
-                }
-                for(const meshName in this.sceneData.waypoints.text) {
-                    if(!this.sceneData.waypoints.text[meshName].isAdded) {
-//                        console.log("scene.add waypoints text", meshName);
-                        this.scene.add(this.sceneData.waypoints.text[meshName].threeJSObject)
-                        this.sceneData.waypoints.text[meshName].isAdded = true;
+                    else{
+                        for(const meshName in this.sceneData.waypoints.text) {
+                            this.sceneData.waypoints.text[meshName].lookAt( this.camera.position );
+                            this.sceneData.waypoints.text[meshName].setRotationFromQuaternion( this.camera.quaternion );
+                        }
                     }
-                    this.sceneData.waypoints.text[meshName].threeJSObject.lookAt( this.camera.position );
-                    this.sceneData.waypoints.text[meshName].threeJSObject.setRotationFromQuaternion( this.camera.quaternion );
                 }
             }
             else {
-                for(const dataType in this.sceneData.waypoints) {
-                    for(const meshName in this.sceneData.waypoints[dataType]) {
-//                        console.log("scene.remove waypoints", meshName);
-                        const threeJSObject = this.scene.getObjectByName(meshName);
-                        if(typeof threeJSObject !== "undefined") {
-                            this.scene.remove(threeJSObject);
-                        }
-                        delete this.sceneData.waypoints[dataType][meshName].threeJSObject;
-                    }
+                if(!this.sceneData.waypoints.isAdded) {
+                    this.scene.remove(this.scene.getObjectByName("waypoints"));
+                    delete this.sceneData.waypoints;
                 }
-                delete this.sceneData.waypoints;
             }
         }
 
@@ -364,6 +365,7 @@ export default class RosView {
         }
 
         if(!sceneDataIDs.includes("waypoints") && topicIDs.includes("waypoints")) {
+            this.sceneData.waypoints = CONST.OBJECT_IS_LOADING;
             this.getWaypoints(this.topics.waypoints.instance);
         }
 
@@ -602,35 +604,31 @@ export default class RosView {
     }
 
     getWaypoints(topic) {
-//        console.log("getWaypoints");
+        console.log("getWaypoints");
 
         let that = this;
-        that.sceneData.waypoints = {
-            arrow: {},
-            text: {},
-        };
         topic.subscribe(function(message) {
-            // arrow
-            for(let i=1; i<message.lanes[0].waypoints.length; i++) {
-                const pos_1 = message.lanes[0].waypoints[i-1].pose.pose.position;
-                const pos = message.lanes[0].waypoints[i].pose.pose.position;
-                var from = new THREE.Vector3( pos_1.x, pos_1.y, pos_1.z );
-                var to = new THREE.Vector3( pos.x, pos.y, pos.z );
-                const mesh = that.drawArrowHead(0xFF0000, [from, to]);
-                mesh.name = "arrow_"+mesh.uuid;
-                that.sceneData.waypoints.arrow[mesh.name] = {
-                    threeJSObject: mesh,
-                    isAdded: false,
-                }
-            }
-
-            // text
             that.fontLoader.load(WEB_UI_URL+'/res/static/helvetiker_regular.typeface.json', function(font) {
+                console.log("getWaypoints.topic.subscribe.onMessage.onLoadFont");
+                // arrow
+                const arrow = {};
+                for(let i=1; i<message.lanes[0].waypoints.length; i++) {
+                    const pos_1 = message.lanes[0].waypoints[i-1].pose.pose.position;
+                    const pos = message.lanes[0].waypoints[i].pose.pose.position;
+                    var from = new THREE.Vector3( pos_1.x, pos_1.y, pos_1.z );
+                    var to = new THREE.Vector3( pos.x, pos.y, pos.z );
+                    const mesh = that.drawArrowHead(0xFF0000, [from, to]);
+                    mesh.name = "arrow_"+mesh.uuid;
+                    arrow[mesh.name] = mesh;
+                }
+
+                // text
+                const text = {};
                 const textMaterial = new THREE.MeshBasicMaterial( { color: 0xFFFFFF, overdraw: 0.2 } );
                 for( const waypoint of message.lanes[0].waypoints ) {
                     const position = waypoint.pose.pose.position;
 //                    console.log(waypoint);
-                    const velocity = (Math.round(waypoint.twist.twist.linear.x*10)/10).toFixed(1).toString();
+                    const velocity = (Math.round(waypoint.twist.twist.linear.x*36)/10).toFixed(1).toString();
                     const textGeometry = new THREE.TextGeometry(velocity, {
                         font: font,
                         size: 0.2,
@@ -643,13 +641,14 @@ export default class RosView {
                     mesh.position.y = position.y;
                     mesh.position.z = position.z;
                     mesh.lookAt( that.camera.position );
-                    that.sceneData.waypoints.text[mesh.name] = {
-                        threeJSObject: mesh,
-                        isAdded: false,
-                    }
+                    text[mesh.name] = mesh;
                 }
+                that.sceneData.waypoints = {
+                    arrow: arrow,
+                    text: text,
+                    isAdded: false
+                };
             });
-            topic.unsubscribe();
         });
     }
 
