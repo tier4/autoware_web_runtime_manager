@@ -382,6 +382,21 @@ def create_mission_launch_file():
     -->
     """
 
+    # """
+    launch.append(Comment("WF Simulator"))
+    wf_simulator = SubElement(
+        launch,
+        "include",
+        {
+            "file": "$(find waypoint_follower)/launch/wf_simulator.launch",
+        }
+    )
+    SubElement(wf_simulator, "arg", {"name": "initialize_source", "value": "Rviz"})
+    SubElement(wf_simulator, "arg", {"name": "accel_rate", "value": "1"})
+    SubElement(wf_simulator, "arg", {"name": "position_error", "value": "0"})
+    SubElement(wf_simulator, "arg", {"name": "angle_error", "value": "0"})
+    # """
+
     launch.append(Comment("vel_pose_mux"))
     vel_pose_mux = SubElement(
         launch,
@@ -392,6 +407,7 @@ def create_mission_launch_file():
     )
     SubElement(vel_pose_mux, "arg", {"name": "topic_pose_stamped", "value": "$(arg topic_pose_stamped)"})
     SubElement(vel_pose_mux, "arg", {"name": "topic_twist_stamped", "value": "$(arg topic_twist_stamped)"})
+    SubElement(vel_pose_mux, "arg", {"name": "sim_mode", "value": "True"})
 
 
     launch.append(Comment("waypoint_loader"))
