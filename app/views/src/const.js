@@ -70,7 +70,7 @@ const CONST = {
         MAP2D: "2d",
         MAP3D: "3d",
         CAMERA: "camera",
-        RADAR: "radar",
+        LIDAR: "lidar",
     },
     VISUALIZATION_OBJECT: {
         GOOGLE_MAPS: "GoogleMaps",

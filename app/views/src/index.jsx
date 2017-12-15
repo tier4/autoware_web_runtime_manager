@@ -10,7 +10,7 @@ import GoogleMapsView from "./googleMapsView";
 import RosView from "./rosView";
 
 import Map2DView from './map_2d_view';
-import RadarView from './radar_view';
+import LidarView from './lidar_view';
 import Map3DView from './map_3d_view';
 import CameraView from './camera_view';
 
@@ -228,18 +228,18 @@ class Index extends React.Component {
                         },
                         visibleObjectIDs: [],
                     },
-                    [CONST.VIEW_CONTENT.RADAR]: {
+                    [CONST.VIEW_CONTENT.LIDAR]: {
                         triggerButtonIDs: {
                             open: 6,
                             close: 3,
                         },
                         layout: {
-                            i: CONST.VIEW_CONTENT.RADAR,
+                            i: CONST.VIEW_CONTENT.LIDAR,
                             x: 10, y: 0, w: 14, h: 25,
                             isDraggable: false,
                             isResizable: false,
                         },
-                        component: RadarView,
+                        component: LidarView,
                         viewInstance: new RosView(),
                         visualizationObjects: {
                             [CONST.VISUALIZATION_OBJECT.POINTS_RAW]: {
