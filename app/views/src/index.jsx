@@ -13,14 +13,15 @@ import Map2DView from './map_2d_view';
 import RadarView from './radar_view';
 import Map3DView from './map_3d_view';
 import CameraView from './camera_view';
-
+import MqttWrapper from './mqtt';
 
 class Index extends React.Component {
     constructor() {
         super();
         const rosView = new RosView();
         console.log(CONST);
-        this.state = {
+	this.mqtt_client= new MqttWrapper();
+        this.state= {
             buttonRGL: {
                 nodeWidth: 4,
                 nodeHeight: 3,
@@ -267,15 +268,18 @@ class Index extends React.Component {
             },
         };
     }
+
     render() {
         return (
             <div>
                 <ButtonRGL
-                    structure={this.state.buttonRGL}
-                    updateStructure={this.updateButtonRGLStructure.bind(this)}
+                   structure={this.state.buttonRGL}
+		   mqtt_client={this.mqtt_client}
+                   updateStructure={this.updateButtonRGLStructure.bind(this)}
                 />
                 <ViewRGL
-                    structure={this.state.viewRGL}
+                   structure={this.state.viewRGL}
+		   mqtt_client={this.mqtt_client}
                     updateStructure={this.updateViewRGLStructure.bind(this)}
                 />
             </div>
@@ -310,6 +314,11 @@ class Index extends React.Component {
         }
         this.setState({viewRGL: viewRGL});
     }
+    componentWillUnmount(){
+	this.mqtt_client.disConnect();
+	delete(this.mqtt_client);
+    }
+
 }
 
 ReactDOM.render(

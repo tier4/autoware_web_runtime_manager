@@ -150,7 +150,91 @@ export default class GoogleMapsView {
         });
     }
 
+    publishInitialPose(args) {
+        const ros = this.ros;
+        const useSimTimeParam = new ROSLIB.Param({
+            ros: ros,
+            name: "use_sim_time"
+        });
+        useSimTimeParam.get(function(useSimTime){
+            console.log("use_sim_time", useSimTime);
+            if(useSimTime) {
+                const clockTopic = new ROSLIB.Topic({
+                    ros: ros,
+                    name : "/clock",
+                    messageType : 'rosgraph_msgs/Clock',
+                });
+                clockTopic.subscribe(function(message){
+                    console.log(message);
+
+                    const initialPoseTopic = new ROSLIB.Topic({
+                        ros: ros,
+                        name : "/initialpose",
+                        messageType : 'geometry_msgs/PoseWithCovarianceStamped',
+                    });
+                    const quaternion = new THREE.Quaternion();
+                    quaternion.setFromAxisAngle( new THREE.Vector3( 0, 0, 1 ), args.dtlane.Dir );
+                    const initialPoseMessage = {
+                        header: {
+                            seq: 0,
+                            stamp: {
+                              secs: message.clock.secs,
+                              nsecs: message.clock.nsecs,
+                            },
+                            frame_id: '/map',
+                        },
+                        pose: {
+                          pose: {
+                            position: {x: args.point.Ly, y: args.point.Bx, z: args.point.H},
+                            orientation: {x: -quaternion.x, y: -quaternion.y, z: -quaternion.z, w: -quaternion.w}
+                          },
+                          covariance: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+                            0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+                            0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+                        }
+                    }
+                    console.log(initialPoseMessage, args.dtlane.Dir);
+                    initialPoseTopic.publish(initialPoseMessage);
+
+                    clockTopic.unsubscribe();
+                });
+            }
+            else {
+                const initialPoseTopic = new ROSLIB.Topic({
+                    ros: ros,
+                    name : "/initialpose",
+                    messageType : 'geometry_msgs/PoseWithCovarianceStamped',
+                });
+                const quaternion = new THREE.Quaternion();
+                quaternion.setFromAxisAngle( new THREE.Vector3( 0, 0, 1 ), args.dtlane.Dir );
+                const initialPoseMessage = {
+                    header: {
+                        seq: 0,
+                        stamp: {
+                          secs: Date.now()*0.001,
+                          nsecs: 0,
+                        },
+                        frame_id: '/map',
+                    },
+                    pose: {
+                      pose: {
+                        position: {x: args.point.Ly, y: args.point.Bx, z: args.point.H},
+                        orientation: {x: -quaternion.x, y: -quaternion.y, z: -quaternion.z, w: -quaternion.w}
+                      },
+                      covariance: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+                        0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+                        0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+                    }
+                }
+                console.log(initialPoseMessage, args.dtlane.Dir);
+                initialPoseTopic.publish(initialPoseMessage);
+            }
+
+        });
+    }
+
     drawDTLanes() {
+        let that = this;
         for(const did in this.viewData.dtlanes) {
             const pid = this.viewData.dtlanes[did].PID;
             const lat = this.viewData.points[pid].lat;
@@ -163,7 +247,8 @@ export default class GoogleMapsView {
                 fillOpacity = 1.0;
             }
 
-            var circle = new google.maps.Circle({
+            const circle = new google.maps.Circle({
+                label: {point: this.viewData.points[pid], dtlane: this.viewData.dtlanes[did]},
                 strokeColor: rgb,
                 strokeOpacity: 0.8,
                 strokeWeight: 2,
@@ -172,6 +257,10 @@ export default class GoogleMapsView {
                 map: this.map,
                 center: {lat: lat, lng: lng},
                 radius: 0.2
+            });
+            circle.addListener('click', function() {
+//              console.log(this.label);
+              that.publishInitialPose(this.label);
             });
         }
     }

@@ -81,7 +81,30 @@ export default class ButtonRGL extends React.Component {
     }
     componentWillMount() {
         this.initializeButtonRGLState();
+
+	//mqtt callback method creating
+	const mqtt_client = this.props.mqtt_client;
+	
+	var buttonMethod = function(message){
+	    console.log(message.payloadString);
+	    const topic_factor = message.destinationName.split("/");
+	    const message_factor = topic_factor[2].split(".");
+            const index = this.props.structure.nodes.findIndex(node => node.label === message_factor[2]);   
+	    console.log(index);
+	    
+	    if(message.payloadString === "ok"){
+		this.props.structure.nodes[index].span = (<span>{this.props.structure.nodes[index].display}</span>);
+	    }else{
+		this.props.structure.nodes[index].span = (<span>error</span>);
+	    }
+	    this.props.updateStructure(this.props.structure);
+	};
+
+	for(const node of this.props.structure.nodes){
+	    mqtt_client.setCallback(node.label,buttonMethod.bind(this));
+	}
     }
+    
     render() {
         return (
             <ResponsiveReactGridLayout
@@ -93,7 +116,7 @@ export default class ButtonRGL extends React.Component {
                 {this.getButtons()}
             </ResponsiveReactGridLayout>
         );
-    }
+    }    
     initializeButtonRGLState() {
         const date = new Date();
         const url = WEB_UI_URL+"/getRTMStatus?date="+date.getTime().toString();
@@ -140,8 +163,9 @@ export default class ButtonRGL extends React.Component {
             const nodeDomain = structure.nodes[index].domain;
             const nodeLabel = structure.nodes[index].label;
             const nodeDisplay = structure.nodes[index].display;
-            const url = WEB_UI_URL+"/roslaunch/"+nodeDomain+"/"+nodeLabel+"/"+(this.props.structure.nodes[index].on ? "on" : "off");
+            const url = WEB_UI_URL+"/roslaunch/"+nodeDomain+"/"+nodeLabel+"/"+nodeID+"/"+(this.props.structure.nodes[index].on ? "on" : "off");
 
+	    /*
             structure.nodes[index].span = (<ROSLaunchRequest
                 url={url}
                 errorCallback={() => { return (<span>error</span>); }}
@@ -155,8 +179,18 @@ export default class ButtonRGL extends React.Component {
                     return (<span>{nodeDisplay}</span>);
                 }}
                 defaultCallback={() => { return (<span>{nodeDisplay}</span>); }}
-            />);
+					   />);
+	    */
 
+	    // set callback handlers
+	    //this.props.mqtt_client.onMessageDelivered = onMessageDelivere
+	    //const mqtt_client = this.props.mqtt_client;
+	    const label = structure.nodes[index].label;
+	    const message = structure.nodes[index].on ? "on" : "off";
+	    this.props.mqtt_client.onPublish(label,message);
+	    structure.nodes[index].span = (<span>{(structure.nodes[index].on ? "loading.." : "killing..")}</span>);
+
+	    
             /*
             let that = this;
             const xhttpRequest = new XMLHttpRequest();

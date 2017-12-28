@@ -184,5 +184,5 @@ def exitRTM():
 
 if __name__ == '__main__':
     print("flask run")
-    flask.run(host=env["AUTOWARE_WEB_UI_HOST"], port=env["AUTOWARE_WEB_UI_PORT"])#, processes=1, threaded=True)
+    flask.run(host=env["AUTOWARE_WEB_UI_HOST"], port=int(env["AUTOWARE_WEB_UI_PORT"]))#, processes=1, threaded=True)
     # flask.run(debug=True)

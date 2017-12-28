@@ -42,7 +42,7 @@ const CONST = {
         },
         ROSBAG_PLAY: {
             DOMAIN: "rosbag",
-            LABEL: "rosbagPlay",
+            LABEL: "play",
             DISPLAY: "Play",
         },
         ROSBAG_PAUSE: {
@@ -57,7 +57,7 @@ const CONST = {
         },
         GATEWAY_ON: {
             DOMAIN: "gateway",
-            LABEL: "gatewayOn",
+            LABEL: "on",
             DISPLAY: "On"
         },
         GATEWAY_OFF: {

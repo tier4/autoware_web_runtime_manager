@@ -22,7 +22,7 @@ class Wrapper extends React.Component {
                         width: that.props.style.width,
                         height: that.props.style.height
                     }
-                )
+                );
             }
         );
         return (
@@ -67,14 +67,15 @@ export default class ViewRGL extends React.Component {
                             id={content.layout.i}
                             style={{backgroundColor: "lightslategray"}}
                         >
-                            <content.component
-                                parentId={content.layout.i}
-                                width={this.props.width}
-                                height={this.props.height}
-                                viewInstance={content.viewInstance}
-                                visualizationObjects={visualizationObjects}
-                                stop={false}
-                            />
+                          <content.component
+                             parentId={content.layout.i}
+                             width={this.props.width}
+                             height={this.props.height}
+                             viewInstance={content.viewInstance}
+			     mqtt_client={this.props.mqtt_client}
+                             visualizationObjects={visualizationObjects}
+                             stop={false}
+                             />
                         </Wrapper>
                     ));
                 }
