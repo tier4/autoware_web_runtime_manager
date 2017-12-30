@@ -22,6 +22,12 @@ export default class MqttWrapper{
 	//label is unique.
 	this.topics = [
 	    {
+		domain : CONST.BUTTON_INIT.DOMAIN,
+		label : CONST.BUTTON_INIT.LABEL,
+		type : "buttonInit",
+		callback : function(){}
+	    },
+	    {
 		domain : CONST.BUTTON.INITIALIZATION.DOMAIN,
 		label : CONST.BUTTON.INITIALIZATION.LABEL,
 		type : "button",
@@ -95,12 +101,12 @@ export default class MqttWrapper{
 	    },
 	]
 
-	this.mqtt_client = new Paho.MQTT.Client(this.host, this.port, "clientId");
-	this.mqtt_client.onConnectionLost = onConnectionLost;
-	this.mqtt_client.onMessageArrived = onMessageArrived.bind(this);
+	this.mqttClient = new Paho.MQTT.Client(this.host, this.port, "clientId");
+	this.mqttClient.onConnectionLost = onConnectionLost;
+	this.mqttClient.onMessageArrived = onMessageArrived.bind(this);
 
 	// connect the client
-	this.mqtt_client.connect({onSuccess:onConnect.bind(this)});
+	this.mqttClient.connect({onSuccess:onConnect.bind(this)});
 
 	function onConnect() {
 	    // Once a connection has been made, make a subscription.
@@ -110,9 +116,10 @@ export default class MqttWrapper{
 		const body = "/" + this.topics[i].type + "." + this.topics[i].domain + "." + this.topics[i].label;
 		const direction = "/" + this.fromAutoware;
 
-		this.mqtt_client.subscribe(header + body + direction);
+		this.mqttClient.subscribe(header + body + direction);
 		console.log(header + body + direction);
 	    }
+	    this.onPublish("buttonInit","GET");
 	}
 
 	function onMessageArrived(message){
@@ -123,8 +130,8 @@ export default class MqttWrapper{
             const index = this.topics.findIndex(topic => topic.label === message_factor[1]);
 
 	    if(index !== -1){
-		console.log(this.topics[index].callback)
-		console.log(index)
+		//console.log(this.topics[index].callback)
+		//console.log(index)
 		this.topics[index].callback(message);
 	    }
 	}
@@ -140,7 +147,6 @@ export default class MqttWrapper{
 
     onPublish(label,msg){
 	const index = this.topics.findIndex(topic => topic.label === label);
-
 	if(index !== -1){
 	    var message = new Paho.MQTT.Message(msg);
 	    const header = "/" + this.userid + "." + this.carid;
@@ -148,7 +154,7 @@ export default class MqttWrapper{
 	    const direction = "/" + this.toAutoware;
 	    
 	    message.destinationName = header + body + direction;
-	    this.mqtt_client.send(message);
+	    this.mqttClient.send(message);
 	    //console.log(message.destinationName);
 	    //console.log(message.payloadString);
 	}
@@ -156,8 +162,8 @@ export default class MqttWrapper{
 
     setCallback(label,callback) {
 	const index = this.topics.findIndex(topic => topic.label === label);
-	console.log("image callback set")
-	console.log(index)
+	//console.log("image callback set")
+	//console.log(index)
 	if( index !== -1){
 	    this.topics[index].callback = callback;
 	}
@@ -165,6 +171,6 @@ export default class MqttWrapper{
 
     disConnect(){
 	console.log("disconnect");
-	this.mqtt_client.disonnet();
+	this.mqttClient.disonnet();
     }
 }

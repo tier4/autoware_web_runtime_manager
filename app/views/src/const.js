@@ -64,8 +64,12 @@ const CONST = {
             DOMAIN: "gateway",
             LABEL: "gatewayOff",
             DISPLAY: "Off"
-        }
+        },
     },
+    BUTTON_INIT: {
+        DOMAIN: "buttonInit",
+        LABEL: "buttonInit",
+    },	
     VIEW_CONTENT: {
         MAP2D: "2d",
         MAP3D: "3d",

@@ -72,7 +72,7 @@ export default class ViewRGL extends React.Component {
                              width={this.props.width}
                              height={this.props.height}
                              viewInstance={content.viewInstance}
-			     mqtt_client={this.props.mqtt_client}
+			     mqttClient={this.props.mqttClient}
                              visualizationObjects={visualizationObjects}
                              stop={false}
                              />

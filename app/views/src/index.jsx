@@ -20,7 +20,7 @@ class Index extends React.Component {
         super();
         const rosView = new RosView();
         console.log(CONST);
-	this.mqtt_client= new MqttWrapper();
+	this.mqttClient= new MqttWrapper();
         this.state= {
             buttonRGL: {
                 nodeWidth: 4,
@@ -222,7 +222,7 @@ class Index extends React.Component {
                                 topics: {
                                     [CONST.TOPIC.IMAGE_RAW.NAME]: {
                                         name : CONST.TOPIC.IMAGE_RAW.NAME,
-                                        messageType : CONST.TOPIC.IMAGE_RAW.MESSAGE_TYPE,
+                                        messageType : CONST.TOPIC.IMAGE_RAW.MESSAGE_TYPE
                                     }
                                 },
                             },
@@ -274,13 +274,13 @@ class Index extends React.Component {
             <div>
                 <ButtonRGL
                    structure={this.state.buttonRGL}
-		   mqtt_client={this.mqtt_client}
+		   mqttClient={this.mqttClient}
                    updateStructure={this.updateButtonRGLStructure.bind(this)}
                 />
                 <ViewRGL
                    structure={this.state.viewRGL}
-		   mqtt_client={this.mqtt_client}
-                    updateStructure={this.updateViewRGLStructure.bind(this)}
+		   mqttClient={this.mqttClient}
+                   updateStructure={this.updateViewRGLStructure.bind(this)}
                 />
             </div>
         );
@@ -315,8 +315,8 @@ class Index extends React.Component {
         this.setState({viewRGL: viewRGL});
     }
     componentWillUnmount(){
-	this.mqtt_client.disConnect();
-	delete(this.mqtt_client);
+	this.mqttClient.disConnect();
+	delete(this.mqttClient);
     }
 
 }

@@ -8,20 +8,26 @@ from controllers.ros_controller import ROSController
 from controllers.vector_map_loader import VectorMap
 from prepare import kill_web_video_server
 import traceback
-from pprint import PrettyPrinter
 import paho.mqtt.client as mqtt
 import signal
 import sys
+import json
 
 class MQTT_RosLauncher:
-    __host = '127.0.0.1'
+    __host = 'localhost'
     __port = 1883
     __userid = "test"
     __carid = "test"
     __toAutoware = "UtoA";
     __fromAutoware = "AtoU";
 
-
+    
+    __initialButton = {
+        "topic" : "buttonInit.buttonInit"
+    }
+    
+    
+    
     __initial_rtm_status = {
         "initialization": {
             "initialization": {
@@ -130,6 +136,11 @@ class MQTT_RosLauncher:
     
     def __initialize_rtm_status(self):
         self.rtm_status = deepcopy(self.__initial_rtm_status)
+
+    def __getRTMStatus(self):
+        print("getRTMStatus")
+        return self.rtm_status
+
         
     def __roslaunch(self,domain,label,message):
         self.rtm_status[domain][label]["mode"] = message
@@ -160,13 +171,10 @@ class MQTT_RosLauncher:
         space,header,body,direction = msg.topic.split("/")
         mtype,domain,label = body.split(".")
         
-        res = ""
         if mtype == "button":
-            res = self.__roslaunch(domain,label,msg.payload)
-        elif mtype == "image":
-            #to do
-            print("test")
-        return res
+            return self.__roslaunch(domain,label,msg.payload)
+        elif mtype == "buttonInit":
+            return json.dumps(self.__getRTMStatus())
         
     def __on_connect(self,client, userdata, flags, respons_code):
         print('status {0}'.format(respons_code))
@@ -179,18 +187,20 @@ class MQTT_RosLauncher:
                 if "topic" in value2.keys():
                     body = "/" + "button" + "." + value2["topic"]
                     topic = header + body + direction
-                    print topic
                     self.client.subscribe(topic)
+                    
+        body = "/" + "buttonInit" + "." + self.__initialButton["topic"]
+        topic = header + body + direction
+        self.client.subscribe(topic)
 
-
+                    
     def __on_message(self,client, userdata, msg):
-        print(msg.topic + ' ' + str(msg.payload))        
+        print(msg.topic + ' ' + str(msg.payload))
         res = self.__execution(msg)
         
         space,header,body,direction = msg.topic.split("/")
         topic = "/" + header + "/" + body + "/" + self.__fromAutoware
-        print(topic,res)
-        self.client.publish(topic,res)
+        self.client.publish(topic,str(res))
 
     def __on_disconnect(self):
         logging.debug("DisConnected result code "+str(rc))

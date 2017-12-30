@@ -53,19 +53,19 @@ export default class ButtonRGL extends React.Component {
         for(const node of this.props.structure.nodes) {
             let buttonState = null;
             if(node.on) {
-                buttonState = "on"
+                buttonState = "on";
             }
             else{
-                buttonState = "off"
+                buttonState = "off";
             }
             if(node.isLoading) {
-                buttonState = "disabled"
+                buttonState = "disabled";
             }
             if(node.isKilling) {
-                buttonState = "disabled"
+                buttonState = "disabled";
             }
             if(!node.enabled) {
-                buttonState = "disabled"
+                buttonState = "disabled";
             }
             buttons.push((
                 <GridSizeWrapper key={node.id}>
@@ -83,14 +83,14 @@ export default class ButtonRGL extends React.Component {
         this.initializeButtonRGLState();
 
 	//mqtt callback method creating
-	const mqtt_client = this.props.mqtt_client;
+	const mqttClient = this.props.mqttClient;
 	
 	var buttonMethod = function(message){
-	    console.log(message.payloadString);
+	    //console.log(message.payloadString);
 	    const topic_factor = message.destinationName.split("/");
 	    const message_factor = topic_factor[2].split(".");
             const index = this.props.structure.nodes.findIndex(node => node.label === message_factor[2]);   
-	    console.log(index);
+	    //console.log(index);
 	    
 	    if(message.payloadString === "ok"){
 		this.props.structure.nodes[index].span = (<span>{this.props.structure.nodes[index].display}</span>);
@@ -101,7 +101,7 @@ export default class ButtonRGL extends React.Component {
 	};
 
 	for(const node of this.props.structure.nodes){
-	    mqtt_client.setCallback(node.label,buttonMethod.bind(this));
+	    mqttClient.setCallback(node.label,buttonMethod.bind(this));
 	}
     }
     
@@ -116,40 +116,40 @@ export default class ButtonRGL extends React.Component {
                 {this.getButtons()}
             </ResponsiveReactGridLayout>
         );
-    }    
+    }
     initializeButtonRGLState() {
-        const date = new Date();
-        const url = WEB_UI_URL+"/getRTMStatus?date="+date.getTime().toString();
-        fetch(url)
-        .then((response) => {
-            if(!response.ok) {
-                throw Error(response.statusText);
-            }
-            return response.json();
-        })
-        .then((json) => {
-            console.log("initializeButtonRGLState", json);
+        //const date = new Date();
+	//todo:change mqtt
+        //const url = WEB_UI_URL+"/getRTMStatus?date="+date.getTime().toString();
+
+	var initMethod = function(message){
+	    //console.log(message.payloadString);
+	    var json = JSON.parse(message.payloadString);
+            //console.log("initializeButtonRGLState", json);
             const structure = this.props.structure;
             for(const domain of Object.keys(json)){
                 for(const label of Object.keys(json[domain])){
-                    const index = this.props.structure.nodes.findIndex(function(x) { return x.domain == domain && x.label == label });
-                    structure.nodes[index].enabled = json[domain][label]["enable"];
+                    const index = this.props.structure.nodes.findIndex(function(x) { return x.domain == domain && x.label == label; });
+		    if(index !== -1){
+			structure.nodes[index].enabled = json[domain][label]["enable"];
+		    }
                 }
             }
             for(const domain of Object.keys(json)){
                 for(const label of Object.keys(json[domain])){
-                    const index = this.props.structure.nodes.findIndex(function(x) { return x.domain == domain && x.label == label });
-                    if(json[domain][label]["mode"]=="on"){
+                    const index = this.props.structure.nodes.findIndex(function(x) { return x.domain == domain && x.label == label; });
+                    if(json[domain][label]["mode"]=="on" && index !== -1){
                         structure.nodes = this.getUpdatedNodes(
                             this.props.structure.nodes[index].id,
                             !this.props.structure.nodes[index].on,
-                            this.props.structure.nodes);
+      this.props.structure.nodes);
                     }
                 }
             }
             this.props.updateStructure(structure);
-        })
-        .catch((e) => { console.error(e);} );
+        };
+	this.props.mqttClient.setCallback("buttonInit",initMethod.bind(this));
+		
     }
     onClickButton(nodeID) {
         const index = this.props.structure.nodes.findIndex(node => node.id === nodeID);
@@ -183,11 +183,9 @@ export default class ButtonRGL extends React.Component {
 	    */
 
 	    // set callback handlers
-	    //this.props.mqtt_client.onMessageDelivered = onMessageDelivere
-	    //const mqtt_client = this.props.mqtt_client;
 	    const label = structure.nodes[index].label;
 	    const message = structure.nodes[index].on ? "on" : "off";
-	    this.props.mqtt_client.onPublish(label,message);
+	    this.props.mqttClient.onPublish(label,message);
 	    structure.nodes[index].span = (<span>{(structure.nodes[index].on ? "loading.." : "killing..")}</span>);
 
 	    
