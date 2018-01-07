@@ -12,111 +12,42 @@ import paho.mqtt.client as mqtt
 import signal
 import sys
 import json
+import urllib
+import urllib2
 
-class MQTT_RosLauncher:
-    __host = 'localhost'
-    __port = 1883
-    __userid = "test"
-    __carid = "test"
-    __toAutoware = "UtoA";
-    __fromAutoware = "AtoU";
-
-    
-    __initialButton = {
-        "topic" : "buttonInit.buttonInit"
-    }
-    
-    
-    
-    __initial_rtm_status = {
-        "initialization": {
-            "initialization": {
-                "topic" : "initialization.initialization",
-                "enable": True,
-                "mode": "off"
-            }
-        },
-        "map": {
-            "map": {
-                "topic" : "map.map",
-                "enable": False,
-                "mode": "off"
-            }
-        },
-        "localization": {
-            "localization": {
-                "topic" : "localization.localization",
-                "enable": False,
-                "mode": "off"
-            }
-        },
-        "mission": {
-            "mission": {
-                "topic" : "mission.mission",
-                "enable": False,
-                "mode": "off"
-            }
-        },
-        "motion": {
-            "motion": {
-                "topic" : "motion.motion",
-                "enable": False,
-                "mode": "off"
-            }
-        },
-        "sensing": {
-            "sensing": {
-                "topic" : "sensing.sensing",
-                "enable": False,
-                "mode": "off"
-            }
-        },
-        "detection": {
-            "detection": {
-                "topic" : "detection.detection",
-                "enable": False,
-                "mode": "off"
-            }
-        },
-        "rosbag": {
-            "rosbag": {
-                "topic" : "rosbag.rosbag",
-                "enable": False,
-                "mode": "off"
-            },
-            "play": {
-                "topic" : "rosbag.play",
-                "enable": False,
-                "mode": "off"
-            }
-        },
-        "gateway": {
-            "gateway": {
-                "topic" : "gateway.gateway",
-                "enable": False,
-                "mode": "off"
-            },
-            "on": {
-                "topic" : "gateway.on",
-                "enable": False,
-                "mode": "off"
-            }
-        }
-    }
+class MqttRosLauncher:
 
     def __init__(self):
-        self.rtm_status = deepcopy(self.__initial_rtm_status)
         self.rosController = ROSController(env)
         self.client = mqtt.Client(protocol=mqtt.MQTTv311)
 
 
+    def TopicGet(self):
+        url = "http://localhost:5000/topicData"
+        try :
+            params = urllib.urlencode({'name':"test"})
+            req = urllib2.Request(url, params)
+            res= urllib2.urlopen(req)
+            self.__initial_rtm_status = json.loads(res.read())
+            self.rtm_status = deepcopy(self.__initial_rtm_status)
+            self.__userid = self.rtm_status["fixeddata"]["userid"]
+            self.__carid = self.rtm_status["fixeddata"]["carid"]
+            self.__toAutoware = self.rtm_status["fixeddata"]["toAutoware"]
+            self.__fromAutoware = self.rtm_status["fixeddata"]["fromAutoware"]
+            
+            print(self.rtm_status)
+            return True
+        except urllib2.HTTPError, e:
+            print e.code,e.reason
+            return False
+            
 
-    def mqtt_start(self):
+    def mqttStart(self):
         #mqtt setting
         self.client.on_connect = self.__on_connect
         self.client.on_message = self.__on_message
         self.client.on_disconnect = self.__on_disconnect
-        self.client.connect(self.__host, self.__port)
+        self.client.connect(env["MQTT_HOST"], int(env["MQTT_PYTHON_PORT"]))
 
         self.client.loop_forever()
 
@@ -134,7 +65,7 @@ class MQTT_RosLauncher:
         kill_web_video_server()
         return "ok"
     
-    def __initialize_rtm_status(self):
+    def __initializeRtmStatus(self):
         self.rtm_status = deepcopy(self.__initial_rtm_status)
 
     def __getRTMStatus(self):
@@ -142,8 +73,8 @@ class MQTT_RosLauncher:
         return self.rtm_status
 
         
-    def __roslaunch(self,domain,label,message):
-        self.rtm_status[domain][label]["mode"] = message
+    def __roslaunch(self,topic_name,domain,label,message):
+        self.rtm_status["button_topics"][topic_name]["mode"] = message
         try:
             if (domain,label) == ("rosbag","play"):
                 if message == "on":
@@ -160,7 +91,7 @@ class MQTT_RosLauncher:
             else:
                 if (domain, label, message) == ("initialization","initialization", "off"):
                     self.__exitRTM()
-                    self.__initialize_rtm_status()
+                    self.__initializeRtmStatus()
                 self.rosController.launch(domain, label, message)
                 return "ok"
         except:
@@ -169,29 +100,26 @@ class MQTT_RosLauncher:
                         
     def __execution(self,msg):
         space,header,body,direction = msg.topic.split("/")
-        mtype,domain,label = body.split(".")
+        topic_name,domain,label = body.split(".")
         
-        if mtype == "button":
-            return self.__roslaunch(domain,label,msg.payload)
-        elif mtype == "buttonInit":
+        if topic_name == "buttonInit":
             return json.dumps(self.__getRTMStatus())
+        else:
+            return self.__roslaunch(topic_name,domain,label,msg.payload)
+
         
     def __on_connect(self,client, userdata, flags, respons_code):
         print('status {0}'.format(respons_code))
 
+        #topic name making and subscriber start
         header = "/" + self.__userid + "." + self.__carid
         direction  = "/" + self.__toAutoware
 
-        for key,value in self.rtm_status.items():
-            for key2,value2 in value.items():
-                if "topic" in value2.keys():
-                    body = "/" + "button" + "." + value2["topic"]
-                    topic = header + body + direction
-                    self.client.subscribe(topic)
-                    
-        body = "/" + "buttonInit" + "." + self.__initialButton["topic"]
-        topic = header + body + direction
-        self.client.subscribe(topic)
+        for key,value in self.rtm_status["button_topics"].items():
+            body = "/" + value["topic"]
+            topic = header + body + direction
+            print(topic)
+            self.client.subscribe(topic)
 
                     
     def __on_message(self,client, userdata, msg):
@@ -207,7 +135,7 @@ class MQTT_RosLauncher:
         #self.client.loop_stop()
 
 
-mqtt_roslauncher = MQTT_RosLauncher()
+mqtt_roslauncher = MqttRosLauncher()
 
 def handler(signal, frame):
     mqtt_roslauncher.disConnect();
@@ -216,7 +144,8 @@ def handler(signal, frame):
 if __name__ == '__main__':
     signal.signal(signal.SIGINT,handler)
 
-    mqtt_roslauncher.mqtt_start()
+    if mqtt_roslauncher.TopicGet():
+        mqtt_roslauncher.mqttStart()
     
 
     

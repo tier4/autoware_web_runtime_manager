@@ -138,7 +138,7 @@ class Index extends React.Component {
                             i: CONST.VIEW_CONTENT.MAP3D,
                             x: 10, y: 0, w: 14, h: 25,
                             isDraggable: false,
-                            isResizable: false,
+                            isResizable: false
                         },
                         component: Map3DView,
                         viewInstance: new RosView(),

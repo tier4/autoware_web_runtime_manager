@@ -1,0 +1,111 @@
+{
+    "fixeddata":{
+	"userid" :"",
+	"carid" :"",
+	"toAutoware":"UtoA",
+	"fromAutoware":"AtoU"
+    },
+    "button_topics":{
+	"buttonInit":{
+	    "type" : "buttonInit",
+	    "topic" : "buttonInit.buttonInit.buttonInit",
+	    "erroePublishMessage" : "buttonInit topic can not publish."
+	},
+	"initialization": {
+	    "topic" : "initialization.initialization.initialization",
+	    "domain" : "initialization",
+	    "label" : "initialization",
+	    "enable": true,
+	    "mode" : "off",
+	    "erroePublishMessage" : "initialization topic can not publish."
+	},
+	"map":{
+	    "topic" : "map.map.map",
+	    "domain" : "map",
+	    "label" : "map",
+	    "enable": false,
+	    "mode": "off",
+	    "erroePublishMessage" : "map topic can not publish."
+	},
+	"localization":{
+	    "topic" : "localization.localization.localization",
+	    "domain" : "localization",
+	    "label" : "localization",
+	    "enable": false,
+	    "mode": "off",
+	    "erroePublishMessage" : "localization topic can not publish."
+	},
+	"mission": {
+	    "topic" : "mission.mission.mission",
+	    "domain" : "mission",
+	    "label" : "mission",
+	    "enable": false,
+	    "mode": "off",
+	    "erroePublishMessage" : "mission topic can not publish."
+	},
+	"motion": {
+	    "topic" : "motion.motion.motion",
+	    "domain" : "motion",
+	    "label" : "motion",
+	    "enable": false,
+	    "mode": "off",
+	    "erroePublishMessage" : "motion topic can not publish."
+	},
+	"sensing": {
+	    "topic" : "sensing.sensing.sensing",
+	    "domain" : "sensing",
+	    "label" : "sensing",
+	    "enable": false,
+	    "mode": "off",
+	    "erroePublishMessage" : "sensing topic can not publish."
+	},
+	"detection": {
+	    "topic" : "detection.detection.detection",
+	    "domain" : "detection",
+	    "label" : "detection",
+	    "enable": false,
+	    "mode": "off",
+	    "erroePublishMessage" : "detection topic can not publish."
+	},
+	"rosbag": {
+	    "topic" : "rosbag.rosbag.rosbag",
+	    "domain" : "rosbag",
+	    "label" : "rosbag",
+	    "enable": false,
+	    "mode": "off",
+	    "erroePublishMessage" : "rosbag topic can not publish."
+	},
+	"play": {
+	    "topic" : "play.rosbag.play",
+	    "domain" : "rosbag",
+	    "label" : "play",
+	    "enable": false,
+	    "mode": "off",
+	    "erroePublishMessage" : "rosbag_play topic can not publish."
+	},
+	"gateway": {
+	    "topic" : "gateway.gateway.gateway",
+	    "domain" : "gateway",
+	    "label" : "gateway",
+	    "enable": false,
+	    "mode": "off",
+	    "erroePublishMessage" : "gateway topic can not publish."
+	},
+	"on": {
+	    "topic" : "on.gateway.on",
+	    "domain" : "gateway",
+	    "label" : "on",
+	    "enable": false,
+	    "mode": "off",
+	    "erroePublishMessage" : "gateway_on topic can not publish."
+	}
+    },
+    "image_topics":{
+	"image":{
+	    "type" : "image",
+	    "topic" : "image.ImageRaw.ImageRaw",
+	    "label" : "image"
+	}
+    }
+}
+

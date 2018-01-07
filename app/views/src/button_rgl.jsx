@@ -89,7 +89,7 @@ export default class ButtonRGL extends React.Component {
 	    //console.log(message.payloadString);
 	    const topic_factor = message.destinationName.split("/");
 	    const message_factor = topic_factor[2].split(".");
-            const index = this.props.structure.nodes.findIndex(node => node.label === message_factor[2]);   
+            const index = this.props.structure.nodes.findIndex(node => node.label === message_factor[2]);
 	    //console.log(index);
 	    
 	    if(message.payloadString === "ok"){
@@ -124,28 +124,25 @@ export default class ButtonRGL extends React.Component {
 
 	var initMethod = function(message){
 	    //console.log(message.payloadString);
-	    var json = JSON.parse(message.payloadString);
+	    const json = JSON.parse(message.payloadString);
             //console.log("initializeButtonRGLState", json);
             const structure = this.props.structure;
-            for(const domain of Object.keys(json)){
-                for(const label of Object.keys(json[domain])){
-                    const index = this.props.structure.nodes.findIndex(function(x) { return x.domain == domain && x.label == label; });
-		    if(index !== -1){
-			structure.nodes[index].enabled = json[domain][label]["enable"];
-		    }
-                }
+            for(const topic_name of Object.keys(json["button_topics"])){
+		console.log(json["button_topics"][topic_name]);
+                const index = this.props.structure.nodes.findIndex(function(x) { return x.domain === json["button_topics"][topic_name]["domain"] && x.label === json["button_topics"][topic_name]["label"]; });
+		if(index !== -1){
+		    structure.nodes[index].enabled = json["button_topics"][topic_name]["enable"];
+		}
             }
-            for(const domain of Object.keys(json)){
-                for(const label of Object.keys(json[domain])){
-                    const index = this.props.structure.nodes.findIndex(function(x) { return x.domain == domain && x.label == label; });
-                    if(json[domain][label]["mode"]=="on" && index !== -1){
-                        structure.nodes = this.getUpdatedNodes(
-                            this.props.structure.nodes[index].id,
-                            !this.props.structure.nodes[index].on,
-      this.props.structure.nodes);
-                    }
+            for(const topic_name of Object.keys(json["button_topics"])){
+                const index = this.props.structure.nodes.findIndex(function(x) { return x.domain === json["button_topics"][topic_name]["domain"] && x.label === json["button_topics"][topic_name]["label"]; });
+                if(json["button_topics"][topic_name]["mode"]=="on" && index !== -1){
+                    structure.nodes = this.getUpdatedNodes(
+                        this.props.structure.nodes[index].id,
+                        !this.props.structure.nodes[index].on,
+			this.props.structure.nodes);
                 }
-            }
+            }        
             this.props.updateStructure(structure);
         };
 	this.props.mqttClient.setCallback("buttonInit",initMethod.bind(this));

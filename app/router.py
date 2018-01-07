@@ -11,7 +11,10 @@ from controllers.vector_map_loader import VectorMap
 from prepare import kill_web_video_server
 import traceback
 from pprint import PrettyPrinter
+import json
+
 pp = PrettyPrinter(indent=2).pprint
+"""
 initial_rtm_status = {
     "initialization": {
         "initialization": {
@@ -76,16 +79,18 @@ initial_rtm_status = {
         }
     }
 }
+"""
+
 flask = Flask(__name__)
 CORS(flask)
 with flask.app_context():
     flask.rosController = ROSController(env)
-    flask.rtm_status = deepcopy(initial_rtm_status)
+    #flask.rtm_status = deepcopy(initial_rtm_status)
 
-
+"""
 def initialize_rtm_status():
     flask.rtm_status = deepcopy(initial_rtm_status)
-
+"""
 
 def api_response(code=200, message={}):
     response = jsonify(message)
@@ -99,12 +104,32 @@ def root():
     return send_from_directory(
         directory="./views/", filename="index.html")
 
+#@flask.route("/getRTMStatus", methods=["GET"])
+#def getRTMStatus():
+    #print("getRTMStatus", flask.rtm_status, request.args.get("date"))
+#    return api_response(200, flask.rtm_status)
 
+@flask.route("/topicData", methods=["POST"])
+def topicGetter():
+    print("came to topicGetter")
+    if request.method == "POST":
+        name = request.form["name"]
+        f = open('./app/topic.json', 'r')
+        topic_init = json.load(f)
+        topic_init["fixeddata"]["userid"]="test"
+        topic_init["fixeddata"]["carid"]="test"        
+        print('json_dict:{}'.format(topic_init))
+        return api_response(200, topic_init)
+    else:
+        return api_response(500, "")
+
+
+"""
 @flask.route("/getRTMStatus", methods=["GET"])
 def getRTMStatus():
     print("getRTMStatus", flask.rtm_status, request.args.get("date"))
     return api_response(200, flask.rtm_status)
-
+"""
 
 @flask.route("/.config/model/<path:path>", methods=["GET"])
 def getVehicleModel(path):
@@ -143,7 +168,7 @@ def getPCDFile(filename):
     return send_from_directory(
         directory=pathDir, filename=filename, as_attachment=True)
 
-
+"""
 @flask.route('/roslaunch/<domain>/<target>/<mode>')
 def roslaunch(domain, target, mode):
     print("roslaunch", domain, target, mode)
@@ -170,8 +195,9 @@ def roslaunch(domain, target, mode):
     except:
         traceback.print_exc()
         return api_response(500, {"target": target, "mode": mode})
+"""
 
-
+"""
 @flask.route("/exitRTM")
 def exitRTM():
     print("exitRTM")
@@ -180,7 +206,7 @@ def exitRTM():
     flask.rosController = ROSController(env)
     kill_web_video_server()
     return api_response(200, {"exitRTM": "done"})
-
+"""
 
 if __name__ == '__main__':
     print("flask run")

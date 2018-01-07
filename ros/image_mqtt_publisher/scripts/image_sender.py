@@ -9,14 +9,13 @@ from cv_bridge import CvBridge, CvBridgeError
 import paho.mqtt.client as mqtt
 import base64
 import signal
+from config.env import env
 
 
 #from __future__ import print_function
 
 class ImageMqttPublisher:
 
-    __host = "localhost"
-    __port = 1883
     __userid = "test"
     __carid = "test"
     __topicType = "image"
@@ -40,7 +39,7 @@ class ImageMqttPublisher:
         self.client.on_connect = self.__onConnect
         self.client.on_message = self.__onMessage
         self.client.on_disconnect = self.__onDisconnect
-        self.client.connect(self.__host, self.__port)
+        self.client.connect(env["MQTT_HOST"], int(env["MQTT_PYTHON_PORT"]))
         self.client.loop_start()
 
         #mqtt function
