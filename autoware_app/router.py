@@ -130,7 +130,7 @@ class MqttRosLauncher:
         topic = "/" + header + "/" + body + "/" + self.__fromAutoware
         self.client.publish(topic,str(res))
 
-    def __on_disconnect(self):
+    def __on_disconnect(self,a,b,c,):
         logging.debug("DisConnected result code "+str(rc))
         #self.client.loop_stop()
 

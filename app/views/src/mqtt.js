@@ -120,7 +120,7 @@ export default class MqttWrapper{
 		    "erroePublishMessage" : "gateway_on topic can not publish.",
 		    "callback" : function(){}
 		},		
-		"image" : {
+		"ImageRaw" : {
 		    "domain" : CONST.VISUALIZATION_OBJECT.IMAGE_RAW,
 		    "label" : CONST.VISUALIZATION_OBJECT.IMAGE_RAW,
 		    "type" : "image",
@@ -158,10 +158,11 @@ export default class MqttWrapper{
 
 	    const topic_factor = message.destinationName.split("/");
 	    const message_factor = topic_factor[2].split(".");
-	    const index = message_factor[0];
+	    const index = message_factor[1];
+	    //console.log(this.topics["topicdata"][index].callback);
 	    this.topics["topicdata"][index].callback(message);
 	}
-	
+
 	// called when the client loses its connection
 	function onConnectionLost(responseObject) {
 	    if (responseObject.errorCode !== 0) {
@@ -195,7 +196,7 @@ export default class MqttWrapper{
 		    this.topics["fixeddata"]["toAutoware"] = json["fixeddata"]["toAutoware"];
 		    this.topics["fixeddata"]["fromAutoware"] = json["fixeddata"]["fromAutoware"];
 		    		    
-		    if(key !== "image"){
+		    if(key !== "ImageRaw"){
 			this.topics["topicdata"][key]["topic"] = json["button_topics"][key]["topic"];
 			
 		    }else{
@@ -212,6 +213,7 @@ export default class MqttWrapper{
     }
 
     onPublish(label,msg){
+	console.log(label,msg);
 	try{
 	    var message = new Paho.MQTT.Message(msg);
 	    const head = this.topics["fixeddata"]
@@ -219,10 +221,11 @@ export default class MqttWrapper{
 	    const body = "/" + this.topics["topicdata"][label]["topic"];
 	    const direction = "/" + head["toAutoware"];
 	    
+	    console.log(message.destinationName);
+	    console.log(message.payloadString);
+
 	    message.destinationName = header + body + direction;
 	    this.mqttClient.send(message);
-	    //console.log(message.destinationName);
-	    //console.log(message.payloadString);
 	}catch(error){
 	    console.log("error:" + error);
 	    if("errorPublishMessage" in this.topics["topicdata"][label]){
@@ -235,7 +238,7 @@ export default class MqttWrapper{
 	//console.log("image callback set")
 	//console.log(index)
 	try{
-	    if(label !== "image"){
+	    if(label !== "ImageRaw"){
 		this.topics["topicdata"][label]["callback"] = callback;
 	    }else{
 		this.topics["topicdata"][label]["callback"] = callback;

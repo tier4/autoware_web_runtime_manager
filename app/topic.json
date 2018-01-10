@@ -101,10 +101,10 @@
 	}
     },
     "image_topics":{
-	"image":{
+	"ImageRaw":{
 	    "type" : "image",
 	    "topic" : "image.ImageRaw.ImageRaw",
-	    "label" : "image"
+	    "label" : "ImageRaw"
 	}
     }
 }
