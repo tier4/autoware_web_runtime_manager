@@ -5,107 +5,116 @@
 	"toAutoware":"UtoA",
 	"fromAutoware":"AtoU"
     },
-    "button_topics":{
+    "topicdata":{
 	"buttonInit":{
 	    "type" : "buttonInit",
-	    "topic" : "buttonInit.buttonInit.buttonInit",
-	    "erroePublishMessage" : "buttonInit topic can not publish."
+	    "topic" : "buttonInit.buttonInit.buttonInit"
 	},
 	"initialization": {
-	    "topic" : "initialization.initialization.initialization",
+	    "topic" : "button.initialization.initialization",
 	    "domain" : "initialization",
-	    "label" : "initialization",
-	    "enable": true,
-	    "mode" : "off",
-	    "erroePublishMessage" : "initialization topic can not publish."
+	    "label" : "initialization"
 	},
 	"map":{
-	    "topic" : "map.map.map",
+	    "topic" : "button.map.map",
 	    "domain" : "map",
-	    "label" : "map",
-	    "enable": false,
-	    "mode": "off",
-	    "erroePublishMessage" : "map topic can not publish."
+	    "label" : "map"
 	},
 	"localization":{
-	    "topic" : "localization.localization.localization",
+	    "topic" : "button.localization.localization",
 	    "domain" : "localization",
-	    "label" : "localization",
-	    "enable": false,
-	    "mode": "off",
-	    "erroePublishMessage" : "localization topic can not publish."
+	    "label" : "localization"
 	},
 	"mission": {
-	    "topic" : "mission.mission.mission",
+	    "topic" : "button.mission.mission",
 	    "domain" : "mission",
-	    "label" : "mission",
-	    "enable": false,
-	    "mode": "off",
-	    "erroePublishMessage" : "mission topic can not publish."
+	    "label" : "mission"
 	},
 	"motion": {
-	    "topic" : "motion.motion.motion",
+	    "topic" : "button.motion.motion",
 	    "domain" : "motion",
-	    "label" : "motion",
-	    "enable": false,
-	    "mode": "off",
-	    "erroePublishMessage" : "motion topic can not publish."
+	    "label" : "motion"
 	},
 	"sensing": {
-	    "topic" : "sensing.sensing.sensing",
+	    "topic" : "button.sensing.sensing",
 	    "domain" : "sensing",
-	    "label" : "sensing",
-	    "enable": false,
-	    "mode": "off",
-	    "erroePublishMessage" : "sensing topic can not publish."
+	    "label" : "sensing"
 	},
 	"detection": {
-	    "topic" : "detection.detection.detection",
+	    "topic" : "button.detection.detection",
 	    "domain" : "detection",
-	    "label" : "detection",
-	    "enable": false,
-	    "mode": "off",
-	    "erroePublishMessage" : "detection topic can not publish."
+	    "label" : "detection"
 	},
 	"rosbag": {
-	    "topic" : "rosbag.rosbag.rosbag",
+	    "topic" : "button.rosbag.rosbag",
 	    "domain" : "rosbag",
-	    "label" : "rosbag",
-	    "enable": false,
-	    "mode": "off",
-	    "erroePublishMessage" : "rosbag topic can not publish."
+	    "label" : "rosbag"
 	},
 	"play": {
-	    "topic" : "play.rosbag.play",
+	    "topic" : "button.rosbag.play",
 	    "domain" : "rosbag",
-	    "label" : "play",
-	    "enable": false,
-	    "mode": "off",
-	    "erroePublishMessage" : "rosbag_play topic can not publish."
+	    "label" : "play"
 	},
 	"gateway": {
-	    "topic" : "gateway.gateway.gateway",
+	    "topic" : "button.gateway.gateway",
 	    "domain" : "gateway",
-	    "label" : "gateway",
-	    "enable": false,
-	    "mode": "off",
-	    "erroePublishMessage" : "gateway topic can not publish."
+	    "label" : "gateway"
 	},
 	"on": {
-	    "topic" : "on.gateway.on",
+	    "topic" : "button.gateway.on",
 	    "domain" : "gateway",
-	    "label" : "on",
-	    "enable": false,
-	    "mode": "off",
-	    "erroePublishMessage" : "gateway_on topic can not publish."
-	}
-    },
-    "image_topics":{
+	    "label" : "on"
+	},
 	"ImageRaw":{
 	    "type" : "image",
 	    "topic" : "image.ImageRaw.ImageRaw",
 	    "label" : "ImageRaw"
+	},
+	"points_raw" : {
+	    "topic" : "rostopic.points_raw.points_raw",
+	    "type" : "rostopic"
+	},
+	"ndt_pose" : {
+	    "topic" : "rostopic.ndt_pose.ndt_pose",
+	    "type" : "rostopic"
+	},
+	"tf" : {
+	    "topic" : "rostopic.tf.tf",
+	    "type" : "rostopic"
+	},
+	"vector_map" : {
+	    "topic" : "rostopic.vector_map.vector_map",
+	    "type" : "rostopic"
+	},
+	"lane_waypoints_array" : {
+	    "topic" : "rostopic.lane_waypoints_array.lane_waypoints_array",
+	    "type" : "rostopic"
+	},
+	"downsampled_next_target_mark" : {
+	    "topic" : "rostopic.downsampled_next_target_mark.downsampled_next_target_mark",
+	    "type" : "rostopic"
+	},
+	"downsampled_trajectory_circle_mark" : {
+	    "topic" : "rostopic.downsampled_trajectory_circle_mark.downsampled_trajectory_circle_mark",
+	    "type" : "rostopic"
+	},
+	"map_pose" : {
+	    "topic" : "rostopic.map_pose.map_pose",
+	    "type" : "rostopic"
+	},
+	"get_param" : {
+	    "topic" : "getParam.get_param.get_param",
+	    "type" : "rostopic"
+	},
+	"clock" : {
+	    "topic" : "rostopic.clock.clock",
+	    "type" : "rostopic"
+	},
+	"initialpose" : {
+	    "topic" : "rostopic.initialpose.initialpose",
+	    "type" : "rostopic"
 	}
     }
 }
+
 

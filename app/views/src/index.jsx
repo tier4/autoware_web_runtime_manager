@@ -183,22 +183,22 @@ class Index extends React.Component {
                                 topics: {
                                     waypoints: {
                                         name : "/lane_waypoints_array",
-                                        messageType : 'autoware_msgs/LaneArray',
+                                        messageType : 'autoware_msgs/LaneArray'
                                     }
-                                },
+                                }
                             },
                             [CONST.VISUALIZATION_OBJECT.TARGETS]: {
                                 buttonID: 5,
                                 topics: {
                                     nextTarget: {
                                         name : "/downsampled_next_target_mark",
-                                        messageType : 'visualization_msgs/Marker',
+                                        messageType : 'visualization_msgs/Marker'
                                     },
                                     trajectoryCircle: {
                                         name : "/downsampled_trajectory_circle_mark",
-                                        messageType : 'visualization_msgs/Marker',
+                                        messageType : 'visualization_msgs/Marker'
                                     }
-                                },
+                                }
                             }
                         },
                         visibleObjectIDs: [],
@@ -267,6 +267,9 @@ class Index extends React.Component {
                 },
             },
         };
+	this.state.viewRGL.contents[CONST.VIEW_CONTENT.RADAR].viewInstance.setMqttClient(this.mqttClient);
+	this.state.viewRGL.contents[CONST.VIEW_CONTENT.MAP3D].viewInstance.setMqttClient(this.mqttClient);
+	this.state.viewRGL.contents["2d"].viewInstance.setMqttClient(this.mqttClient);
     }
 
     render() {

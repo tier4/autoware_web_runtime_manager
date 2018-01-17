@@ -127,21 +127,23 @@ export default class ButtonRGL extends React.Component {
 	    const json = JSON.parse(message.payloadString);
             //console.log("initializeButtonRGLState", json);
             const structure = this.props.structure;
-            for(const topic_name of Object.keys(json["button_topics"])){
-		console.log(json["button_topics"][topic_name]);
-                const index = this.props.structure.nodes.findIndex(function(x) { return x.domain === json["button_topics"][topic_name]["domain"] && x.label === json["button_topics"][topic_name]["label"]; });
+            for(const topic_name of Object.keys(json)){
+		//console.log("topic:" + json[topic_name]);
+                const index = this.props.structure.nodes.findIndex(function(x) { return x.label === topic_name; });
 		if(index !== -1){
-		    structure.nodes[index].enabled = json["button_topics"][topic_name]["enable"];
+		    structure.nodes[index].enabled = json[topic_name]["enable"];
 		}
             }
-            for(const topic_name of Object.keys(json["button_topics"])){
-                const index = this.props.structure.nodes.findIndex(function(x) { return x.domain === json["button_topics"][topic_name]["domain"] && x.label === json["button_topics"][topic_name]["label"]; });
-                if(json["button_topics"][topic_name]["mode"]=="on" && index !== -1){
-                    structure.nodes = this.getUpdatedNodes(
-                        this.props.structure.nodes[index].id,
-                        !this.props.structure.nodes[index].on,
-			this.props.structure.nodes);
-                }
+            for(const topic_name of Object.keys(json)){
+                const index = this.props.structure.nodes.findIndex(function(x) { return x.label === topic_name; });
+		if(index !== -1){
+                    if(json[topic_name]["mode"]=="on" && index !== -1){
+			structure.nodes = this.getUpdatedNodes(
+                            this.props.structure.nodes[index].id,
+                            !this.props.structure.nodes[index].on,
+			    this.props.structure.nodes);
+                    }
+		}
             }        
             this.props.updateStructure(structure);
         };

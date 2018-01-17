@@ -29,6 +29,8 @@ export default class RosView {
         this.vehiclePose = null;  // {position: {x: 0, y: 0, z: 0}, orientation: {x: 0, y: 0, z:0, w: 0}};
 
         this.initialCameraPosition = {x: 0, y: 0, z: 300};
+
+	this.mqttClient = {};//set setMqttClient() called from index.jsx
     }
 
     setUpTopics() {
@@ -45,6 +47,10 @@ export default class RosView {
 //        console.log(this.topics);
     }
 
+    setMqttClient(client){
+	this.mqttClient = client;
+    }
+    
     reset() {
 //        console.log("rosView.reset");
         delete this.stats;
@@ -444,13 +450,15 @@ export default class RosView {
             }
         };
 
+
         this.sceneData.pointsMap = {
             threeJSObjects: {},
             isAdded: false,
         };
         xhttpPCDs.open("GET", WEB_UI_URL+"/getPCDFileNames", true);
         xhttpPCDs.send();
-    }
+    }	
+    
 
     getVectorMap(topic) {
 //        console.log("getVectorMap");
@@ -472,6 +480,54 @@ export default class RosView {
         that.sceneData.vectorMap = {
             threeJSObjects: {},
         };
+	
+	var getVectorMapMethod = function(msg){
+	    var message = JSON.parse(msg.payloadString)
+	    //console.log("ndt pose:");
+	    //console.log(message);
+
+            for(const marker of message.markers) {
+                if(marker.type == ARROW) {
+                    const color = new THREE.Color( marker.color.r, marker.color.g, marker.color.b );
+                    const mesh = that.drawLine( color, marker.points );
+                    mesh.name = "arrow_"+mesh.uuid;
+                    that.sceneData.vectorMap.threeJSObjects[mesh.name] = {
+                        threeJSObject: mesh,
+                        isAdded: false,
+                    }
+                    // vectorMapMarkers.push(drawArrowHead( color, marker.points.slice(0, 2) ));
+                }
+                else if(marker.type == CYLINDER) {
+                    const color = new THREE.Color( marker.color.r, marker.color.g, marker.color.b );
+                    const mesh = that.drawCylinder( color, marker.pose, marker.scale );
+                    mesh.name = "cylinder_"+mesh.uuid;
+                    that.sceneData.vectorMap.threeJSObjects[mesh.name] = {
+                        threeJSObject: mesh,
+                        isAdded: false,
+                    }
+                }
+                else if(marker.type == LINE_STRIP) {
+                    const color = new THREE.Color( marker.color.r, marker.color.g, marker.color.b );
+                    const mesh = that.drawLine( color, marker.points );
+                    mesh.name = "lineStrip_"+mesh.uuid;
+                    that.sceneData.vectorMap.threeJSObjects[mesh.name] = {
+                        threeJSObject: mesh,
+                        isAdded: false,
+                    }
+                }
+                else {
+                    console.log("Unknown Marker Type: " + marker.type.toString());
+                }
+            }
+            that.mqttClient.unSubscribeTopic("vector_map");
+
+	    
+	};
+
+	this.mqttClient.setCallback("vector_map",getVectorMapMethod);
+	this.mqttClient.onSubscribeTopic("vector_map");
+	
+	/*
         topic.subscribe(function(message) {
             for(const marker of message.markers) {
                 if(marker.type == ARROW) {
@@ -508,21 +564,57 @@ export default class RosView {
             }
             topic.unsubscribe();
         });
+	*/
     }
 
     getVehiclePose(topic, callback=(args)=>{}) {
+
         let that = this;
+	var getVehiclePoseMethod = function(msg){
+	    var message = JSON.parse(msg.payloadString)
+	    //console.log("ndt pose:");
+	    //console.log(message);
+
+            that.vehiclePose = message.pose;
+            callback();
+
+	};
+
+	this.mqttClient.setCallback("ndt_pose",getVehiclePoseMethod);
+
+	/*
         topic.subscribe(function(message) {
             that.vehiclePose = message.pose;
 //            console.log(that.vehiclePose.position, that.camera.position, that.controls.target)
             callback();
         });
+	*/
     }
 
     getTFBaseLinkToVelodyne(topic) {
         let that = this;
+	var getTFMethod = function(msg){
+	    var message = JSON.parse(msg.payloadString)
+
+	    for(const transform of message.transforms) {
+                if( transform.header.frame_id == "/base_link" && transform.child_frame_id == "/velodyne" ) {
+		    console.log("base_link:");
+		    console.log(transform.transform);
+                    that.tfBaseLinkToVelodyne = transform.transform;
+		    //                    console.log(message);
+                    that.mqttClient.unSubscribeTopic("tf");
+                }
+            }
+	};
+
+	this.mqttClient.setCallback("tf",getTFMethod);
+	this.mqttClient.onSubscribeTopic("tf");
+	
+	/*
         topic.subscribe(function(message) {
-//            console.log(message);
+	    console.log("tf:");
+	    console.log(message);
+
             for(const transform of message.transforms) {
                 if( transform.header.frame_id == "/base_link" && transform.child_frame_id == "/velodyne" ) {
                     that.tfBaseLinkToVelodyne = transform.transform;
@@ -531,6 +623,7 @@ export default class RosView {
                 }
             }
         });
+	*/
     }
 
     getVehicleCollada() {
@@ -550,9 +643,12 @@ export default class RosView {
     }
 
     getPointsRaw(topic, pointSize=0.4, callback=(args)=>{}) {
-//        console.log("getPointsRaw", topic);
+	//        console.log("getPointsRaw", topic);
         let that = this;
-        topic.subscribe(function(message) {
+	var getPointsRawMethod = function(msg){
+	    var message = JSON.parse(msg.payloadString)
+	    //console.log("mqtt:");
+	    //console.log(message);
             let positions = [];
             let colors = [];
             let n = message.height*message.width;
@@ -592,13 +688,68 @@ export default class RosView {
             that.sceneData.pointsRaw.threeJSObject.setRotationFromQuaternion( that.vehiclePose.orientation )
             if(that.tfBaseLinkToVelodyne !== null) {
                 that.sceneData.pointsRaw.threeJSObject.position.x = that.vehiclePose.position.x + that.tfBaseLinkToVelodyne.translation.x;
-                that.sceneData.pointsRaw.threeJSObject.position.y = that.vehiclePose.position.y + that.tfBaseLinkToVelodyne.translation.y;
+		that.sceneData.pointsRaw.threeJSObject.position.y = that.vehiclePose.position.y + that.tfBaseLinkToVelodyne.translation.y;
+                that.sceneData.pointsRaw.threeJSObject.position.z = that.vehiclePose.position.z + that.tfBaseLinkToVelodyne.translation.z;
+            }
+
+//            callback();
+	    
+	};
+
+	this.mqttClient.setCallback("points_raw",getPointsRawMethod);
+
+	/*
+        topic.subscribe(function(message) {
+	    console.log("roslib:");
+	    console.log(message);
+
+            let positions = [];
+            let colors = [];
+            let n = message.height*message.width;
+            let buffer;
+            if(message.data.buffer) {
+                buffer = message.data.buffer;
+            }
+            else {
+                buffer = that.decode64(message.data);
+            }
+            for(let i=0;i<n;i++) {
+                let pt = that.readPoint(message, i, buffer);
+                positions.push(pt['x'],  pt['y'], pt['z']);
+                if("rgb" in Object.keys(pt)) {
+                    colors.push(new THREE.Color( pt['rgb'] ));
+                }
+                else {
+                    colors.push( 1, 0, 0 );
+                }
+            }
+
+            var geometry = new THREE.BufferGeometry();
+            geometry.addAttribute( 'position', new THREE.Float32BufferAttribute( positions, 3 ) );
+            geometry.addAttribute( 'color', new THREE.Float32BufferAttribute( colors, 3 ) );
+            geometry.computeBoundingSphere();
+            var material = new THREE.PointsMaterial( { size: pointSize, vertexColors: THREE.VertexColors } );
+            const threeJSObject = new THREE.Points( geometry, material );
+            threeJSObject.name = "pointsRaw";
+            that.sceneData.pointsRaw = {
+                threeJSObject: threeJSObject,
+                isAdded: false,
+            }
+
+            that.sceneData.pointsRaw.threeJSObject.position.x = that.vehiclePose.position.x;
+            that.sceneData.pointsRaw.threeJSObject.position.y = that.vehiclePose.position.y;
+            that.sceneData.pointsRaw.threeJSObject.position.z = that.vehiclePose.position.z;
+            that.sceneData.pointsRaw.threeJSObject.setRotationFromQuaternion( that.vehiclePose.orientation )
+            if(that.tfBaseLinkToVelodyne !== null) {
+                that.sceneData.pointsRaw.threeJSObject.position.x = that.vehiclePose.position.x + that.tfBaseLinkToVelodyne.translation.x;
+		that.sceneData.pointsRaw.threeJSObject.position.y = that.vehiclePose.position.y + that.tfBaseLinkToVelodyne.translation.y;
                 that.sceneData.pointsRaw.threeJSObject.position.z = that.vehiclePose.position.z + that.tfBaseLinkToVelodyne.translation.z;
             }
 
 //            callback();
 
         });
+	*/
     }
 
     getWaypoints(topic) {
@@ -609,7 +760,10 @@ export default class RosView {
             arrow: {},
             text: {},
         };
-        topic.subscribe(function(message) {
+
+	var getWayPointMethod = function(msg){
+	    var message = JSON.parse(msg.payloadString)
+
             // arrow
             for(let i=1; i<message.lanes[0].waypoints.length; i++) {
                 const pos_1 = message.lanes[0].waypoints[i-1].pose.pose.position;
@@ -649,36 +803,50 @@ export default class RosView {
                     }
                 }
             });
-            topic.unsubscribe();
-        });
+	    that.mqttClient.unSubscribeTopic("lane_waypoints_array");
+        };
+
+	this.mqttClient.setCallback("lane_waypoints_array",getWayPointMethod);
+	//this.mqttClient.onSubscribeTopic("lane_waypoints_array");
+
     }
 
     getNextTarget(topic) {
 //        console.log("getNextTarget");
 
         let that = this;
-        topic.subscribe(function(message) {
+	var getNextTargetMethod = function(msg){
+	    var message = JSON.parse(msg.payloadString)
+
             const mesh = that.drawSphere(0x00FF00, message.pose.position);
             mesh.name = "nextTarget"
             that.sceneData.nextTarget = {
                 threeJSObject: mesh,
                 isAdded: false,
             }
-        });
+        };
+	this.mqttClient.setCallback("downsampled_next_target_mark",getNextTargetMethod);
+
+	
     }
 
     getTrajectoryCircle(topic) {
 //        console.log("getTrajectoryCircle");
 
         let that = this;
-        topic.subscribe(function(message) {
+	var getTrajectoryCircleMethod = function(msg){
+	    var message = JSON.parse(msg.payloadString)
+	    
             const mesh = that.drawLine(0x00FF00, message.points);
             mesh.name = "trajectoryCircle"
             that.sceneData.trajectoryCircle = {
                 threeJSObject: mesh,
                 isAdded: false,
             }
-        });
+        };
+
+	this.mqttClient.setCallback("downsampled_trajectory_circle_mark",getTrajectoryCircleMethod);
+	
     }
 
     drawLine(color, points) {

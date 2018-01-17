@@ -14,9 +14,77 @@ import sys
 import json
 import urllib
 import urllib2
+import rosparam
 
 class MqttRosLauncher:
 
+    __initial_rtm_status = {
+        #get ros launch status for button on/off of web page
+        "buttonInit":{
+            "topic" : ""
+        },
+        #button launch signal and status,response
+        "initialization": {
+            "enable": True,
+            "mode": "off",
+            "topic": ""
+        },
+        "map": {
+            "enable": False,
+            "mode": "off",
+            "topic": ""
+        },
+        "localization": {
+            "enable": False,
+            "mode": "off",
+            "topic": ""
+        },
+        "mission": {
+            "enable": False,
+            "mode": "off",
+            "topic": ""
+        },
+        "motion": {
+            "enable": False,
+            "mode": "off",
+            "topic": ""
+        },
+        "sensing": {
+            "enable": False,
+            "mode": "off",
+            "topic": ""
+        },
+        "detection": {
+            "enable": False,
+            "mode": "off",
+            "topic": ""
+        },
+        "rosbag": {
+            "enable": False,
+            "mode": "off",
+            "topic": ""
+        },
+        "play": {
+            "enable": False,
+            "mode": "off",
+            "topic": ""
+        },
+        "gateway": {
+            "enable": False,
+            "mode": "off",
+            "topic": ""
+        },
+        "on": {
+            "enable": False,
+            "mode": "off",
+            "topic": ""
+        },
+        #get rosparam
+        "get_param": {
+            "topic": ""
+        }
+    }    
+    
     def __init__(self):
         self.rosController = ROSController(env)
         self.client = mqtt.Client(protocol=mqtt.MQTTv311)
@@ -28,13 +96,16 @@ class MqttRosLauncher:
             params = urllib.urlencode({'name':"test"})
             req = urllib2.Request(url, params)
             res= urllib2.urlopen(req)
-            self.__initial_rtm_status = json.loads(res.read())
-            self.rtm_status = deepcopy(self.__initial_rtm_status)
-            self.__userid = self.rtm_status["fixeddata"]["userid"]
-            self.__carid = self.rtm_status["fixeddata"]["carid"]
-            self.__toAutoware = self.rtm_status["fixeddata"]["toAutoware"]
-            self.__fromAutoware = self.rtm_status["fixeddata"]["fromAutoware"]
-            
+            json_data = json.loads(res.read())
+            self.__userid = json_data["fixeddata"]["userid"]
+            self.__carid = json_data["fixeddata"]["carid"]
+            self.__toAutoware = json_data["fixeddata"]["toAutoware"]
+            self.__fromAutoware = json_data["fixeddata"]["fromAutoware"]
+            for key,value in json_data["topicdata"].items():
+                if key in self.__initial_rtm_status:
+                    self.__initial_rtm_status[key]["topic"] = value["topic"]
+                    print(value["topic"])
+            self.rtm_status = deepcopy(self.__initial_rtm_status)            
             print(self.rtm_status)
             return True
         except urllib2.HTTPError, e:
@@ -73,8 +144,8 @@ class MqttRosLauncher:
         return self.rtm_status
 
         
-    def __roslaunch(self,topic_name,domain,label,message):
-        self.rtm_status["button_topics"][topic_name]["mode"] = message
+    def __roslaunch(self,domain,label,message):
+        self.rtm_status[label]["mode"] = message
         try:
             if (domain,label) == ("rosbag","play"):
                 if message == "on":
@@ -97,16 +168,21 @@ class MqttRosLauncher:
         except:
             traceback.print_exc()
             return "error"
-                        
+
+    def __getParam(self,message):
+        print("get rosparam:" + message)
+        return str(rosparam.get_param(message))
+        
     def __execution(self,msg):
         space,header,body,direction = msg.topic.split("/")
-        topic_name,domain,label = body.split(".")
+        topic_type,domain,label = body.split(".")
         
-        if topic_name == "buttonInit":
+        if topic_type == "buttonInit":
             return json.dumps(self.__getRTMStatus())
-        else:
-            return self.__roslaunch(topic_name,domain,label,msg.payload)
-
+        elif topic_type == "button":
+            return self.__roslaunch(domain,label,msg.payload)
+        elif topic_type == "getParam":
+            return self.__getParam(msg.payload)
         
     def __on_connect(self,client, userdata, flags, respons_code):
         print('status {0}'.format(respons_code))
@@ -115,13 +191,13 @@ class MqttRosLauncher:
         header = "/" + self.__userid + "." + self.__carid
         direction  = "/" + self.__toAutoware
 
-        for key,value in self.rtm_status["button_topics"].items():
+        for key,value in self.rtm_status.items():
             body = "/" + value["topic"]
             topic = header + body + direction
             print(topic)
             self.client.subscribe(topic)
 
-                    
+            
     def __on_message(self,client, userdata, msg):
         print(msg.topic + ' ' + str(msg.payload))
         res = self.__execution(msg)
@@ -130,6 +206,7 @@ class MqttRosLauncher:
         topic = "/" + header + "/" + body + "/" + self.__fromAutoware
         self.client.publish(topic,str(res))
 
+        
     def __on_disconnect(self,a,b,c,):
         logging.debug("DisConnected result code "+str(rc))
         #self.client.loop_stop()

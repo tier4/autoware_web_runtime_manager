@@ -16,6 +16,8 @@ export default class MqttWrapper{
 	this.port = parseInt(MQTT_PORT);
 
 	//label is unique.
+	//fixeddata : header and footer
+	//topicdata : 
 	this.topics = {
 	    "fixeddata" : {
 		"userid" : "",
@@ -127,6 +129,50 @@ export default class MqttWrapper{
 		    "topic" : "",
 		    "callback" : function(){}
 		},
+		"points_raw" : {
+		    "topic" : "",
+		    "callback" : function(){}
+		},
+		"ndt_pose" : {
+		    "topic" : "",
+		    "callback" : function(){}
+		},
+		"tf" : {
+		    "topic" : "",
+		    "callback" : function(){}
+		},
+		"vector_map" : {
+		    "topic" : "",
+		    "callback" : function(){}
+		},
+		"lane_waypoints_array" : {
+		    "topic" : "",
+		    "callback" : function(){}
+		},
+		"downsampled_next_target_mark" : {
+		    "topic" : "",
+		    "callback" : function(){}
+		},
+		"downsampled_trajectory_circle_mark" : {
+		    "topic" : "",
+		    "callback" : function(){}
+		},
+		"map_pose" : {
+		    "topic" : "",
+		    "callback" : function(){}
+		},
+		"get_param" : {
+		    "topic" : "",
+		    "callback" : function(){}
+		},
+		"clock" : {
+		    "topic" : "",
+		    "callback" : function(){}
+		},
+		"initialpose" : {
+		    "topic" : "",
+		    "callback" : function(){}
+		}
 	    }
 	}
 
@@ -137,28 +183,21 @@ export default class MqttWrapper{
 	
 	function onConnect() {
 	    console.log("mqtt onConnect");
-	    
 	    // Once a connection has been made, make a subscription.
-	    const head = this.topics["fixeddata"]
-	    const header = "/" + head["userid"] + "." + head["carid"];
-	    const direction = "/" + head["fromAutoware"];
-	    
 	    for(const key of Object.keys(this.topics["topicdata"])){
-		const body = "/" + this.topics["topicdata"][key]["topic"];
-		this.mqttClient.subscribe(header + body + direction);
-		console.log(header + body + direction);
+		this.onSubscribeTopic(key);
 	    }
-	    
+	    //get button status that the autoware has.
 	    this.onPublish("buttonInit","GET");
 	}
 
 
 	function onMessageArrived(message){
-	    console.log("mqtt message arrived" + message.destinationName);
 
 	    const topic_factor = message.destinationName.split("/");
 	    const message_factor = topic_factor[2].split(".");
-	    const index = message_factor[1];
+	    const index = message_factor[2];
+	    //console.log("mqtt message arrived" + message.destinationName);
 	    //console.log(this.topics["topicdata"][index].callback);
 	    this.topics["topicdata"][index].callback(message);
 	}
@@ -190,20 +229,14 @@ export default class MqttWrapper{
             })
             .then((json) => {
 		console.log("initializeButtonRGLState", json);
+		this.topics["fixeddata"]["userid"] = json["fixeddata"]["userid"];
+		this.topics["fixeddata"]["carid"] = json["fixeddata"]["carid"];
+		this.topics["fixeddata"]["toAutoware"] = json["fixeddata"]["toAutoware"];
+		this.topics["fixeddata"]["fromAutoware"] = json["fixeddata"]["fromAutoware"];
 		for(const key in this.topics["topicdata"]){
-		    this.topics["fixeddata"]["userid"] = json["fixeddata"]["userid"];
-		    this.topics["fixeddata"]["carid"] = json["fixeddata"]["carid"];
-		    this.topics["fixeddata"]["toAutoware"] = json["fixeddata"]["toAutoware"];
-		    this.topics["fixeddata"]["fromAutoware"] = json["fixeddata"]["fromAutoware"];
-		    		    
-		    if(key !== "ImageRaw"){
-			this.topics["topicdata"][key]["topic"] = json["button_topics"][key]["topic"];
-			
-		    }else{
-			this.topics["topicdata"][key]["topic"] = json["image_topics"][key]["topic"];
-		    }
+		    console.log(key);
+		    this.topics["topicdata"][key]["topic"] = json["topicdata"][key]["topic"];
 		}
-		
 		
 		// connect the client
 		this.mqttClient.connect({onSuccess:onConnect.bind(this)});
@@ -213,19 +246,14 @@ export default class MqttWrapper{
     }
 
     onPublish(label,msg){
-	console.log(label,msg);
+	//console.log(label,msg);
 	try{
 	    var message = new Paho.MQTT.Message(msg);
-	    const head = this.topics["fixeddata"]
-	    const header = "/" + head["userid"] + "." + head["carid"];
-	    const body = "/" + this.topics["topicdata"][label]["topic"];
-	    const direction = "/" + head["toAutoware"];
-	    
-	    console.log(message.destinationName);
-	    console.log(message.payloadString);
-
-	    message.destinationName = header + body + direction;
+	    message.destinationName = this.getPublishTopicName(label)
 	    this.mqttClient.send(message);
+	    
+	    console.log("pub topic name:" + message.destinationName);
+	    console.log("pub message:" + message.payloadString);
 	}catch(error){
 	    console.log("error:" + error);
 	    if("errorPublishMessage" in this.topics["topicdata"][label]){
@@ -234,17 +262,67 @@ export default class MqttWrapper{
 	}
     }
 
+    //label:set key of topicdata of this.topics
+    onSubscribeTopic(label){
+	const topic_name = this.getSubscribeTopicName(label);
+	if(topic_name !== ""){
+	    this.mqttClient.subscribe(topic_name);
+	}
+	console.log("topic subscribe:" + topic_name);
+    }
+
+    //label:set key of topicdata of this.topics
+    onSubscribeTopicWithMethod(label,method){
+	const topic_name = this.getSubscribeTopicName(label);
+	if(topic_name !== ""){
+	    this.mqttClient.subscribe(topic_name,{onSuccess:method});
+	}
+	console.log("topic subscribe:" + topic_name);
+    }
+
+    
+    //label:set key of topicdata of this.topics
+    unSubscribeTopic(label){
+	const topic_name = this.getSubscribeTopicName(label);
+	this.mqttClient.unsubscribe(topic_name);
+	console.log("topic unsubscribe:" + topic_name);
+    }
+    
     setCallback(label,callback) {
-	//console.log("image callback set")
-	//console.log(index)
+	//console.log(label + " callback set");
+	//console.log(callback);
 	try{
-	    if(label !== "ImageRaw"){
-		this.topics["topicdata"][label]["callback"] = callback;
-	    }else{
-		this.topics["topicdata"][label]["callback"] = callback;
-	    }
+	    this.topics["topicdata"][label]["callback"] = callback;
 	}catch(error){
-	    console.log("error:" + error);
+	    console.log(label + " serror:" + error);
+	}
+    }
+
+    //header and direction is fixed.These are subscribed from web server
+    //body is topic of topicdata of this.topics
+    getPublishTopicName(label){
+	try{
+	    const head = this.topics["fixeddata"]
+	    const header = "/" + head["userid"] + "." + head["carid"];
+	    const direction = "/" + head["toAutoware"];
+	    const body = "/" + this.topics["topicdata"][label]["topic"];
+	    return header + body + direction;
+	}catch(error){
+	    return "";
+	}
+    }
+    
+    //header and direction is fixed.These are subscribed from web server
+    //body is topic of topicdata of this.topics
+    getSubscribeTopicName(label){
+	try{
+	    const head = this.topics["fixeddata"]
+	    const header = "/" + head["userid"] + "." + head["carid"];
+	    const direction = "/" + head["fromAutoware"];
+	    const body = "/" + this.topics["topicdata"][label]["topic"];
+	    return header + body + direction;
+	}catch(error){
+	    return "";
 	}
     }
 

@@ -118,7 +118,7 @@ def topicGetter():
         topic_init = json.load(f)
         topic_init["fixeddata"]["userid"]="test"
         topic_init["fixeddata"]["carid"]="test"        
-        print('json_dict:{}'.format(topic_init))
+        #print('json_dict:{}'.format(topic_init))
         return api_response(200, topic_init)
     else:
         return api_response(500, "")
