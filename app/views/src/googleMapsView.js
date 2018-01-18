@@ -162,7 +162,7 @@ export default class GoogleMapsView {
 
 	let that = this
 	var getParamMethod = function(msg){
-	    var useSimTime  = JSON.parse(msg.payloadString)
+	    var useSimTime  = msg.payloadString
 	    
             console.log("use_sim_time:", useSimTime);
             if(useSimTime === "true") {
@@ -173,7 +173,7 @@ export default class GoogleMapsView {
 
                     const quaternion = new THREE.Quaternion();
                     quaternion.setFromAxisAngle( new THREE.Vector3( 0, 0, 1 ), args.dtlane.Dir );
-                    const initialPoseMessage = {
+                    const initialPoseMessage = JSON.stringify({
                         header: {
                             seq: 0,
                             stamp: {
@@ -191,7 +191,7 @@ export default class GoogleMapsView {
                             0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
                             0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
                         }
-                    }
+                    });
                     
                     that.mqttClient.onPublish("initialpose",initialPoseMessage);
 		    that.mqttClient.unSubscribeTopic("get_param");
@@ -207,7 +207,7 @@ export default class GoogleMapsView {
 
                 const quaternion = new THREE.Quaternion();
                 quaternion.setFromAxisAngle( new THREE.Vector3( 0, 0, 1 ), args.dtlane.Dir );
-                const initialPoseMessage = {
+                const initialPoseMessage = JSON.stringify({
                     header: {
                         seq: 0,
                         stamp: {
@@ -225,7 +225,7 @@ export default class GoogleMapsView {
                         0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
                         0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
                     }
-                }
+                });
 		
                 console.log(initialPoseMessage, args.dtlane.Dir);
 
