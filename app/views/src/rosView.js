@@ -1,7 +1,6 @@
 import { WEB_UI_URL } from "./dotenv";
 import Detector from "../lib/threejs/Detector";
 import Stats from "../lib/threejs/stats.min";
-import {getROSConnection} from "./ros_interface";
 import { CONST } from "./const";
 
 export default class RosView {
@@ -19,7 +18,7 @@ export default class RosView {
         this.controls = null;
         this.stats = null;
 
-        this.ros = null;
+        //this.ros = null;
         this.topics = {};
         this.sceneData = {};
 
@@ -39,8 +38,8 @@ export default class RosView {
             for(const topicID in this.visualizationObjects[visualizationObjectID].topics) {
                 if(!Object.keys(this.topics).includes(topicID)) {
                     this.topics[topicID] = this.visualizationObjects[visualizationObjectID].topics[topicID];
-                    this.topics[topicID].ros = this.ros;
-                    this.topics[topicID].instance = new ROSLIB.Topic(this.topics[topicID]);
+                    //this.topics[topicID].ros = this.ros;
+                    //this.topics[topicID].instance = new ROSLIB.Topic(this.topics[topicID]);
                 }
             }
         }
@@ -70,9 +69,11 @@ export default class RosView {
     }
 
     prepare() {
+	/*
         if(this.ros === null) {
             this.ros = getROSConnection();
         }
+	*/
 
         this.visualizationObjectIDs = Object.keys(this.visualizationObjects);
         this.setUpTopics();

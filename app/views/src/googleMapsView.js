@@ -1,18 +1,19 @@
 import { WEB_UI_URL } from "./dotenv";
-import {getROSConnection} from "./ros_interface";
+//import {getROSConnection} from "./ros_interface";
 
 export default class GoogleMapsView {
     constructor() {
         this.map = null;
         this.elementID = null;
         this.viewData = null;
-        this.ros = null;
+        //this.ros = null;
         this.vehicle = null;
         this.updatedTime = Math.round(Date.now()*0.001);
 	this.mqttClient = {};
     }
 
     run() {
+	/*
         if(this.ros === null){
             this.ros = getROSConnection();
         }
@@ -21,6 +22,7 @@ export default class GoogleMapsView {
             name : "/ndt_pose",
             messageType : 'geometry_msgs/PoseStamped',
         });
+	*/
 
 
         let that = this;

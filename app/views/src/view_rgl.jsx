@@ -1,6 +1,5 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import {getROSConnection} from "./ros_interface";
 import Responsive, { WidthProvider } from 'react-grid-layout';
 import ReactResizeDetector from 'react-resize-detector';
 const ResponsiveReactGridLayout = WidthProvider(Responsive);

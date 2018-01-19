@@ -91,7 +91,8 @@ class MqttRosLauncher:
 
 
     def TopicGet(self):
-        url = "http://localhost:5000/topicData"
+        url = "http://" + env["AUTOWARE_WEB_UI_HOST"] + ":" + env["AUTOWARE_WEB_UI_PORT"] + "/topicData"
+        #url = "http://localhost:5000/topicData"
         try :
             params = urllib.urlencode({'name':"test"})
             req = urllib2.Request(url, params)
