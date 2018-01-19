@@ -6,7 +6,6 @@ from flask_cors import CORS
 from os import listdir
 from os.path import realpath, abspath, dirname
 from config.env import env
-from controllers.ros_controller import ROSController
 from controllers.vector_map_loader import VectorMap
 from prepare import kill_web_video_server
 import traceback
@@ -83,8 +82,8 @@ initial_rtm_status = {
 
 flask = Flask(__name__)
 CORS(flask)
-with flask.app_context():
-    flask.rosController = ROSController(env)
+#with flask.app_context():
+#    flask.rosController = ROSController(env)
     #flask.rtm_status = deepcopy(initial_rtm_status)
 
 """
