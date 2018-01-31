@@ -21,68 +21,136 @@ class MqttRosLauncher:
     __initial_rtm_status = {
         #get ros launch status for button on/off of web page
         "buttonInit":{
-            "topic" : ""
+            "topic" : "",
+            "subscribe" : True
         },
         #button launch signal and status,response
         "initialization": {
             "enable": True,
             "mode": "off",
-            "topic": ""
+            "topic": "",
+            "subscribe" : True
         },
         "map": {
             "enable": False,
             "mode": "off",
-            "topic": ""
+            "topic": "",
+            "subscribe" : True
         },
         "localization": {
             "enable": False,
             "mode": "off",
-            "topic": ""
+            "topic": "",
+            "subscribe" : True
         },
         "mission": {
             "enable": False,
             "mode": "off",
-            "topic": ""
+            "topic": "",
+            "subscribe" : True
         },
         "motion": {
             "enable": False,
             "mode": "off",
-            "topic": ""
+            "topic": "",
+            "subscribe" : True
         },
         "sensing": {
             "enable": False,
             "mode": "off",
-            "topic": ""
+            "topic": "",
+            "subscribe" : True
         },
         "detection": {
             "enable": False,
             "mode": "off",
-            "topic": ""
+            "topic": "",
+            "subscribe" : True
         },
         "rosbag": {
             "enable": False,
             "mode": "off",
-            "topic": ""
+            "topic": "",
+            "subscribe" : True
         },
         "play": {
             "enable": False,
             "mode": "off",
-            "topic": ""
+            "topic": "",
+            "subscribe" : True
         },
         "gateway": {
             "enable": False,
             "mode": "off",
-            "topic": ""
+            "topic": "",
+            "subscribe" : True
         },
         "on": {
             "enable": False,
             "mode": "off",
-            "topic": ""
+            "topic": "",
+            "subscribe" : True
         },
         #get rosparam
         "get_param": {
-            "topic": ""
-        }
+            "topic": "",
+            "subscribe" : True
+        },
+	"ImageRaw":{
+	    "topic" : "",
+            "subscribe" : False,
+            "mqttparam" : True
+	},
+	"points_raw" : {
+	    "topic" : "",
+            "subscribe" : False,
+            "mqttparam" : True
+	},
+	"ndt_pose" : {
+	    "topic" : "",
+            "subscribe" : False,
+            "mqttparam" : True
+	},
+	"tf" : {
+	    "topic" : "",
+            "subscribe" : False,
+            "mqttparam" : True
+	},
+	"vector_map" : {
+	    "topic" : "",
+            "subscribe" : False,
+            "mqttparam" : True
+	},
+	"lane_waypoints_array" : {
+	    "topic" : "",
+            "subscribe" : False,
+            "mqttparam" : True
+	},
+	"downsampled_next_target_mark" : {
+	    "topic" : "",
+            "subscribe" : False,
+            "mqttparam" : True
+	},
+	"downsampled_trajectory_circle_mark" : {
+	    "topic" : "",
+            "subscribe" : False,
+            "mqttparam" : True
+	},
+	"map_pose" : {
+	    "topic" : "",
+            "subscribe" : False,
+            "mqttparam" : True
+	},
+	"clock" : {
+	    "topic" : "",
+            "subscribe" : False,
+            "mqttparam" : True
+	},
+	"initialpose" : {
+	    "topic" : "",
+            "subscribe" : False,
+            "mqttparam" : True
+	}
     }    
     
     def __init__(self):
@@ -98,6 +166,7 @@ class MqttRosLauncher:
             req = urllib2.Request(url, params)
             res= urllib2.urlopen(req)
             json_data = json.loads(res.read())
+            #set fixed data to variable and ros param.
             self.__userid = json_data["fixeddata"]["userid"]
             self.__carid = json_data["fixeddata"]["carid"]
             self.__toAutoware = json_data["fixeddata"]["toAutoware"]
@@ -106,6 +175,10 @@ class MqttRosLauncher:
                 if key in self.__initial_rtm_status:
                     self.__initial_rtm_status[key]["topic"] = value["topic"]
                     print(value["topic"])
+
+            sf = open('./mqtt_setting/config.json', 'w')
+            json.dump(json_data, sf)
+                    
             self.rtm_status = deepcopy(self.__initial_rtm_status)            
             print(self.rtm_status)
             return True
@@ -144,7 +217,6 @@ class MqttRosLauncher:
         print("getRTMStatus")
         return self.rtm_status
 
-        
     def __roslaunch(self,domain,label,message):
         self.rtm_status[label]["mode"] = message
         try:
@@ -165,6 +237,10 @@ class MqttRosLauncher:
                     self.__exitRTM()
                     self.__initializeRtmStatus()
                 self.rosController.launch(domain, label, message)
+
+                #After initialize, set rosparam
+                #if (domain, label, message) == ("initialization","initialization", "on"):
+                #    self.__setRosParam()
                 return "ok"
         except:
             traceback.print_exc()
@@ -193,10 +269,11 @@ class MqttRosLauncher:
         direction  = "/" + self.__toAutoware
 
         for key,value in self.rtm_status.items():
-            body = "/" + value["topic"]
-            topic = header + body + direction
-            print(topic)
-            self.client.subscribe(topic)
+            if value["subscribe"]:
+                body = "/" + value["topic"]
+                topic = header + body + direction
+                print(topic)
+                self.client.subscribe(topic)
 
             
     def __on_message(self,client, userdata, msg):

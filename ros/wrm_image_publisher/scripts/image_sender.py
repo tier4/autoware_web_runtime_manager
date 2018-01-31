@@ -9,28 +9,44 @@ from cv_bridge import CvBridge, CvBridgeError
 import paho.mqtt.client as mqtt
 import base64
 import signal
+import json
 from config.env import env
-
 
 #from __future__ import print_function
 
 class ImageMqttPublisher:
 
-    __userid = "test"
-    __carid = "test"
-    __topicType = "image"
-    __topicLabel = "ImageRaw"
-    __toAutoware = "UtoA"
-    __fromAutoware = "AtoU"
+    __userid = ""
+    __carid = ""
+    __toAutoware = ""
+    __fromAutoware = ""
+    __topic = ""
+    __host = ""
+    __port = ""
     
     def __init__(self):
+        rospy.init_node('wrm_image_publisher', anonymous=True)
+        
+        sf = open(env["PATH_WRM_DIR"] + "/config.json", "r")
+        json_data = json.load(sf)
+
+        self.__userid = json_data["fixeddata"]["userid"]
+        self.__carid = json_data["fixeddata"]["carid"]
+        self.__toAutoware = json_data["fixeddata"]["toAutoware"]
+        self.__fromAutoware = json_data["fixeddata"]["fromAutoware"]
+        self.__topic = json_data["topicdata"]["ImageRaw"]["topic"]
+        self.__host = env["MQTT_HOST"]
+        self.__port = env["MQTT_PYTHON_PORT"]
+
+        print(self.__topic)
+        
+        
         header = "/" + self.__userid + "." + self.__carid
-        body = "/" + self.__topicType + "." + self.__topicLabel + "." + self.__topicLabel
+        body = "/" + self.__topic
         pubDirection = "/" + self.__fromAutoware
         subDirection = "/" + self.__toAutoware
         self.mqttPubTopic = header + body + pubDirection
         self.mqttSubTopic = header + body + subDirection
-
         self.bridge = CvBridge()
 
 
@@ -39,7 +55,7 @@ class ImageMqttPublisher:
         self.client.on_connect = self.__onConnect
         self.client.on_message = self.__onMessage
         self.client.on_disconnect = self.__onDisconnect
-        self.client.connect(env["MQTT_HOST"], int(env["MQTT_PYTHON_PORT"]))
+        self.client.connect(self.__host, int(self.__port))
         self.client.loop_start()
 
         #mqtt function
@@ -92,7 +108,6 @@ class ImageMqttPublisher:
 ip = ImageMqttPublisher()
 
 def main():
-    rospy.init_node('WRM_mqtt_publisher', anonymous=True)
     print("WRM_mqtt_publisher run.")
     ip.onStartMqtt()
     try:

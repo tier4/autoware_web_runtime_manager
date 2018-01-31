@@ -2,7 +2,7 @@ mqtt:
   client:
     protocol: 4      # MQTTv311
   connection:
-    host: 52.243.37.39
+    host: localhost
     port: 1883
     keepalive: 60
   private_path: device/001
