@@ -5,8 +5,6 @@ from os import listdir
 from os.path import realpath, abspath, dirname
 from config.env import env
 from controllers.ros_controller import ROSController
-from controllers.vector_map_loader import VectorMap
-from prepare import kill_web_video_server
 import traceback
 import paho.mqtt.client as mqtt
 import signal
