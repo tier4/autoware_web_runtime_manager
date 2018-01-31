@@ -205,7 +205,6 @@ class MqttRosLauncher:
         self.rosController.killall()
         del self.rosController
         self.rosController = ROSController(env)
-        kill_web_video_server()
         return "ok"
     
     def __initializeRtmStatus(self):
