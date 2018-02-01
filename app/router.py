@@ -7,7 +7,6 @@ from os import listdir
 from os.path import realpath, abspath, dirname
 from config.env import env
 from controllers.vector_map_loader import VectorMap
-from prepare import kill_web_video_server
 import traceback
 #from pprint import PrettyPrinter
 import json
