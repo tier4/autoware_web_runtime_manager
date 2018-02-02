@@ -9,6 +9,8 @@ from .bridge import create_bridge
 from .mqtt_client import create_private_path_extractor
 from .util import lookup_object
 
+from config.env import env
+import json
 
 def create_config(mqtt_client, serializer, deserializer, mqtt_private_path):
     if isinstance(serializer, basestring):
@@ -35,6 +37,35 @@ def mqtt_bridge_node():
     mqtt_private_path = mqtt_params.pop("private_path", "")
     bridge_params = params.get("bridge", [])
 
+    # load wrm parameters
+    sf = open(env["PATH_WRM_DIR"] + "/config.json", "r")
+    json_data = json.load(sf)
+    
+    __userid = json_data["fixeddata"]["userid"]
+    __carid = json_data["fixeddata"]["carid"]
+    __toAutoware = json_data["fixeddata"]["toAutoware"]
+    __fromAutoware = json_data["fixeddata"]["fromAutoware"]
+    __topic = json_data["topicdata"]["ImageRaw"]["topic"]
+    conn_params["host"] = env["MQTT_HOST"]
+    conn_params["port"] = env["MQTT_PYTHON_PORT"]
+    print(conn_params)
+
+    header = "/" + __userid + "." + __carid
+    direction  = "/" + __fromAutoware
+
+    print(bridge_params)
+    
+    for i,value in enumerate(bridge_params):
+        if value["factory"] == "mqtt_bridge.bridge:RosToMqttBridge":
+            key = value["topic_to"]
+            body = "/" + json_data["topicdata"][key]["topic"]
+            bridge_params[i]["topic_to"] = header + body + direction
+        elif value["factory"] == "mqtt_bridge.bridge:MqttToRosBridge":
+            key = value["topic_from"]
+            body = "/" + json_data["topicdata"][key]["topic"]
+            bridge_params[i]["topic_from"] = header + body + direction
+        print(bridge_params)
+    
     # create mqtt client
     mqtt_client_factory_name = rospy.get_param(
         "~mqtt_client_factory", ".mqtt_client:default_mqtt_client_factory")
