@@ -573,23 +573,12 @@ export default class RosView {
         let that = this;
 	var getVehiclePoseMethod = function(msg){
 	    var message = JSON.parse(msg.payloadString)
-	    //console.log("ndt pose:");
-	    //console.log(message);
-
             that.vehiclePose = message.pose;
             callback();
 
 	};
-
+	//set callback executing when mqtt arrived
 	this.mqttClient.setCallback("ndt_pose",getVehiclePoseMethod);
-
-	/*
-        topic.subscribe(function(message) {
-            that.vehiclePose = message.pose;
-//            console.log(that.vehiclePose.position, that.camera.position, that.controls.target)
-            callback();
-        });
-	*/
     }
 
     getTFBaseLinkToVelodyne(topic) {
@@ -602,7 +591,8 @@ export default class RosView {
 		    console.log("base_link:");
 		    console.log(transform.transform);
                     that.tfBaseLinkToVelodyne = transform.transform;
-		    //                    console.log(message);
+		    //console.log("tf value:");
+		    //console.log(message);
                     that.mqttClient.unSubscribeTopic("tf");
                 }
             }
@@ -691,6 +681,36 @@ export default class RosView {
                 that.sceneData.pointsRaw.threeJSObject.position.x = that.vehiclePose.position.x + that.tfBaseLinkToVelodyne.translation.x;
 		that.sceneData.pointsRaw.threeJSObject.position.y = that.vehiclePose.position.y + that.tfBaseLinkToVelodyne.translation.y;
                 that.sceneData.pointsRaw.threeJSObject.position.z = that.vehiclePose.position.z + that.tfBaseLinkToVelodyne.translation.z;
+
+		var base_quaternion = new THREE.Quaternion(
+		    that.vehiclePose.orientation.x,
+		    that.vehiclePose.orientation.y,
+		    that.vehiclePose.orientation.z,
+		    that.vehiclePose.orientation.w
+		);
+		var vel_quaternion = new THREE.Quaternion(
+		    that.tfBaseLinkToVelodyne.rotation.x,
+		    that.tfBaseLinkToVelodyne.rotation.y,
+		    that.tfBaseLinkToVelodyne.rotation.z,
+		    that.tfBaseLinkToVelodyne.rotation.w
+		);
+		var zero_quaternion = new THREE.Quaternion(0,0,0,0);
+		if(base_quaternion.equals(zero_quaternion)){
+		    console.log("zero quaternion:");
+		    console.log(base_quaternion);
+		    console.log(vel_quaternion);
+		    //console.log(base_quaternion.multiply(vel_quaternion));
+		    that.sceneData.pointsRaw.threeJSObject.setRotationFromQuaternion(vel_quaternion);
+		    //that.sceneData.pointsRaw.threeJSObject.setRotationFromQuaternion(base_quaternion.multiply(vel_quaternion));
+
+		}else{
+		    console.log("not zero quaternion:");
+		    console.log(base_quaternion);
+		    console.log(vel_quaternion);
+		    //console.log(base_quaternion.multiply(vel_quaternion));
+		    
+		    that.sceneData.pointsRaw.threeJSObject.setRotationFromQuaternion(base_quaternion.multiply(vel_quaternion));
+		}
             }
 
 //            callback();

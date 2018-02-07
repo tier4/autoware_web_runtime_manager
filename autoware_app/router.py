@@ -231,7 +231,7 @@ class MqttRosLauncher:
                 return "ok"
             else:
                 if (domain, label, message) == ("initialization","initialization", "off"):
-                    self.__exitRTM()
+                    #self.__exitRTM()
                     self.__initializeRtmStatus()
                 self.rosController.launch(domain, label, message)
 

@@ -182,7 +182,7 @@ export default class MqttWrapper{
 	this.mqttClient.onMessageArrived = onMessageArrived.bind(this);
 	
 	function onConnect() {
-	    console.log("mqtt onConnect");
+	    //console.log("mqtt onConnect");
 	    // Once a connection has been made, make a subscription.
 	    for(const key of Object.keys(this.topics["topicdata"])){
 		this.onSubscribeTopic(key);
@@ -221,20 +221,20 @@ export default class MqttWrapper{
 		  body: data
 	      })
 	    .then((response) => {
-		console.log(response)
+		//console.log(response)
 		if(!response.ok) {
                     throw Error(response.statusText);
 		}
 		return response.json();
             })
             .then((json) => {
-		console.log("initializeButtonRGLState", json);
+		//console.log("initializeButtonRGLState", json);
 		this.topics["fixeddata"]["userid"] = json["fixeddata"]["userid"];
 		this.topics["fixeddata"]["carid"] = json["fixeddata"]["carid"];
 		this.topics["fixeddata"]["toAutoware"] = json["fixeddata"]["toAutoware"];
 		this.topics["fixeddata"]["fromAutoware"] = json["fixeddata"]["fromAutoware"];
 		for(const key in this.topics["topicdata"]){
-		    console.log(key);
+		    //console.log(key);
 		    this.topics["topicdata"][key]["topic"] = json["topicdata"][key]["topic"];
 		}
 		
@@ -252,8 +252,8 @@ export default class MqttWrapper{
 	    message.destinationName = this.getPublishTopicName(label)
 	    this.mqttClient.send(message);
 	    
-	    console.log("pub topic name:" + message.destinationName);
-	    console.log("pub message:" + message.payloadString);
+	    //console.log("pub topic name:" + message.destinationName);
+	    //console.log("pub message:" + message.payloadString);
 	}catch(error){
 	    console.log("error:" + error);
 	    if("errorPublishMessage" in this.topics["topicdata"][label]){
@@ -268,7 +268,7 @@ export default class MqttWrapper{
 	if(topic_name !== ""){
 	    this.mqttClient.subscribe(topic_name);
 	}
-	console.log("topic subscribe:" + topic_name);
+	//console.log("topic subscribe:" + topic_name);
     }
 
     //label:set key of topicdata of this.topics
@@ -277,7 +277,7 @@ export default class MqttWrapper{
 	if(topic_name !== ""){
 	    this.mqttClient.subscribe(topic_name,{onSuccess:method});
 	}
-	console.log("topic subscribe:" + topic_name);
+	//console.log("topic subscribe:" + topic_name);
     }
 
     
@@ -285,7 +285,7 @@ export default class MqttWrapper{
     unSubscribeTopic(label){
 	const topic_name = this.getSubscribeTopicName(label);
 	this.mqttClient.unsubscribe(topic_name);
-	console.log("topic unsubscribe:" + topic_name);
+	//console.log("topic unsubscribe:" + topic_name);
     }
     
     setCallback(label,callback) {
