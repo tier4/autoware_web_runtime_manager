@@ -333,7 +333,7 @@ export default class RosView {
     onGetPointsRaw() {
 //        console.log("onGetPointsRaw");
 
-        this.vehiclePose = {position: {x: 0, y: 0, z: 0}, orientation: {x: 0, y: 0, z:0, w: 0}};
+        this.vehiclePose = {position: {x: 0, y: 0, z: 0}, orientation: {x: 0, y: 0, z:0, w: 1}};
 
         const sceneDataIDs = Object.keys(this.sceneData);
         const topicIDs = Object.keys(this.topics);
@@ -387,10 +387,12 @@ export default class RosView {
                 that.getPointsRaw(that.topics.pointsRaw.instance);
             }
             if(!sceneDataIDs.includes("nextTarget") && that.visualizationObjectIDs.includes(CONST.VISUALIZATION_OBJECT.TARGETS)) {
+		console.log("nextTarget call");
                 that.sceneData.nextTarget = CONST.OBJECT_IS_LOADING;
                 that.getNextTarget(that.topics.nextTarget.instance);
             }
             if(!sceneDataIDs.includes("trajectoryCircle") && that.visualizationObjectIDs.includes(CONST.VISUALIZATION_OBJECT.TARGETS)) {
+		console.log("trajectoryCircle call");		
                 that.sceneData.trajectoryCircle = CONST.OBJECT_IS_LOADING;
                 that.getTrajectoryCircle(that.topics.trajectoryCircle.instance);
             }
@@ -694,23 +696,7 @@ export default class RosView {
 		    that.tfBaseLinkToVelodyne.rotation.z,
 		    that.tfBaseLinkToVelodyne.rotation.w
 		);
-		var zero_quaternion = new THREE.Quaternion(0,0,0,0);
-		if(base_quaternion.equals(zero_quaternion)){
-		    console.log("zero quaternion:");
-		    console.log(base_quaternion);
-		    console.log(vel_quaternion);
-		    //console.log(base_quaternion.multiply(vel_quaternion));
-		    that.sceneData.pointsRaw.threeJSObject.setRotationFromQuaternion(vel_quaternion);
-		    //that.sceneData.pointsRaw.threeJSObject.setRotationFromQuaternion(base_quaternion.multiply(vel_quaternion));
-
-		}else{
-		    console.log("not zero quaternion:");
-		    console.log(base_quaternion);
-		    console.log(vel_quaternion);
-		    //console.log(base_quaternion.multiply(vel_quaternion));
-		    
-		    that.sceneData.pointsRaw.threeJSObject.setRotationFromQuaternion(base_quaternion.multiply(vel_quaternion));
-		}
+		that.sceneData.pointsRaw.threeJSObject.setRotationFromQuaternion(base_quaternion.multiply(vel_quaternion));
             }
 
 //            callback();
@@ -785,6 +771,8 @@ export default class RosView {
 	var getWayPointMethod = function(msg){
 	    var message = JSON.parse(msg.payloadString)
 
+	    console.log("waypoint sub");
+	    console.log(message);
             // arrow
             for(let i=1; i<message.lanes[0].waypoints.length; i++) {
                 const pos_1 = message.lanes[0].waypoints[i-1].pose.pose.position;
