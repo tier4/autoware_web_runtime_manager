@@ -1,0 +1,5 @@
+python-dotenv==0.6.5
+Cython==0.23.4
+inject>=3.3.1
+paho-mqtt>=1.2
+msgpack-python>=0.4.8

@@ -10,9 +10,7 @@ from config.env import env
 def kill_connection():
     procs = list(filter(
         lambda x: x["name"] == "python" and 0 < len(x["connections"]),
-        map(
-            lambda x: x.as_dict(attrs=["name", "pid", "connections"]),
-            psutil.process_iter())))
+        map(lambda x: x.as_dict(attrs=["name", "pid", "connections"]),psutil.process_iter())))
 
     pids = {}
     for proc in procs:

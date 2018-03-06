@@ -380,6 +380,10 @@ export default class RosView {
 
         let that = this;
         const callback = () => {
+	    //todo:first aid.If button off , do nothing
+	    if(that.controls == null){
+		return
+	    }
             const topicIDs = Object.keys(that.topics);
             const sceneDataIDs = Object.keys(that.sceneData);
             if(topicIDs.includes("pointsRaw") && !sceneDataIDs.includes("pointsRaw")) {
