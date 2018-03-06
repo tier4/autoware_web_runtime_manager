@@ -51,19 +51,20 @@ def mqtt_bridge_node():
     print(conn_params)
 
     header = "/" + __userid + "." + __carid
-    direction  = "/" + __fromAutoware
-
+    fromdirection  = "/" + __fromAutoware
+    todirection  = "/" + __toAutoware
+    
     print(bridge_params)
     
     for i,value in enumerate(bridge_params):
         if value["factory"] == "mqtt_bridge.bridge:RosToMqttBridge":
             key = value["topic_to"]
             body = "/" + json_data["topicdata"][key]["topic"]
-            bridge_params[i]["topic_to"] = header + body + direction
+            bridge_params[i]["topic_to"] = header + body + fromdirection
         elif value["factory"] == "mqtt_bridge.bridge:MqttToRosBridge":
             key = value["topic_from"]
             body = "/" + json_data["topicdata"][key]["topic"]
-            bridge_params[i]["topic_from"] = header + body + direction
+            bridge_params[i]["topic_from"] = header + body + todirection
         print(bridge_params)
     
     # create mqtt client
