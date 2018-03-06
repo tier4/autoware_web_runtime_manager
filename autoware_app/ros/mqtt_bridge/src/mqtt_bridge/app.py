@@ -38,6 +38,7 @@ def mqtt_bridge_node():
     bridge_params = params.get("bridge", [])
 
     # load wrm parameters
+    wrm_path = params.pop("wrm")
     sf = open(env["PATH_WRM_DIR"] + "/config.json", "r")
     json_data = json.load(sf)
     
@@ -48,13 +49,10 @@ def mqtt_bridge_node():
     __topic = json_data["topicdata"]["ImageRaw"]["topic"]
     conn_params["host"] = env["MQTT_HOST"]
     conn_params["port"] = env["MQTT_PYTHON_PORT"]
-    print(conn_params)
 
     header = "/" + __userid + "." + __carid
     fromdirection  = "/" + __fromAutoware
     todirection  = "/" + __toAutoware
-    
-    print(bridge_params)
     
     for i,value in enumerate(bridge_params):
         if value["factory"] == "mqtt_bridge.bridge:RosToMqttBridge":
@@ -65,7 +63,6 @@ def mqtt_bridge_node():
             key = value["topic_from"]
             body = "/" + json_data["topicdata"][key]["topic"]
             bridge_params[i]["topic_from"] = header + body + todirection
-        print(bridge_params)
     
     # create mqtt client
     mqtt_client_factory_name = rospy.get_param(

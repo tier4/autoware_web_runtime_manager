@@ -74,10 +74,6 @@ class RosToMqttBridge(Bridge):
             self._last_published = now
 
     def _publish(self, msg):
-        if self._topic_to == "/test.test/points_raw.points_raw.points_raw/AtoU":
-            #print(extract_values(msg))
-            print(extract_values(msg)["row_step"])
-
         payload = bytearray(self._serialize(extract_values(msg)))
         self._mqtt_client.publish(topic=self._topic_to, payload=payload)
 
