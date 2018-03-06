@@ -51,5 +51,7 @@ ENV/
 ./app/views/build/app.js
 ./app/views/node_modules/
 
+.launch
+
 
 
