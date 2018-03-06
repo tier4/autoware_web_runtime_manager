@@ -16,10 +16,15 @@ $ sudo ln -sf /usr/local/bin/node /usr/bin/node
 ## Installing
 
 ```
-$ python setup.py
+Web Server
+$ python app/setup.py
+
+Autoware PC
+$ python autoware_app/setup.py
+
 ```
 
-## Autoware Setting
+## Autoware Installing
 Installing Autoware as below
 
 https://github.com/CPFL/Autoware
@@ -52,7 +57,7 @@ deserializer: json:loads
 
 ```
 
-###Browser Connection Settings
+Browser Connection Settings
 ```angular2html
 $ cd autoware_web_runtime_manager/app/config
 
@@ -63,7 +68,7 @@ MQTT_JS_PORT = "9091" #MQTT broker port that browser connect
 
 ```
 
-###Autoware Connection Client Connection Settings
+Autoware Connection Client Connection Settings
 ```angular2html
 $ cd autoware_web_runtime_manager/autoware_app/config
 $ vim sample.env
@@ -75,7 +80,7 @@ MQTT_PYTHON_PORT = "1883" #MQTT broker port that browser connect
 
 ```
 
-###Autoware Connection Client Connection Settings
+Autoware Connection Client Connection Settings
 ```angular2html
 $ cd autoware_web_runtime_manager/autoware_app/ros/wrm_image_publisher/scripts/config
 $ vim sample.env
