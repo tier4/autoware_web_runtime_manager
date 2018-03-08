@@ -62,11 +62,17 @@ def getVectorMapViewData():
     vectorMap.load(pathDir)
     return api_response(code=200, message=vectorMap.getViewData())
 
-
 @flask.route('/getPCDFileNames')
 def getPCDFileNames():
     pathDir = realpath("./controllers/res/map/points/")
-    return api_response(code=200, message=listdir(pathDir))
+    file_names = list(filter(lambda x: ".pcd" in x, listdir(pathDir)))
+    response = api_response(code=200, message={"fileNames": file_names})
+    return response
+
+#@flask.route('/getPCDFileNames')
+#def getPCDFileNames():
+#    pathDir = realpath("./controllers/res/map/points/")
+#    return api_response(code=200, message=listdir(pathDir))
 
 
 @flask.route('/getPCDFile/<filename>')
