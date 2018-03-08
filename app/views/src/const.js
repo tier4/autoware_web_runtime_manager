@@ -65,6 +65,11 @@ const CONST = {
             LABEL: "gatewayOff",
             DISPLAY: "Off"
         },
+        RVIZ: {
+            DOMAIN: "rviz",
+            LABEL: "rviz",
+            DISPLAY: "Rviz"
+        },
     },
     BUTTON_INIT: {
         DOMAIN: "buttonInit",

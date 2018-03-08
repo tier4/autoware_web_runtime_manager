@@ -159,57 +159,11 @@ export default class ButtonRGL extends React.Component {
                 !this.props.structure.nodes[index].on,
                 this.props.structure.nodes);
 
-            const nodeDomain = structure.nodes[index].domain;
-            const nodeLabel = structure.nodes[index].label;
-            const nodeDisplay = structure.nodes[index].display;
-            const url = WEB_UI_URL+"/roslaunch/"+nodeDomain+"/"+nodeLabel+"/"+nodeID+"/"+(this.props.structure.nodes[index].on ? "on" : "off");
-
-	    /*
-            structure.nodes[index].span = (<ROSLaunchRequest
-                url={url}
-                errorCallback={() => { return (<span>error</span>); }}
-                isLoadingCallback={() => {
-                    return (<span>{(this.props.structure.nodes[index].on ? "loading.." : "killing..")}</span>); }
-                }
-                responseCallback={() => {
-                    if(index==0 && !this.props.structure.nodes[index].on) {
-                        location.reload();
-                    }
-                    return (<span>{nodeDisplay}</span>);
-                }}
-                defaultCallback={() => { return (<span>{nodeDisplay}</span>); }}
-					   />);
-	    */
-
 	    // set callback handlers
 	    const label = structure.nodes[index].label;
 	    const message = structure.nodes[index].on ? "on" : "off";
 	    this.props.mqttClient.onPublish(label,message);
 	    structure.nodes[index].span = (<span>{(structure.nodes[index].on ? "loading.." : "killing..")}</span>);
-
-	    
-            /*
-            let that = this;
-            const xhttpRequest = new XMLHttpRequest();
-            xhttpRequest.onreadystatechange = function() {
-                if (this.readyState == 4 && this.status == 200) {
-                    structure.nodes[index].isLoading = false;
-                    structure.nodes[index].on = !structure.nodes[index].on;
-                    if(index==0 && structure.nodes[index].on) {
-                        location.reload();
-                    }
-                    that.props.updateStructure(structure);
-                }
-            };
-            if(structure.nodes[index].on){
-                structure.nodes[index].isLoading = true;
-            }
-            else{
-                structure.nodes[index].isKilling = true;
-            }
-            xhttpRequest.open("GET", url, true);
-            xhttpRequest.send();
-            */
 
             this.props.updateStructure(structure);
         }

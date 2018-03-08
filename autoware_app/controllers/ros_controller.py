@@ -9,7 +9,7 @@ from os.path import abspath, dirname, realpath
 from os import listdir
 from time import sleep
 
-from rosbag_controller import ROSBAGController
+from .rosbag_controller import ROSBAGController
 
 
 class ROSController(object):
@@ -33,12 +33,20 @@ class ROSController(object):
     def launch(self, domain="map", target="map", mode="on"):
         launch_id = "/".join([domain, target])
         if mode == "on":
-            self.__launches[launch_id] = roslaunch.parent.ROSLaunchParent(
-                self.__uuid, [self.__path + "/res/{}/{}.launch".format(domain, target)])
+            if domain == "rviz":
+                roslaunch_args = " rviz_setting_path:=/home/yabuta/Autoware/ros/src/.config/default.rviz"
+                roslaunch_file = [(self.__path + "/res/{}/{}.launch".format(domain, target), roslaunch_args)]
+                self.__launches[launch_id] = roslaunch.parent.ROSLaunchParent(
+                    self.__uuid, roslaunch_file)
+            else:
+                self.__launches[launch_id] = roslaunch.parent.ROSLaunchParent(
+                    self.__uuid, [self.__path + "/res/{}/{}.launch".format(domain, target)])
+
             self.__launches[launch_id].start()
         else:
             if launch_id in self.__launches:
                 self.__launches[launch_id].shutdown()
+
         return True
 
     def killall(self):

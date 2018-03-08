@@ -90,6 +90,15 @@ class Index extends React.Component {
                         enabled: false, on: false, isLoading: false, isKilling: false,
                         required: {forOn: {}, forOff: {}, forEnable: {on: [1,2,3,4,5,6,10], off: [], enable: [], disable: []}, forDisable: {}},
                         domain: "gateway", label: 'on', display: "On", span: (<span>On</span>)},
+                    {
+                        id: 12, x: 0,  y: 6, w: 4, h: 3,
+                        enabled: false, on: false, isLoading: false, isKilling: false,
+                        required: {forOn: {}, forOff: {}, forEnable: {on: [], off: [11], enable: [], disable: []}, forDisable: {}},
+                        domain: CONST.BUTTON.RVIZ.DOMAIN,
+                        label: CONST.BUTTON.RVIZ.LABEL,
+                        display: "Rviz",
+                        span: (<span>Rviz</span>)
+                    },
                 ],
             },
             viewRGL: {
@@ -277,12 +286,12 @@ class Index extends React.Component {
             <div>
                 <ButtonRGL
                    structure={this.state.buttonRGL}
-		   mqttClient={this.mqttClient}
+                   mqttClient={this.mqttClient}
                    updateStructure={this.updateButtonRGLStructure.bind(this)}
                 />
                 <ViewRGL
                    structure={this.state.viewRGL}
-		   mqttClient={this.mqttClient}
+                   mqttClient={this.mqttClient}
                    updateStructure={this.updateViewRGLStructure.bind(this)}
                 />
             </div>
@@ -318,8 +327,8 @@ class Index extends React.Component {
         this.setState({viewRGL: viewRGL});
     }
     componentWillUnmount(){
-	this.mqttClient.disConnect();
-	delete(this.mqttClient);
+        this.mqttClient.disConnect();
+        delete(this.mqttClient);
     }
 
 }
