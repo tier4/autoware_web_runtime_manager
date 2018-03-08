@@ -424,13 +424,14 @@ export default class RosView {
 //        console.log("getPointsMap");
         let that = this;
         const xhttpPCDs = new XMLHttpRequest();
-        xhttpPCDs.onreadystatechange = function() {
+	xhttpPCDs.onreadystatechange = function() {
             if (this.readyState == 4 && this.status == 200) {
-                if(that.pcdFileNames === null) {
-                    that.pcdFileNames = JSON.parse(this.responseText);
-                    let loader = new THREE.PCDLoader();
-                    for(const pcdFileName of that.pcdFileNames) {
-                        if(!Object.keys(that.sceneData.pointsMap.threeJSObjects).includes(pcdFileName)){
+		if(that.pcdFileNames === null) {
+		    that.pcdFileNames = JSON.parse(this.responseText).fileNames;	      
+		    let loader = new THREE.PCDLoader();
+		    
+		    for(const pcdFileName of that.pcdFileNames) {
+			if(!Object.keys(that.sceneData.pointsMap.threeJSObjects).includes(pcdFileName)){
                             loader.load(
                                 WEB_UI_URL+"/getPCDFile/"+pcdFileName,
                                 function ( mesh ) {
