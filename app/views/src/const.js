@@ -70,6 +70,11 @@ const CONST = {
             LABEL: "rviz",
             DISPLAY: "Rviz"
         },
+        SETTING: {
+            DOMAIN: "setting",
+            LABEL: "setting",
+            DISPLAY: "Setting"
+        },
     },
     BUTTON_INIT: {
         DOMAIN: "buttonInit",

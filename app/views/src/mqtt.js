@@ -143,6 +143,15 @@ export default class MqttWrapper {
                     "callback": function () {
                     }
                 },
+                "setting": {
+                    "domain": CONST.BUTTON.SETTING.DOMAIN,
+                    "label": CONST.BUTTON.SETTING.LABEL,
+                    "type": "button",
+                    "topic": "",
+                    "erroePublishMessage": "setting topic can not publish.",
+                    "callback": function () {
+                    }
+                },
                 "ImageRaw": {
                     "domain": CONST.VISUALIZATION_OBJECT.IMAGE_RAW,
                     "label": CONST.VISUALIZATION_OBJECT.IMAGE_RAW,
@@ -261,7 +270,6 @@ export default class MqttWrapper {
                 return response.json();
             })
     .then((json) => {
-        //console.log("initializeButtonRGLState", json)
             this.topics["fixeddata"]["userid"] = json["fixeddata"]["userid"];
             this.topics["fixeddata"]["carid"] = json["fixeddata"]["carid"];
             this.topics["fixeddata"]["toAutoware"] = json["fixeddata"]["toAutoware"];
@@ -275,6 +283,7 @@ export default class MqttWrapper {
         this.mqttClient.connect({onSuccess: onConnect.bind(this)});
     }).catch((e) => {console.error(e);})}
 
+    //arg label:set key of this.topics.topicdata
     onPublish(label, msg) {
         //console.log(label,msg);
         try {
@@ -292,7 +301,7 @@ export default class MqttWrapper {
         }
     }
 
-    //label:set key of topicdata of this.topics
+    //arg label:set key of this.topics.topicdata
     onSubscribeTopic(label) {
         const topic_name = this.getSubscribeTopicName(label);
         if (topic_name !== "") {
@@ -301,7 +310,7 @@ export default class MqttWrapper {
         //console.log("topic subscribe:" + topic_name);
     }
 
-    //label:set key of topicdata of this.topics
+    //arg label:set key of this.topics.topicdata
     onSubscribeTopicWithMethod(label, method) {
         const topic_name = this.getSubscribeTopicName(label);
         if (topic_name !== "") {
@@ -311,13 +320,14 @@ export default class MqttWrapper {
     }
 
 
-    //label:set key of topicdata of this.topics
+    //arg label:set key of this.topics.topicdata
     unSubscribeTopic(label) {
         const topic_name = this.getSubscribeTopicName(label);
         this.mqttClient.unsubscribe(topic_name);
         //console.log("topic unsubscribe:" + topic_name);
     }
 
+    //arg label:set key of this.topics.topicdata
     setCallback(label, callback) {
         //console.log(label + " callback set");
         //console.log(callback);
@@ -329,7 +339,7 @@ export default class MqttWrapper {
     }
 
     //header and direction is fixed.These are subscribed from web server
-    //body is topic of topicdata of this.topics
+    //body is topic of this.topics.topicdata
     getPublishTopicName(label) {
         try {
             const head = this.topics["fixeddata"]
@@ -343,7 +353,7 @@ export default class MqttWrapper {
     }
 
     //header and direction is fixed.These are subscribed from web server
-    //body is topic of topicdata of this.topics
+    //body is topic of this.topics.topicdata
     getSubscribeTopicName(label) {
         try {
             const head = this.topics["fixeddata"]

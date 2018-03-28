@@ -5,14 +5,14 @@ import rospy
 import roslaunch
 
 from subprocess import call, Popen
-from os.path import abspath, dirname, realpath
-from os import listdir
+from os.path import abspath, dirname
 from time import sleep
 
 from .rosbag_controller import ROSBAGController
 
 
 class ROSController(object):
+
     def __init__(self, env):
         self.__pids = []
         self.__env = env
@@ -24,28 +24,35 @@ class ROSController(object):
         self.__path = abspath(dirname(__file__))
 
         self.__launches = {}
+        self.__launchers = {}
         self.__uuid = roslaunch.rlutil.get_or_generate_uuid(None, False)
         roslaunch.configure_logging(self.__uuid)
+
 
     def __del__(self):
         self.__devnull.close()
 
     def launch(self, domain="map", target="map", mode="on"):
+
         launch_id = "/".join([domain, target])
         if mode == "on":
             if domain == "rviz":
-                roslaunch_args = " rviz_setting_path:=/home/yabuta/Autoware/ros/src/.config/default.rviz"
-                roslaunch_file = [(self.__path + "/res/{}/{}.launch".format(domain, target), roslaunch_args)]
-                self.__launches[launch_id] = roslaunch.parent.ROSLaunchParent(
-                    self.__uuid, roslaunch_file)
+                rviz_setting_path = "rviz_setting_path:=/home/yabuta/Autoware/ros/src/.config/rviz/default.rviz"
+                self.__launchers[launch_id] = Popen(["roslaunch",
+                                                     self.__path + "/res/{}/{}.launch".format(domain, target),
+                                                     rviz_setting_path])
             else:
                 self.__launches[launch_id] = roslaunch.parent.ROSLaunchParent(
                     self.__uuid, [self.__path + "/res/{}/{}.launch".format(domain, target)])
 
-            self.__launches[launch_id].start()
+                self.__launches[launch_id].start()
         else:
-            if launch_id in self.__launches:
-                self.__launches[launch_id].shutdown()
+            if launch_id in self.__launches or launch_id in self.__launchers:
+                if domain == "rviz":
+                    print("rviz")
+                    self.__launchers[launch_id].terminate()
+                else:
+                    self.__launches[launch_id].shutdown()
 
         return True
 
@@ -89,3 +96,9 @@ class ROSController(object):
 
     def gateway_off(self):
         self.launch(domain="gateway", target="off")
+
+    def set_param(self,params):
+        tf_params = params["setup"]["tf"]
+        for key, value in tf_params.items():
+            rospy.set_param(key, value)
+

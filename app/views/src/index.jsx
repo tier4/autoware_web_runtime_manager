@@ -93,12 +93,19 @@ class Index extends React.Component {
                     {
                         id: 12, x: 0,  y: 6, w: 4, h: 3,
                         enabled: false, on: false, isLoading: false, isKilling: false,
-                        required: {forOn: {}, forOff: {}, forEnable: {on: [], off: [11], enable: [], disable: []}, forDisable: {}},
+                        required: {forOn: {}, forOff: {}, forEnable: {on: [1], off: [11], enable: [1], disable: []}, forDisable: {}},
                         domain: CONST.BUTTON.RVIZ.DOMAIN,
                         label: CONST.BUTTON.RVIZ.LABEL,
                         display: "Rviz",
-                        span: (<span>Rviz</span>)
-                    },
+                        span: (<span>Rviz</span>)},
+                    {
+                        id: 13, x: 4,  y: 6, w: 4, h: 3,
+                        enabled: false, on: false, isLoading: false, isKilling: false,
+                        required: {forOn: {}, forOff: {}, forEnable: {on: [1], off: [11], enable: [1], disable: []}, forDisable: {}},
+                        domain: CONST.BUTTON.SETTING.DOMAIN,
+                        label: CONST.BUTTON.SETTING.LABEL,
+                        display: "Setting",
+                        span: (<span>Setting</span>)},
                 ],
             },
             viewRGL: {
@@ -275,6 +282,21 @@ class Index extends React.Component {
                     },
                 },
             },
+            settingParams: {
+                setup: {
+                    tf: {
+                        tf_x: 0,
+                        tf_y: 0,
+                        tf_z: 0,
+                        tf_yaw: 0,
+                        tf_pitch: 0,
+                        tf_roll: 0
+                    },
+                    vehicleModel: {
+                        data: ""
+                    }
+                }
+            }
         };
 	this.state.viewRGL.contents[CONST.VIEW_CONTENT.RADAR].viewInstance.setMqttClient(this.mqttClient);
 	this.state.viewRGL.contents[CONST.VIEW_CONTENT.MAP3D].viewInstance.setMqttClient(this.mqttClient);
@@ -286,8 +308,11 @@ class Index extends React.Component {
             <div>
                 <ButtonRGL
                    structure={this.state.buttonRGL}
+                   settingParams={this.state.settingParams}
                    mqttClient={this.mqttClient}
                    updateStructure={this.updateButtonRGLStructure.bind(this)}
+                   updateSettingParamsStructure={this.updateSettingParamsStructure.bind(this)}
+
                 />
                 <ViewRGL
                    structure={this.state.viewRGL}
@@ -302,6 +327,9 @@ class Index extends React.Component {
         this.updateViewRGLVisibility();
     }
     updateViewRGLStructure(nextStructure) {
+        this.setState({viewRGL: nextStructure});
+    }
+    updateSettingParamsStructure(nextStructure) {
         this.setState({viewRGL: nextStructure});
     }
     updateViewRGLVisibility() {

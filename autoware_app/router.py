@@ -12,7 +12,6 @@ import sys
 import json
 import urllib
 import urllib2
-import rosparam
 
 
 class MqttRosLauncher:
@@ -90,7 +89,13 @@ class MqttRosLauncher:
             "subscribe": True
         },
         "rviz": {
-            "enable": True,
+            "enable": False,
+            "mode": "off",
+            "topic": "",
+            "subscribe": True
+        },
+        "setting": {
+            "enable": False,
             "mode": "off",
             "topic": "",
             "subscribe": True
@@ -239,17 +244,15 @@ class MqttRosLauncher:
                     self.__initializeRtmStatus()
                 self.rosController.launch(domain, label, message)
 
-                # After initialize, set rosparam
-                # if (domain, label, message) == ("initialization","initialization", "on"):
-                #    self.__setRosParam()
                 return "ok"
         except:
             traceback.print_exc()
             return "error"
 
-    def __getParam(self, message):
-        print("get rosparam:" + message)
-        return str(rosparam.get_param(message))
+    def __settingParams(self, message):
+        params = json.loads(message)
+        self.rosController.set_param(params)
+        return "ok"
 
     def __execution(self, msg):
         space, header, body, direction = msg.topic.split("/")
@@ -259,8 +262,8 @@ class MqttRosLauncher:
             return json.dumps(self.__getRTMStatus())
         elif topic_type == "button":
             return self.__roslaunch(domain, label, msg.payload)
-        elif topic_type == "getParam":
-            return self.__getParam(msg.payload)
+        elif topic_type == "settingParams":
+            return self.__settingParams(msg.payload)
 
     def __on_connect(self, client, userdata, flags, respons_code):
         print('status {0}'.format(respons_code))
@@ -284,9 +287,10 @@ class MqttRosLauncher:
         topic = "/" + header + "/" + body + "/" + self.__fromAutoware
         self.client.publish(topic, str(res))
 
-    def __on_disconnect(self, a, b, c, ):
-        logging.debug("DisConnected result code " + str(rc))
-        # self.client.loop_stop()
+    def __on_disconnect(self, client, userdata, rc):
+        sys.stderr.write("DisConnected result code " + str(rc))
+        self.client.loop_stop()
+        # self.mqttStart()
 
 
 mqtt_roslauncher = MqttRosLauncher()

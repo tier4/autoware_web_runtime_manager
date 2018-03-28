@@ -67,8 +67,13 @@
     },
     "rviz": {
       "topic": "button.rviz.rviz",
-      "domain": "gateway",
-      "label": "on"
+      "domain": "rviz",
+      "label": "rviz"
+    },
+    "setting": {
+      "topic": "settingParams.setting.setting",
+      "domain": "setting",
+      "label": "setting"
     },
     "ImageRaw": {
       "type": "image",
