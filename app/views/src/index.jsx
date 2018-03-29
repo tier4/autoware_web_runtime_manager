@@ -13,14 +13,15 @@ import Map2DView from './map_2d_view';
 import RadarView from './radar_view';
 import Map3DView from './map_3d_view';
 import CameraView from './camera_view';
-
+import MqttWrapper from './mqtt';
 
 class Index extends React.Component {
     constructor() {
         super();
         const rosView = new RosView();
         console.log(CONST);
-        this.state = {
+	this.mqttClient= new MqttWrapper();
+        this.state= {
             buttonRGL: {
                 nodeWidth: 4,
                 nodeHeight: 3,
@@ -137,7 +138,7 @@ class Index extends React.Component {
                             i: CONST.VIEW_CONTENT.MAP3D,
                             x: 10, y: 0, w: 14, h: 25,
                             isDraggable: false,
-                            isResizable: false,
+                            isResizable: false
                         },
                         component: Map3DView,
                         viewInstance: new RosView(),
@@ -182,22 +183,22 @@ class Index extends React.Component {
                                 topics: {
                                     waypoints: {
                                         name : "/lane_waypoints_array",
-                                        messageType : 'autoware_msgs/LaneArray',
+                                        messageType : 'autoware_msgs/LaneArray'
                                     }
-                                },
+                                }
                             },
                             [CONST.VISUALIZATION_OBJECT.TARGETS]: {
                                 buttonID: 5,
                                 topics: {
                                     nextTarget: {
                                         name : "/downsampled_next_target_mark",
-                                        messageType : 'visualization_msgs/Marker',
+                                        messageType : 'visualization_msgs/Marker'
                                     },
                                     trajectoryCircle: {
                                         name : "/downsampled_trajectory_circle_mark",
-                                        messageType : 'visualization_msgs/Marker',
+                                        messageType : 'visualization_msgs/Marker'
                                     }
-                                },
+                                }
                             }
                         },
                         visibleObjectIDs: [],
@@ -221,7 +222,7 @@ class Index extends React.Component {
                                 topics: {
                                     [CONST.TOPIC.IMAGE_RAW.NAME]: {
                                         name : CONST.TOPIC.IMAGE_RAW.NAME,
-                                        messageType : CONST.TOPIC.IMAGE_RAW.MESSAGE_TYPE,
+                                        messageType : CONST.TOPIC.IMAGE_RAW.MESSAGE_TYPE
                                     }
                                 },
                             },
@@ -266,17 +267,23 @@ class Index extends React.Component {
                 },
             },
         };
+	this.state.viewRGL.contents[CONST.VIEW_CONTENT.RADAR].viewInstance.setMqttClient(this.mqttClient);
+	this.state.viewRGL.contents[CONST.VIEW_CONTENT.MAP3D].viewInstance.setMqttClient(this.mqttClient);
+	this.state.viewRGL.contents["2d"].viewInstance.setMqttClient(this.mqttClient);
     }
+
     render() {
         return (
             <div>
                 <ButtonRGL
-                    structure={this.state.buttonRGL}
-                    updateStructure={this.updateButtonRGLStructure.bind(this)}
+                   structure={this.state.buttonRGL}
+		   mqttClient={this.mqttClient}
+                   updateStructure={this.updateButtonRGLStructure.bind(this)}
                 />
                 <ViewRGL
-                    structure={this.state.viewRGL}
-                    updateStructure={this.updateViewRGLStructure.bind(this)}
+                   structure={this.state.viewRGL}
+		   mqttClient={this.mqttClient}
+                   updateStructure={this.updateViewRGLStructure.bind(this)}
                 />
             </div>
         );
@@ -310,6 +317,11 @@ class Index extends React.Component {
         }
         this.setState({viewRGL: viewRGL});
     }
+    componentWillUnmount(){
+	this.mqttClient.disConnect();
+	delete(this.mqttClient);
+    }
+
 }
 
 ReactDOM.render(

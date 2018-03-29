@@ -1,6 +1,5 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import {getROSConnection} from "./ros_interface";
 import Responsive, { WidthProvider } from 'react-grid-layout';
 import ReactResizeDetector from 'react-resize-detector';
 const ResponsiveReactGridLayout = WidthProvider(Responsive);
@@ -22,7 +21,7 @@ class Wrapper extends React.Component {
                         width: that.props.style.width,
                         height: that.props.style.height
                     }
-                )
+                );
             }
         );
         return (
@@ -67,14 +66,15 @@ export default class ViewRGL extends React.Component {
                             id={content.layout.i}
                             style={{backgroundColor: "lightslategray"}}
                         >
-                            <content.component
-                                parentId={content.layout.i}
-                                width={this.props.width}
-                                height={this.props.height}
-                                viewInstance={content.viewInstance}
-                                visualizationObjects={visualizationObjects}
-                                stop={false}
-                            />
+                          <content.component
+                             parentId={content.layout.i}
+                             width={this.props.width}
+                             height={this.props.height}
+                             viewInstance={content.viewInstance}
+			     mqttClient={this.props.mqttClient}
+                             visualizationObjects={visualizationObjects}
+                             stop={false}
+                             />
                         </Wrapper>
                     ));
                 }

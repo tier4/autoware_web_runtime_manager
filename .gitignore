@@ -46,3 +46,12 @@ ENV/
 *.bag
 *.csv
 
+#create file in setup
+./app/views/build/app.js
+./app/views/build/app.js
+./app/views/node_modules/
+
+.launch
+
+
+

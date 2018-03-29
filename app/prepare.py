@@ -10,9 +10,7 @@ from config.env import env
 def kill_connection():
     procs = list(filter(
         lambda x: x["name"] == "python" and 0 < len(x["connections"]),
-        map(
-            lambda x: x.as_dict(attrs=["name", "pid", "connections"]),
-            psutil.process_iter())))
+        map(lambda x: x.as_dict(attrs=["name", "pid", "connections"]),psutil.process_iter())))
 
     pids = {}
     for proc in procs:
@@ -28,16 +26,6 @@ def kill_connection():
             pid.wait()
 
 
-def kill_ros():
-    call(["pkill", "-f", "ros"]);
-    call(["pkill", "-f", "rosbag"]);
-
-
-def kill_web_video_server():
-    call(["pkill", "-f", "web_video_server"]);
-
-
 if __name__ == '__main__':
     print("kill connection")
     kill_connection()
-    kill_ros()

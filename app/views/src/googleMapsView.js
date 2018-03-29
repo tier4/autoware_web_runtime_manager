@@ -1,17 +1,19 @@
 import { WEB_UI_URL } from "./dotenv";
-import {getROSConnection} from "./ros_interface";
+//import {getROSConnection} from "./ros_interface";
 
 export default class GoogleMapsView {
     constructor() {
         this.map = null;
         this.elementID = null;
         this.viewData = null;
-        this.ros = null;
+        //this.ros = null;
         this.vehicle = null;
         this.updatedTime = Math.round(Date.now()*0.001);
+	this.mqttClient = {};
     }
 
     run() {
+	/*
         if(this.ros === null){
             this.ros = getROSConnection();
         }
@@ -20,6 +22,7 @@ export default class GoogleMapsView {
             name : "/ndt_pose",
             messageType : 'geometry_msgs/PoseStamped',
         });
+	*/
 
 
         let that = this;
@@ -34,6 +37,10 @@ export default class GoogleMapsView {
         xhttpSpots.send();
     }
 
+    setMqttClient(client){
+	this.mqttClient = client;
+    }
+    
     initMap() {
         console.log("initMap", this.viewData);
 
@@ -45,11 +52,13 @@ export default class GoogleMapsView {
 
         this.drawDTLanes();
         this.drawVehicle();
-      };
+    };
 
     drawVehicle() {
         let that = this;
-        this.vehiclePoseTopic.subscribe(function(message) {
+	var getMapPoseMethod = function(msg){
+	    var message = JSON.parse(msg.payloadString)
+        //this.vehiclePoseTopic.subscribe(function(message) {
             const currentTime = Math.round(Date.now() * 0.001);
             if(that.updatedTime < currentTime) {
                 that.updatedTime = currentTime;
@@ -147,10 +156,98 @@ export default class GoogleMapsView {
                     }
                 }
             }
-        });
+        };
+	this.mqttClient.setCallback("map_pose",getMapPoseMethod);
+    }
+
+    publishInitialPose(args) {
+
+	let that = this
+	var getParamMethod = function(msg){
+	    var useSimTime  = msg.payloadString
+	    
+            console.log("use_sim_time:", useSimTime);
+            if(useSimTime === "true") {
+
+		var getClockMethod = function(msg){
+		    var message = JSON.parse(msg.payloadStrig);
+                    console.log(message);
+
+                    const quaternion = new THREE.Quaternion();
+                    quaternion.setFromAxisAngle( new THREE.Vector3( 0, 0, 1 ), args.dtlane.Dir );
+                    const initialPoseMessage = JSON.stringify({
+                        header: {
+                            seq: 0,
+                            stamp: {
+                              secs: message.clock.secs,
+                              nsecs: message.clock.nsecs,
+                            },
+                            frame_id: '/map',
+                        },
+                        pose: {
+                          pose: {
+                            position: {x: args.point.Ly, y: args.point.Bx, z: args.point.H},
+                            orientation: {x: -quaternion.x, y: -quaternion.y, z: -quaternion.z, w: -quaternion.w}
+                          },
+                          covariance: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+                            0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+                            0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+                        }
+                    });
+                    
+                    that.mqttClient.onPublish("initialpose",initialPoseMessage);
+		    that.mqttClient.unSubscribeTopic("get_param");
+		    that.mqttClient.unSubscribeTopic("clock");		    
+
+                };
+		
+		that.mqttClient.setCallback("clock",getClockMethod);
+		that.mqttClient.onSubscribeTopic("clock");
+		
+            }
+            else {
+
+                const quaternion = new THREE.Quaternion();
+                quaternion.setFromAxisAngle( new THREE.Vector3( 0, 0, 1 ), args.dtlane.Dir );
+                const initialPoseMessage = JSON.stringify({
+                    header: {
+                        seq: 0,
+                        stamp: {
+                          secs: Date.now()*0.001,
+                          nsecs: 0,
+                        },
+                        frame_id: '/map',
+                    },
+                    pose: {
+                      pose: {
+                        position: {x: args.point.Ly, y: args.point.Bx, z: args.point.H},
+                        orientation: {x: -quaternion.x, y: -quaternion.y, z: -quaternion.z, w: -quaternion.w}
+                      },
+                      covariance: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+                        0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+                        0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+                    }
+                });
+		
+                console.log(initialPoseMessage, args.dtlane.Dir);
+
+                that.mqttClient.onPublish("initialpose",initialPoseMessage);
+		that.mqttClient.unSubscribeTopic("get_param");
+            }
+        };
+
+	var getParamSuccessMethod = function(){
+	    console.log("use_sim_time");
+	    const param_name = "use_sim_time";
+	    that.mqttClient.onPublish("get_param",param_name);
+	};
+
+	this.mqttClient.setCallback("get_param",getParamMethod);
+	this.mqttClient.onSubscribeTopicWithMethod("get_param",getParamSuccessMethod);
     }
 
     drawDTLanes() {
+        let that = this;
         for(const did in this.viewData.dtlanes) {
             const pid = this.viewData.dtlanes[did].PID;
             const lat = this.viewData.points[pid].lat;
@@ -163,7 +260,8 @@ export default class GoogleMapsView {
                 fillOpacity = 1.0;
             }
 
-            var circle = new google.maps.Circle({
+            const circle = new google.maps.Circle({
+                label: {point: this.viewData.points[pid], dtlane: this.viewData.dtlanes[did]},
                 strokeColor: rgb,
                 strokeOpacity: 0.8,
                 strokeWeight: 2,
@@ -172,6 +270,10 @@ export default class GoogleMapsView {
                 map: this.map,
                 center: {lat: lat, lng: lng},
                 radius: 0.2
+            });
+            circle.addListener('click', function() {
+//              console.log(this.label);
+		that.publishInitialPose(this.label);
             });
         }
     }

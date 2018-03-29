@@ -42,7 +42,7 @@ const CONST = {
         },
         ROSBAG_PLAY: {
             DOMAIN: "rosbag",
-            LABEL: "rosbagPlay",
+            LABEL: "play",
             DISPLAY: "Play",
         },
         ROSBAG_PAUSE: {
@@ -57,15 +57,19 @@ const CONST = {
         },
         GATEWAY_ON: {
             DOMAIN: "gateway",
-            LABEL: "gatewayOn",
+            LABEL: "on",
             DISPLAY: "On"
         },
         GATEWAY_OFF: {
             DOMAIN: "gateway",
             LABEL: "gatewayOff",
             DISPLAY: "Off"
-        }
+        },
     },
+    BUTTON_INIT: {
+        DOMAIN: "buttonInit",
+        LABEL: "buttonInit",
+    },	
     VIEW_CONTENT: {
         MAP2D: "2d",
         MAP3D: "3d",

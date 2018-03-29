@@ -1,3 +1,6 @@
+//this class is not used now
+//todo:delete
+
 import { ROSBRIDGE_URL } from "./dotenv";
 
 const getROSConnection = function() {
