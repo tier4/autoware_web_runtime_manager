@@ -191,8 +191,7 @@ class MqttRosLauncher:
             print(self.rtm_status)
             return True
         except urllib2.HTTPError, e:
-            print
-            e.code, e.reason
+            print e.code, e.reason
             return False
 
     def mqttStart(self):
@@ -205,7 +204,7 @@ class MqttRosLauncher:
         self.client.loop_forever()
 
     def disConnect(self):
-        print("切断します")
+        print("disconnect")
         self.client.loop_stop()
         self.client.disconnect()
 
@@ -243,7 +242,6 @@ class MqttRosLauncher:
                     self.__exitRTM()
                     self.__initializeRtmStatus()
                 self.rosController.launch(domain, label, message)
-
                 return "ok"
         except:
             traceback.print_exc()
@@ -289,8 +287,8 @@ class MqttRosLauncher:
 
     def __on_disconnect(self, client, userdata, rc):
         sys.stderr.write("DisConnected result code " + str(rc))
-        self.client.loop_stop()
-        # self.mqttStart()
+        logging.debug("DisConnected result code " + str(rc))
+        # self.client.loop_stop()
 
 
 mqtt_roslauncher = MqttRosLauncher()

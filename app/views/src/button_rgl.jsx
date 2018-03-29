@@ -199,6 +199,7 @@ export default class ButtonRGL extends React.Component {
                 });
                 if (index !== -1) {
                     if (json[topic_name]["mode"] === "on" && index !== -1) {
+
                         structure.nodes = this.getUpdatedNodes(
                             this.props.structure.nodes[index].id,
                             !this.props.structure.nodes[index].on,
@@ -220,7 +221,6 @@ export default class ButtonRGL extends React.Component {
                 nodeID,
                 !this.props.structure.nodes[index].on,
                 this.props.structure.nodes);
-
             if (structure.nodes[index].label !== CONST.BUTTON.SETTING.LABEL) {
                 // set callback handlers
                 const label = structure.nodes[index].label;

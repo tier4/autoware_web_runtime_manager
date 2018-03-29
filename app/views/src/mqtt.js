@@ -239,8 +239,6 @@ export default class MqttWrapper {
             const topic_factor = message.destinationName.split("/");
             const message_factor = topic_factor[2].split(".");
             const index = message_factor[2];
-            //console.log("mqtt message arrived" + message.destinationName);
-            //console.log(this.topics["topicdata"][index].callback);
             this.topics["topicdata"][index].callback(message);
         }
 
@@ -248,7 +246,8 @@ export default class MqttWrapper {
         function onConnectionLost(responseObject) {
             if (responseObject.errorCode !== 0) {
                 console.log("onConnectionLost:" + responseObject.errorMessage);
-                alert("余裕っす");
+
+                alert("disconnect mqtt");
             }
         }
 
@@ -263,32 +262,34 @@ export default class MqttWrapper {
                 body: data
             })
             .then((response) => {
-                //console.log(response)
-                if(!response.ok){
+                if (!response.ok) {
                     throw Error(response.statusText);
                 }
                 return response.json();
             })
-    .then((json) => {
-            this.topics["fixeddata"]["userid"] = json["fixeddata"]["userid"];
-            this.topics["fixeddata"]["carid"] = json["fixeddata"]["carid"];
-            this.topics["fixeddata"]["toAutoware"] = json["fixeddata"]["toAutoware"];
-            this.topics["fixeddata"]["fromAutoware"] = json["fixeddata"]["fromAutoware"];
-        for (const key in this.topics["topicdata"]) {
-            //console.log(key);
-            this.topics["topicdata"][key]["topic"] = json["topicdata"][key]["topic"];
-        }
+            .then((json) => {
+                this.topics["fixeddata"]["userid"] = json["fixeddata"]["userid"];
+                this.topics["fixeddata"]["carid"] = json["fixeddata"]["carid"];
+                this.topics["fixeddata"]["toAutoware"] = json["fixeddata"]["toAutoware"];
+                this.topics["fixeddata"]["fromAutoware"] = json["fixeddata"]["fromAutoware"];
+                for (const key in this.topics["topicdata"]) {
+                    //console.log(key);
+                    this.topics["topicdata"][key]["topic"] = json["topicdata"][key]["topic"];
+                }
 
-        // connect the client
-        this.mqttClient.connect({onSuccess: onConnect.bind(this)});
-    }).catch((e) => {console.error(e);})}
+                // connect the client
+                this.mqttClient.connect({onSuccess: onConnect.bind(this)});
+            })
+            .catch((e) => {
+                console.error(e);
+            });
 
     //arg label:set key of this.topics.topicdata
     onPublish(label, msg) {
         //console.log(label,msg);
         try {
             var message = new Paho.MQTT.Message(msg);
-            message.destinationName = this.getPublishTopicName(label)
+            message.destinationName = this.getPublishTopicName(label);
             this.mqttClient.send(message);
 
             //console.log("pub topic name:" + message.destinationName);
@@ -301,6 +302,7 @@ export default class MqttWrapper {
         }
     }
 
+
     //arg label:set key of this.topics.topicdata
     onSubscribeTopic(label) {
         const topic_name = this.getSubscribeTopicName(label);
@@ -311,14 +313,12 @@ export default class MqttWrapper {
     }
 
     //arg label:set key of this.topics.topicdata
-    onSubscribeTopicWithMethod(label, method) {
         const topic_name = this.getSubscribeTopicName(label);
         if (topic_name !== "") {
             this.mqttClient.subscribe(topic_name, {onSuccess: method});
         }
         //console.log("topic subscribe:" + topic_name);
     }
-
 
     //arg label:set key of this.topics.topicdata
     unSubscribeTopic(label) {
