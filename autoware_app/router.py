@@ -21,6 +21,15 @@ class MqttRosLauncher:
             "topic": "",
             "subscribe": True
         },
+        # setting save/load
+        "settingSave": {
+            "topic": "",
+            "subscribe": True
+        },
+        "settingLoad": {
+            "topic": "",
+            "subscribe": True
+        },
         # button launch signal and status,response
         "initialization": {
             "enable": True,
@@ -220,7 +229,19 @@ class MqttRosLauncher:
 
     def __getRTMStatus(self):
         print("getRTMStatus")
-        return self.rtm_status
+        res = {
+            "rtm_status": self.rtm_status,
+            "parameter_info": self.rosController.get_params()
+        }
+        return json.dumps(res)
+
+    def __settingSaveLoad(self, label, message):
+        if label == "settingSave":
+            return self.rosController.settingSave(message)
+        elif label == "settingLoad":
+            return self.rosController.settingLoad(message)
+        else:
+            return "error"
 
     def __roslaunch(self, domain, label, message):
         self.rtm_status[label]["mode"] = message
@@ -249,15 +270,19 @@ class MqttRosLauncher:
 
     def __settingParams(self, message):
         params = json.loads(message)
-        self.rosController.set_param(params)
-        return "ok"
+        if self.rosController.set_param(params):
+            return "ok"
+        else:
+            return "error"
 
     def __execution(self, msg):
         space, header, body, direction = msg.topic.split("/")
         topic_type, domain, label = body.split(".")
 
         if topic_type == "buttonInit":
-            return json.dumps(self.__getRTMStatus())
+            return self.__getRTMStatus()
+        elif topic_type == "settingSaveLoad":
+            return self.__settingSaveLoad(label, msg.payload)
         elif topic_type == "button":
             return self.__roslaunch(domain, label, msg.payload)
         elif topic_type == "settingParams":
@@ -287,7 +312,7 @@ class MqttRosLauncher:
 
     def __on_disconnect(self, client, userdata, rc):
         sys.stderr.write("DisConnected result code " + str(rc))
-        logging.debug("DisConnected result code " + str(rc))
+        # logging.debug("DisConnected result code " + str(rc))
         # self.client.loop_stop()
 
 

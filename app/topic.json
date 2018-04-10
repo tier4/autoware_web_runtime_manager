@@ -10,6 +10,14 @@
       "type": "buttonInit",
       "topic": "buttonInit.buttonInit.buttonInit"
     },
+    "settingSave": {
+      "type": "settingSaveLoad",
+      "topic": "settingSaveLoad.settingSave.settingSave"
+    },
+    "settingLoad": {
+      "type": "settingSaveLoad",
+      "topic": "settingSaveLoad.settingLoad.settingLoad"
+    },
     "initialization": {
       "topic": "button.initialization.initialization",
       "domain": "initialization",

@@ -35,6 +35,24 @@ export default class MqttWrapper {
                     "callback": function () {
                     }
                 },
+                "settingSave": {
+                    "domain": CONST.SETTING_SAVE.DOMAIN,
+                    "label": CONST.SETTING_SAVE.LABEL,
+                    "type": "settingSaveLoad",
+                    "topic": "",
+                    "erroePublishMessage": "settingSaveLoad topic can not publish.",
+                    "callback": function () {
+                    }
+                },
+                "settingLoad": {
+                    "domain": CONST.SETTING_LOAD.DOMAIN,
+                    "label": CONST.SETTING_LOAD.LABEL,
+                    "type": "settingSaveLoad",
+                    "topic": "",
+                    "erroePublishMessage": "settingSaveLoad topic can not publish.",
+                    "callback": function () {
+                    }
+                },
                 "initialization": {
                     "domain": CONST.BUTTON.INITIALIZATION.DOMAIN,
                     "label": CONST.BUTTON.INITIALIZATION.LABEL,
@@ -216,9 +234,11 @@ export default class MqttWrapper {
                     }
                 }
             }
-        }
+        };
 
-        this.mqttClient = new Paho.MQTT.Client(this.host, this.port, "clientId");
+        let time = new Date();
+        let clientId = "wrmClient" + String(time.getTime());
+        this.mqttClient = new Paho.MQTT.Client(this.host, this.port, clientId);
 
         this.mqttClient.onConnectionLost = onConnectionLost;
         this.mqttClient.onMessageArrived = onMessageArrived.bind(this);
@@ -232,7 +252,6 @@ export default class MqttWrapper {
             //get button status that the autoware has.
             this.onPublish("buttonInit", "GET");
         }
-
 
         function onMessageArrived(message) {
 
@@ -251,11 +270,9 @@ export default class MqttWrapper {
             }
         }
 
-
         const url = WEB_UI_URL + "/topicData";
-        const obj = {name: "test"};
-        var data = new FormData();
-        data.append("name", "test")
+        let data = new FormData();
+        data.append("name", "test");
         fetch(url,
             {
                 method: "POST",
@@ -283,17 +300,18 @@ export default class MqttWrapper {
             .catch((e) => {
                 console.error(e);
             });
+    }
 
     //arg label:set key of this.topics.topicdata
-    onPublish(label, msg) {
-        //console.log(label,msg);
+    onPublish(label, msg){
+        // console.log(label,msg);
         try {
             var message = new Paho.MQTT.Message(msg);
             message.destinationName = this.getPublishTopicName(label);
             this.mqttClient.send(message);
 
-            //console.log("pub topic name:" + message.destinationName);
-            //console.log("pub message:" + message.payloadString);
+            // console.log("pub topic name:" + message.destinationName);
+            // console.log("pub message:" + message.payloadString);
         } catch (error) {
             console.log("error:" + error);
             if ("errorPublishMessage" in this.topics["topicdata"][label]) {
@@ -302,8 +320,7 @@ export default class MqttWrapper {
         }
     }
 
-
-    //arg label:set key of this.topics.topicdata
+    //label:set key of topicdata of this.topics
     onSubscribeTopic(label) {
         const topic_name = this.getSubscribeTopicName(label);
         if (topic_name !== "") {
@@ -312,7 +329,10 @@ export default class MqttWrapper {
         //console.log("topic subscribe:" + topic_name);
     }
 
-    //arg label:set key of this.topics.topicdata
+
+
+    //label:set key of topicdata of this.topics
+    onSubscribeTopicWithMethod(label, method) {
         const topic_name = this.getSubscribeTopicName(label);
         if (topic_name !== "") {
             this.mqttClient.subscribe(topic_name, {onSuccess: method});

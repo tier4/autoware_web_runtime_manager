@@ -6,11 +6,11 @@ import SettingDetails from './setting_details'
 const customStyles = {
     content: {
         top: '10%',
-        left: '30%',
+        left: '20%',
         right: 'auto',
         bottom: 'auto',
         height: "80%",
-        width: "40%",
+        width: "60%",
         marginRight: '-20%',
         //transform: 'translate(-50%, -50%)',
         overflow: 'scroll'
@@ -26,7 +26,6 @@ export default class SettingModal extends React.Component {
 
     constructor(props) {
         super(props);
-
     }
 
     render() {
@@ -39,8 +38,10 @@ export default class SettingModal extends React.Component {
                     contentLabel="Example Modal"
                 >
                     <SettingDetails
-                        onClose={this.props.onClose}
-                        onSubmit={this.props.onSubmit}
+                        onClose={this.props.onClose.bind(this)}
+                        onSubmit={this.props.onSubmit.bind(this)}
+                        onSaveSetting={this.props.onSaveSetting.bind(this)}
+                        onLoadSetting={this.props.onLoadSetting.bind(this)}
                         updateSettingParamsStructure={this.props.updateSettingParamsStructure}
                         settingParams={this.props.settingParams}
                     />

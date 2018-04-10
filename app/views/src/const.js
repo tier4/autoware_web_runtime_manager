@@ -74,12 +74,20 @@ const CONST = {
             DOMAIN: "setting",
             LABEL: "setting",
             DISPLAY: "Setting"
-        },
+        }
     },
     BUTTON_INIT: {
         DOMAIN: "buttonInit",
         LABEL: "buttonInit",
-    },	
+    },
+    SETTING_SAVE: {
+        DOMAIN: "settingSave",
+        LABEL: "settingSave",
+    },
+    SETTING_LOAD: {
+        DOMAIN: "settingLoad",
+        LABEL: "settingLoad",
+    },
     VIEW_CONTENT: {
         MAP2D: "2d",
         MAP3D: "3d",
