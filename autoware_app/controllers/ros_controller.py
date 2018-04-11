@@ -104,16 +104,16 @@ class ROSController(object):
         self.__parameter_info = deepcopy(self.__initial_parameter_info)
 
         # set parameter info
-        files = listdir(self.__path + CONST["MAPPATH"]["BASEPATH"])
+        files = listdir(self.__path + CONST["DATAPATH"])
         self.__parameter_info["settingParams"]["display_data"]["location"]["location_list"] = \
-            [f for f in files if isdir(join(self.__path + CONST["MAPPATH"]["BASEPATH"], f))]
+            [f for f in files if isdir(join(self.__path + CONST["DATAPATH"], f))]
         for loc in self.__parameter_info["settingParams"]["display_data"]["location"]["location_list"]:
             self.__parameter_info["settingParams"]["display_data"]["rosbag"]["rosbag_list"][loc] = \
-                listdir(self.__path + CONST["ROSBAG"]["BASEPATH"] + "/" + loc + "/")
+                listdir(self.__path + CONST["DATAPATH"] + loc + CONST["ROSBAG"]["BASEPATH"])
 
         for loc in self.__parameter_info["settingParams"]["display_data"]["location"]["location_list"]:
             self.__parameter_info["settingParams"]["display_data"]["waypoints"]["waypoints_list"][loc] = \
-                listdir(self.__path + CONST["WAYPOINTSPATH"]["BASEPATH"] + "/" + loc + "/")
+                listdir(self.__path + CONST["DATAPATH"] + loc + CONST["WAYPOINTSPATH"]["BASEPATH"])
         self.__parameter_info["settingParams"]["display_data"]["setting"]["save_file_list"] = \
             listdir(self.__path + CONST["SETTING"]["PATH"])
 
@@ -236,11 +236,10 @@ class ROSController(object):
     def get_params(self):
         for loc in self.__parameter_info["settingParams"]["display_data"]["location"]["location_list"]:
             self.__parameter_info["settingParams"]["display_data"]["rosbag"]["rosbag_list"][loc] = \
-                listdir(self.__path + CONST["ROSBAG"]["BASEPATH"] + "/" + loc + "/")
-
+                listdir(self.__path + CONST["DATAPATH"] + "/" + loc + "/" + CONST["ROSBAG"]["BASEPATH"])
         for loc in self.__parameter_info["settingParams"]["display_data"]["location"]["location_list"]:
             self.__parameter_info["settingParams"]["display_data"]["waypoints"]["waypoints_list"][loc] = \
-                listdir(self.__path + CONST["WAYPOINTSPATH"]["BASEPATH"] + "/" + loc + "/")
+                listdir(self.__path + CONST["DATAPATH"] + "/" + loc + "/" + CONST["WAYPOINTSPATH"]["BASEPATH"])
         self.__parameter_info["settingParams"]["display_data"]["setting"]["save_file_list"] = listdir(self.__path + CONST["SETTING"]["PATH"])
 
         return self.__parameter_info
@@ -300,15 +299,15 @@ class ROSController(object):
         self.__location = location if location != "" else "toyota"
         self.__pointsmap_paths = ""
         self.__vectormap_paths = ""
-        points_base_path = self.__path + CONST["MAPPATH"]["BASEPATH"] + "/" + location + "/" + CONST["MAPPATH"]["POINTSMAP"] + "*"
+        points_base_path = self.__path + CONST["DATAPATH"] + location + CONST["MAPPATH"]["POINTSMAP"] + "*"
         for path in glob(points_base_path):
             self.__pointsmap_paths += path + " "
-        vector_base_path = self.__path + CONST["MAPPATH"]["BASEPATH"] + "/" + location + "/" + CONST["MAPPATH"]["VECTORMAP"] + "*"
+        vector_base_path = self.__path + CONST["DATAPATH"] + location + CONST["MAPPATH"]["VECTORMAP"] + "*"
         for path in glob(vector_base_path):
             self.__vectormap_paths += path + " "
         self.__pointsmap_paths = "pointsmap_path:=" + self.__pointsmap_paths
         self.__vectormap_paths = "vectormap_path:=" + self.__vectormap_paths
-        self.__tf = "tf_path:=" + self.__path + CONST["MAPPATH"]["BASEPATH"] + "/" + location + "/" + CONST["MAPPATH"]["TF"]
+        self.__tf = "tf_path:=" + self.__path + CONST["DATAPATH"] + location + CONST["MAPPATH"]["TF"]
 
         return True
 
@@ -316,8 +315,8 @@ class ROSController(object):
         if not rosbag_param["flag"]:
             return True
 
-        self.__rosbag_path = "rosbag_path:=" + self.__path + \
-                             CONST["ROSBAG"]["BASEPATH"] + "/" + self.__location + "/" + rosbag_param["rosbag_name"]
+        self.__rosbag_path = "rosbag_path:=" + self.__path + CONST["DATAPATH"] + self.__location + \
+                             CONST["ROSBAG"]["BASEPATH"] + rosbag_param["rosbag_name"]
 
         self.__rosbag_start_time = "start_time:=" + str(rosbag_param["start_time"])
         self.__rosbag_rate = "rate:=" + str(rosbag_param["rate"])
@@ -329,8 +328,8 @@ class ROSController(object):
         if not waypoints_param["flag"]:
             return True
 
-        self.__waypoints_path = "waypoints_path:=" + self.__path + \
-                                CONST["WAYPOINTSPATH"]["BASEPATH"] + "/" + self.__location + "/" + waypoints_param["waypoints_name"]
+        self.__waypoints_path = "waypoints_path:=" + self.__path + CONST["DATAPATH"] + self.__location + \
+                                CONST["WAYPOINTSPATH"]["BASEPATH"] + waypoints_param["waypoints_name"]
         return True
 
     def set_rviz(self, rviz_param):

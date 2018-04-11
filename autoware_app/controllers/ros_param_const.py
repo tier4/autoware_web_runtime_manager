@@ -15,8 +15,8 @@ CONST = {
         "prius": "Autoware/ros/src/.config/model/prius.urdf",
         "default": "Autoware/ros/src/.config/model/default.urdf"
     },
+    "DATAPATH": "/res/data/",
     "MAPPATH": {
-        "BASEPATH":"/res/map/",
         "POINTSMAP": "/points/",
         "VECTORMAP": "/vectors/",
         "TF": "/tf/tf.launch"
@@ -26,21 +26,11 @@ CONST = {
         "NAME": "rviz_setting.rviz"
     },
     "ROSBAG": {
-        "BASEPATH": "/res/rosbag/bagfile/",
-        "test_path": {
-            "toyota": "/res/rosbag/bagfile/toyota/",
-            "ohji": "/res/rosbag/bagfile/ohji/",
-            "kasugai": "/res/rosbag/bagfile/kasugai/",
-            "kameria": "/res/rosbag/bagfile/kameria/",
-        },
+        "BASEPATH": "/rosbag/",
         "REPEAT": "--loop"
     },
     "WAYPOINTSPATH": {
-        "BASEPATH": "/res/mission/waypoints/",
-        "toyota": "/res/mission/waypoints/toyota/",
-        "ohji": "/res/mission/waypoints/ohji/",
-        "kasugai": "/res/mission/waypoints/kasugai/",
-        "kameria": "/res/mission/waypoints/kameria/"
+        "BASEPATH": "/waypoints/"
     },
     "SETTING": {
         "PATH": "/res/parameter/save/"

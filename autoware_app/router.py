@@ -109,6 +109,12 @@ class MqttRosLauncher:
             "topic": "",
             "subscribe": True
         },
+        "allActivation": {
+            "enable": True,
+            "mode": "off",
+            "topic": "",
+            "subscribe": True
+        },
         # get rosparam
         "get_param": {
             "topic": "",
