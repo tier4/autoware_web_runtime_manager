@@ -18,7 +18,7 @@ call(["sudo", "pip", "install", "-r", "requirements.txt"])
 call(["sudo", "pip", "install", "git+https://github.com/strawlab/python-pcl"])
 
 # res
-
+"""
 chdir("{}/controllers".format(rootpath))
 file_names = listdir("./")
 
@@ -34,6 +34,7 @@ elif "res.zip" not in file_names and "res" not in file_names:
     call(["unzip", "res.zip"])
 
 call(["rm", "-f", "res.zip"])
+"""
 
 # env
 chdir("{}/config".format(rootpath))

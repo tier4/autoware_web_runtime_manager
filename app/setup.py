@@ -31,6 +31,7 @@ call(["sudo", "ln", "-sf", "/usr/local/bin/node", "/usr/bin/node"])
 chdir("{}/views".format(rootpath))
 call(["npm", "install"])
 call(["sudo", "npm", "install", "--save", "-g", "gulp-cli"])
+call(["sudo", "npm", "install", "--save", "react-modal"])
 
 # res
 #chdir("{}/controllers/res/detection".format(rootpath))
