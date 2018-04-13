@@ -110,7 +110,19 @@ class MqttRosLauncher:
             "subscribe": True
         },
         "allActivation": {
-            "enable": True,
+            "enable": False,
+            "mode": "off",
+            "topic": "",
+            "subscribe": True
+        },
+        "rosbagMode": {
+            "enable": False,
+            "mode": "off",
+            "topic": "",
+            "subscribe": True
+        },
+        "simulationMode": {
+            "enable": False,
             "mode": "off",
             "topic": "",
             "subscribe": True
@@ -180,6 +192,10 @@ class MqttRosLauncher:
     def __init__(self):
         self.rosController = ROSController(env)
         self.client = mqtt.Client(protocol=mqtt.MQTTv311)
+        self.__userid = ""
+        self.__carid = ""
+        self.__toAutoware = ""
+        self.__fromAutoware = ""
 
     def TopicGet(self):
         url = "http://" + env["AUTOWARE_WEB_UI_HOST"] + ":" + env["AUTOWARE_WEB_UI_PORT"] + "/topicData"
@@ -274,6 +290,15 @@ class MqttRosLauncher:
             traceback.print_exc()
             return "error"
 
+    def __allLaunch(self, domain, label, message):
+        self.rtm_status[label]["mode"] = message
+        try:
+            self.rosController.all_launch(domain, label, message)
+            return "ok"
+        except:
+            traceback.print_exc()
+            return "error"
+
     def __settingParams(self, message):
         params = json.loads(message)
         if self.rosController.set_param(params):
@@ -291,6 +316,8 @@ class MqttRosLauncher:
             return self.__settingSaveLoad(label, msg.payload)
         elif topic_type == "button":
             return self.__roslaunch(domain, label, msg.payload)
+        elif topic_type == "allActivation":
+            return self.__allLaunch(domain, label, msg.payload)
         elif topic_type == "settingParams":
             return self.__settingParams(msg.payload)
 

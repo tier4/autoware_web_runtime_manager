@@ -74,6 +74,11 @@ const CONST = {
             DOMAIN: "setting",
             LABEL: "setting",
             DISPLAY: "Setting"
+        },
+        ALL_ACTIVATION: {
+            DOMAIN: "",
+            LABEL: "allActivation",
+            DISPLAY: "allActivation"
         }
     },
     BUTTON_INIT: {
@@ -87,6 +92,18 @@ const CONST = {
     SETTING_LOAD: {
         DOMAIN: "settingLoad",
         LABEL: "settingLoad",
+    },
+    ROSBAG_MODE: {
+        DOMAIN: "rosbagMode",
+        LABEL: "rosbagMode",
+    },
+    SIM_MODE: {
+        DOMAIN: "simulationMode",
+        LABEL: "simulationMode",
+    },
+    REDISPLAY: {
+        DOMAIN: "redisplay",
+        LABEL: "redisplay",
     },
     VIEW_CONTENT: {
         MAP2D: "2d",
@@ -135,4 +152,4 @@ const CONST = {
     OBJECT_IS_LOADING: "isLoading",
 }
 
-export{ CONST };
+export {CONST};

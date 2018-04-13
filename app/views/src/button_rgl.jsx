@@ -237,14 +237,14 @@ export default class ButtonRGL extends React.Component {
         this.props.mqttClient.setCallback("buttonInit", initMethod.bind(this));
     }
 
-    setSaveLoadCallback(){
+    setSaveLoadCallback() {
         let saveMethod = function (message) {
             //console.log(message.payloadString);
             const save_file_list = JSON.parse(message.payloadString);
             console.log("save file list", save_file_list);
-            if (save_file_list["settingParams"] !== "error"){
+            if (save_file_list["settingParams"] !== "error") {
                 this.props.updateSettingParamsStructure(save_file_list["settingParams"]);
-            }else{
+            } else {
                 alert("Fail to save.");
             }
         };
@@ -256,7 +256,7 @@ export default class ButtonRGL extends React.Component {
 
             if (settingParams["settingParams"] !== "error") {
                 this.props.updateSettingParamsStructure(settingParams["settingParams"]);
-            }else{
+            } else {
                 alert("Fail to load.");
             }
         };
@@ -272,16 +272,18 @@ export default class ButtonRGL extends React.Component {
                 nodeID,
                 !this.props.structure.nodes[index].on,
                 this.props.structure.nodes);
-            if (structure.nodes[index].label !== CONST.BUTTON.SETTING.LABEL) {
+            if (structure.nodes[index].label === CONST.BUTTON.SETTING.LABEL) {
+                if (structure.nodes[index].on) {
+                    this.openModal();
+                }
+            }else if(structure.nodes[index].label === CONST.REDISPLAY.LABEL){
+                location.reload(true);
+            }else{
                 // set callback handlers
                 const label = structure.nodes[index].label;
                 const message = structure.nodes[index].on ? "on" : "off";
                 this.props.mqttClient.onPublish(label, message);
                 structure.nodes[index].span = (<span>{(structure.nodes[index].on ? "loading.." : "killing..")}</span>);
-            } else {
-                if (structure.nodes[index].on) {
-                    this.openModal();
-                }
             }
             this.props.updateStructure(structure);
         }
@@ -290,6 +292,23 @@ export default class ButtonRGL extends React.Component {
     getUpdatedNodes(nodeID, on, nodes) {
         const index = nodes.findIndex(node => node.id === nodeID);
         nodes[index].on = on;
+
+        if (index === nodes.findIndex(node => node.label === CONST.BUTTON.ALL_ACTIVATION.LABEL)) {
+            this.setOnNode(nodes, index);
+        }
+        this.setEnable(nodes);
+        if (nodes[nodes.findIndex(node => node.label === CONST.BUTTON.ALL_ACTIVATION.LABEL)].on === false) {
+            for (const id of nodes[nodes.findIndex(node => node.label === CONST.BUTTON.ALL_ACTIVATION.LABEL)].required.forDisable.on) {
+                if (nodes[nodes.findIndex(node => node.id === id)].on === true) {
+                    nodes[nodes.findIndex(node => node.label === CONST.BUTTON.ALL_ACTIVATION.LABEL)].enabled = false;
+                }
+            }
+        }
+
+        return nodes
+    }
+
+    setEnable(nodes) {
         let changeFlag = true;
         while (changeFlag) {
             changeFlag = false;
@@ -326,13 +345,31 @@ export default class ButtonRGL extends React.Component {
                         }
                     }
                 }
-                if (node.enabled != enabled) {
+                if (node.enabled !== enabled) {
                     nodes[nodeIndex].enabled = enabled;
                     changeFlag = true;
                     break;
                 }
             }
         }
-        return nodes;
+        return nodes
     }
+
+    setOnNode(nodes, index) {
+        for (const nodeIndex in nodes) {
+            const node = nodes[nodeIndex];
+            let on_flag = node.on;
+            for (const requiredNodeID of node.required.forOn.on) {
+                on_flag = nodes[nodes.findIndex(node => node.id === requiredNodeID)].on;
+            }
+
+            if (node.on !== on_flag && Number(nodeIndex) !== index) {
+                console.log(index, nodeIndex);
+                nodes[nodeIndex].on = on_flag;
+            }
+        }
+
+        return nodes
+    }
+
 }

@@ -59,10 +59,10 @@ def getResources(type, path):
 @flask.route("/getVectorMapViewData")
 def getVectorMapViewData():
     location = request.args.get('location')
-    if location == "":
-        pathDir = realpath("./controllers/res/map/vectors/") + "/"
-    else:
-        pathDir = realpath("./controllers/res/map/" + location + "/vectors/") + "/"
+
+    pathDir = realpath("../autoware_app/controllers/res/data/" + location + "/vectors/") + "/"
+    print(pathDir)
+
     vectorMap = VectorMap()
     vectorMap.load(pathDir)
     return api_response(code=200, message=vectorMap.getViewData())
@@ -71,25 +71,22 @@ def getVectorMapViewData():
 @flask.route('/getPCDFileNames')
 def getPCDFileNames():
     location = request.args.get('location')
-    if location == "":
-        pathDir = realpath("./controllers/res/map/points/")
-    else:
-        pathDir = realpath("./controllers/res/map/" + location + "/points/")
+    pathDir = realpath("../autoware_app/controllers/res/data/" + location + "/points/")
 
     file_names = list(filter(lambda x: ".pcd" in x, listdir(pathDir)))
     response = api_response(code=200, message={"fileNames": file_names})
     return response
 
+
 @flask.route('/getPCDFile/<filename>')
 def getPCDFile(filename):
     location = request.args.get('location')
-    if location == "":
-        pathDir = realpath("./controllers/res/map/points")
-    else:
-        pathDir = realpath("./controllers/res/map/" + location + "/points")
+    pathDir = realpath("../autoware_app/controllers/res/data/" + location + "/points")
+    print(pathDir)
 
     return send_from_directory(
         directory=pathDir, filename=filename, as_attachment=True)
+
 
 if __name__ == '__main__':
     print("flask run")

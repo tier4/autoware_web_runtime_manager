@@ -83,6 +83,21 @@
       "domain": "setting",
       "label": "setting"
     },
+    "allActivation": {
+      "topic": "allActivation.allActivation.allActivation",
+      "domain": "allActivation",
+      "label": "allActivation"
+    },
+    "rosbagMode": {
+      "topic": "modeSet.rosbagMode.rosbagMode",
+      "domain": "rosbagMode",
+      "label": "rosbagMode"
+    },
+    "simulationMode": {
+      "topic": "modeSet.simulationMode.simulationMode",
+      "domain": "simulationMode",
+      "label": "simulationMode"
+    },
     "ImageRaw": {
       "type": "image",
       "topic": "image.ImageRaw.ImageRaw",

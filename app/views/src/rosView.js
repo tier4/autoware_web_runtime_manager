@@ -322,8 +322,8 @@ export default class RosView {
                         x: x + that.initialCameraPosition.x,
                         y: y + that.initialCameraPosition.y,
                         z: z + that.initialCameraPosition.z,
-                    }
-                    that.updateCameraPosition()
+                    };
+                    that.updateCameraPosition();
                     updateCameraPositionFlag = false;
                 }
             };
@@ -366,10 +366,28 @@ export default class RosView {
     onGetVehiclePose() {
 //        console.log("onGetVehiclePose");
 
+
         const topicIDs = Object.keys(this.topics);
         let sceneDataIDs = Object.keys(this.sceneData);
         if (!sceneDataIDs.includes("pointsMap") && this.visualizationObjectIDs.includes(CONST.VISUALIZATION_OBJECT.POINTS_MAP)) {
-            this.getPointsMap();
+
+            let that = this;
+            let updateCameraPositionFlag = true;
+            const callback = (args) => {
+                if (updateCameraPositionFlag) {
+                    const x = args.geometry.attributes.position.array[0];
+                    const y = args.geometry.attributes.position.array[1];
+                    const z = args.geometry.attributes.position.array[2];
+                    that.pointsMapViewPosition = {
+                        x: x + that.initialCameraPosition.x,
+                        y: y + that.initialCameraPosition.y,
+                        z: z + that.initialCameraPosition.z,
+                    };
+                    that.updateCameraPosition();
+                    updateCameraPositionFlag = false;
+                }
+            };
+            this.getPointsMap(0.1, callback.bind(this));
         }
 
         if (!sceneDataIDs.includes("vectorMap") && topicIDs.includes("vectorMap")) {
@@ -448,9 +466,9 @@ export default class RosView {
                                     that.sceneData.pointsMap.threeJSObjects[pcdFileName] = {
                                         threeJSObject: mesh,
                                         isAdded: false,
-                                    }
+                                    };
                                     callback(mesh);
-                                },
+                                    },
                                 // called when loading is in progresses
                                 function (xhr) {
                                     //console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' );
@@ -472,14 +490,12 @@ export default class RosView {
             isAdded: false,
         };
 
-
-        console.log(this.location);
         xhttpPCDs.open("GET", WEB_UI_URL + "/getPCDFileNames?location=" + this.location, true);
         xhttpPCDs.send();
     }
 
 
-    getVectorMap(topic) {
+    getVectorMap() {
 //        console.log("getVectorMap");
 
         let that = this;
@@ -500,13 +516,13 @@ export default class RosView {
             threeJSObjects: {},
         };
 
-        var getVectorMapMethod = function (msg) {
-            var message = JSON.parse(msg.payloadString)
+        let getVectorMapMethod = function (msg) {
+            let message = JSON.parse(msg.payloadString)
             //console.log("ndt pose:");
             //console.log(message);
 
             for (const marker of message.markers) {
-                if (marker.type == ARROW) {
+                if (marker.type === ARROW) {
                     const color = new THREE.Color(marker.color.r, marker.color.g, marker.color.b);
                     const mesh = that.drawLine(color, marker.points);
                     mesh.name = "arrow_" + mesh.uuid;
@@ -516,7 +532,7 @@ export default class RosView {
                     }
                     // vectorMapMarkers.push(drawArrowHead( color, marker.points.slice(0, 2) ));
                 }
-                else if (marker.type == CYLINDER) {
+                else if (marker.type === CYLINDER) {
                     const color = new THREE.Color(marker.color.r, marker.color.g, marker.color.b);
                     const mesh = that.drawCylinder(color, marker.pose, marker.scale);
                     mesh.name = "cylinder_" + mesh.uuid;
@@ -525,7 +541,7 @@ export default class RosView {
                         isAdded: false,
                     }
                 }
-                else if (marker.type == LINE_STRIP) {
+                else if (marker.type === LINE_STRIP) {
                     const color = new THREE.Color(marker.color.r, marker.color.g, marker.color.b);
                     const mesh = that.drawLine(color, marker.points);
                     mesh.name = "lineStrip_" + mesh.uuid;
@@ -539,8 +555,6 @@ export default class RosView {
                 }
             }
             that.mqttClient.unSubscribeTopic("vector_map");
-
-
         };
 
         this.mqttClient.setCallback("vector_map", getVectorMapMethod);
@@ -591,7 +605,7 @@ export default class RosView {
             that.sceneData.vehicleCollada = {
                 threeJSObject: collada.scene,
                 isAdded: false,
-            }
+            };
             that.sceneData.vehicleCollada.threeJSObject.name = "vehicleCollada";
             that.sceneData.vehicleCollada.threeJSObject.position.x = that.vehiclePose.position.x;
             that.sceneData.vehicleCollada.threeJSObject.position.y = that.vehiclePose.position.y;

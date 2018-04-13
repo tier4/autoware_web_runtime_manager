@@ -170,6 +170,33 @@ export default class MqttWrapper {
                     "callback": function () {
                     }
                 },
+                "allActivation": {
+                    "domain": CONST.BUTTON.ALL_ACTIVATION.DOMAIN,
+                    "label": CONST.BUTTON.ALL_ACTIVATION.LABEL,
+                    "type": "allActivation",
+                    "topic": "",
+                    "erroePublishMessage": "All Activation topic can not publish.",
+                    "callback": function () {
+                    }
+                },
+                "rosbagMode": {
+                    "domain": CONST.ROSBAG_MODE.DOMAIN,
+                    "label": CONST.ROSBAG_MODE.LABEL,
+                    "type": "modeSet",
+                    "topic": "",
+                    "erroePublishMessage": "All Activation topic can not publish.",
+                    "callback": function () {
+                    }
+                },
+                "simulationMode": {
+                    "domain": CONST.SIM_MODE.DOMAIN,
+                    "label": CONST.SIM_MODE.LABEL,
+                    "type": "modeSet",
+                    "topic": "",
+                    "erroePublishMessage": "All Activation topic can not publish.",
+                    "callback": function () {
+                    }
+                },
                 "ImageRaw": {
                     "domain": CONST.VISUALIZATION_OBJECT.IMAGE_RAW,
                     "label": CONST.VISUALIZATION_OBJECT.IMAGE_RAW,

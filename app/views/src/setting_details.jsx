@@ -95,11 +95,10 @@ export default class SettingDetails extends React.Component {
     setChangeFlag(e) {
         let settingParams = this.props.settingParams;
         settingParams[e.target.name].flag = e.target.checked;
-        this.props.updateSettingParamsStructure(settingParams);
         let this_state = this.state[e.target.name];
-        this_state.disabled = !e.target.checked;
         this_state.checked = e.target.checked;
         this.setState(this_state);
+        this.props.updateSettingParamsStructure(settingParams);
     }
 
     setSaveFileName(e) {
@@ -115,7 +114,7 @@ export default class SettingDetails extends React.Component {
         let settingParams = this.props.settingParams;
         let file_name = this.state.setting.saveFileName;
         let overwrite_flag = true;
-        if (settingParams["display_data"]["setting"]["save_file_list"].indexOf(file_name)){
+        if (settingParams["display_data"]["setting"]["save_file_list"].indexOf(file_name) < 0){
             overwrite_flag = confirm("There is a file with same name.OverWrite?");
         }
 
@@ -384,7 +383,7 @@ export default class SettingDetails extends React.Component {
                             onChange={this.setWaypointsName.bind(this)}
                             disabled={!this.state.waypoints.checked}>
                         <option
-                            value={this.props.settingParams.waypoints.waypoints}>{this.props.settingParams.waypoints.waypoints}</option>
+                            value={this.props.settingParams.waypoints.waypoints_name}>{this.props.settingParams.waypoints.waypoints_name}</option>
                         {this.getWaypointsList()}
                     </select>
                     <br/>

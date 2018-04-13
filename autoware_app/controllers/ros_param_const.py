@@ -29,10 +29,21 @@ CONST = {
         "BASEPATH": "/rosbag/",
         "REPEAT": "--loop"
     },
+    "VEHICLE_INFO_PATH": "/vehicle_info/vehicle_info.yaml",
     "WAYPOINTSPATH": {
         "BASEPATH": "/waypoints/"
     },
     "SETTING": {
         "PATH": "/res/parameter/save/"
+    },
+    "LAUNCHPATH": {
+        "INITIALIZATION": "/res/initialization/initialization.launch",
+        "ROSBAG": "/res/rosbag/rosbag.launch",
+        "MAP": "/res/map/map.launch",
+        "SENSING": "/res/sensing/sensing.launch",
+        "LOCALIZATION": "/res/localization/localization.launch",
+        "MISSION": "/res/mission/mission.launch",
+        "MOTION": "/res/motion/motion.launch",
     }
+
 }
