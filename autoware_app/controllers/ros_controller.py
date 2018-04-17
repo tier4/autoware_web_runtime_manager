@@ -348,23 +348,27 @@ class ROSController(object):
 
         if init_param["display_data"]["location"]["location_list"]:
             init_location = init_param["display_data"]["location"]["location_list"][0]
+            init_param["map"]["location"] = init_location
+            init_param["map"]["flag"] = True
         else:
             init_location = ""
-        init_param["map"]["location"] = init_location
-        init_param["map"]["flag"] = True
+            init_param["map"]["location"] = init_location
+            init_param["map"]["flag"] = False
 
         if init_param["display_data"]["rosbag"]["rosbag_list"][init_location]:
             init_param["rosbag"]["rosbag_name"] = init_param["display_data"]["rosbag"]["rosbag_list"][init_location][0]
+            init_param["rosbag"]["flag"] = True
         else:
             init_param["rosbag"]["rosbag_name"] = ""
-        init_param["rosbag"]["flag"] = True
+            init_param["rosbag"]["flag"] = False
 
         if init_param["display_data"]["waypoints"]["waypoints_list"][init_location]:
             init_param["waypoints"]["waypoints_name"] = \
                 init_param["display_data"]["waypoints"]["waypoints_list"][init_location][0]
+            init_param["waypoints"]["flag"] = True
         else:
             init_param["waypoints"]["waypoints_name"] = ""
-        init_param["waypoints"]["flag"] = True
+            init_param["waypoints"]["flag"] = False
 
         self.set_param(init_param)
 
