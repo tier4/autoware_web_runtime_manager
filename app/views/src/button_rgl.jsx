@@ -304,10 +304,13 @@ export default class ButtonRGL extends React.Component {
         const index = nodes.findIndex(node => node.id === nodeID);
         nodes[index].on = on;
 
+        /*
         if (index === nodes.findIndex(node => node.label === CONST.BUTTON.ALL_ACTIVATION.LABEL)) {
             this.setOnNode(nodes, index);
         }
+        */
         this.setEnable(nodes);
+        /*
         if (nodes[nodes.findIndex(node => node.label === CONST.ROSBAG_MODE.LABEL)].on === false &&
         nodes[nodes.findIndex(node => node.label === CONST.SIM_MODE.LABEL)].on === false &&
         nodes[nodes.findIndex(node => node.label === CONST.DRIVE_MODE.LABEL)].on === false){
@@ -322,6 +325,7 @@ export default class ButtonRGL extends React.Component {
                 }
             }
         }
+        */
 
         return nodes
     }
