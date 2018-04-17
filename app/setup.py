@@ -12,17 +12,16 @@ args = parser.parse_args()
 rootpath = getcwd()
 print rootpath
 
-# pip
-#call(["pip", "install", "--upgrade", "pip"])
-call(["sudo", "pip", "install", "-r", "requirements.txt"])
-call(["sudo", "pip", "install", "git+https://github.com/strawlab/python-pcl"])
-
-# ROSBridge
+# apt-get
 call(["sudo", "apt-get", "update"])
-call(["sudo", "apt-get", "install", "curl"])
+call(["sudo", "apt-get", "install", "mosquitto", "mosquitto-clients"])
+call(["sudo", "apt-get", "install", "-y", "nodejs", "npm"])
+
+# pip
+call(["pip", "install", "--upgrade", "pip"])
+call(["sudo", "pip", "install", "-r", "requirements.txt"])
 
 # npm, node
-call(["sudo", "apt-get", "install", "-y", "nodejs", "npm"])
 call(["sudo", "npm", "cache", "clean"])
 call(["sudo", "npm", "install", "n", "-g"])
 call(["sudo", "n", "stable"])
@@ -33,28 +32,6 @@ call(["npm", "install"])
 call(["sudo", "npm", "install", "--save", "-g", "gulp-cli"])
 call(["sudo", "npm", "install", "--save", "react-modal"])
 
-# res
-#chdir("{}/controllers/res/detection".format(rootpath))
-#call(["wget", "https://autoware.blob.core.windows.net/web-ui-resouces/calibration_camera_lidar_3d_prius_nic-150407.yml"])
-
-if args.force == "force":
-    chdir("{}/controllers/res".format(rootpath))
-    call(["rm", "-f", "map"])
-    call(["rm", "-f", "map.zip"])
-    call(["wget", "https://autoware.blob.core.windows.net/web-ui-resouces/map.zip"])
-    call(["unzip", "map.zip", "-d", "map"])
-    call(["rm", "-f", "map.zip"])        
-else:
-    chdir("{}/controllers/res".format(rootpath))
-    file_names = listdir("./")
-    if "map" not in file_names:
-        call(["rm", "-f", "map.zip"])
-        call(["wget", "https://autoware.blob.core.windows.net/web-ui-resouces/map.zip"])
-        call(["unzip", "map.zip", "-d", "map"])
-        call(["rm", "-f", "map.zip"])
-    
-
-    
 # env
 chdir("{}/config".format(rootpath))
 call(["ln", "-s", "sample.env", ".env"])
