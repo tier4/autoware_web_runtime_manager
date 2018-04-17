@@ -202,20 +202,6 @@ class Index extends React.Component {
                         display: "Setting",
                         span: (<span>Setting</span>)
                     },
-                   {
-                        id: 14, x: 16, y: 6, w: 4, h: 3,
-                        enabled: true, on: false, isLoading: false, isKilling: false,
-                        required: {
-                            forOn: {on: []},
-                            forOff: {},
-                            forEnable: {on: [], off: [], enable: [], disable: []},
-                            forDisable: {}
-                        },
-                        domain: CONST.REDISPLAY.DOMAIN,
-                        label: CONST.REDISPLAY.LABEL,
-                        display: "Redisplay",
-                        span: (<span>Redisplay</span>)
-                    },
                 ],
             },
             viewRGL: {
