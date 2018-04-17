@@ -31,7 +31,7 @@ class MqttRosLauncher:
         },
         # button launch signal and status,response
         "initialization": {
-            "enable": False,
+            "enable": True,
             "mode": "off",
             "topic": "",
             "subscribe": True
@@ -108,6 +108,7 @@ class MqttRosLauncher:
             "topic": "",
             "subscribe": True
         },
+        """
         "allActivation": {
             "enable": False,
             "mode": "off",
@@ -135,6 +136,7 @@ class MqttRosLauncher:
             "subscribe": True,
             "type": "modeSet"
         },
+        """
         # get rosparam
         "get_param": {
             "topic": "",
