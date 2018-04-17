@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-import rospy
-
 import json
 import yaml
 import sys
@@ -68,6 +66,9 @@ class ROSController(object):
                 "setting": {
                     "save_file_list": []
                 },
+                "vehicle_model": {
+                    "vehicle_model_list": []
+                },
                 "flag": False
             }
         }
@@ -98,6 +99,8 @@ class ROSController(object):
         self.__vehicle_info = ""
         self.__waypoints_path = ""
         self.__rviz_setting_path = ""
+        self.__autoware_mode = ""
+        self.__sim_mode = ""
 
         # launch file path
         self.__rosbag_file_path = "rosbag_file_path:=" + self.__path + CONST["LAUNCHPATH"]["ROSBAG"]
@@ -125,7 +128,7 @@ class ROSController(object):
                 res_list.append(self.__tf)
         elif domain == "rviz":
             if self.__rviz_setting_path != "":
-                res_list.append("rviz_setting_path:=" + self.__rviz_setting_path)
+                res_list.append(self.__rviz_setting_path)
         elif domain == "rosbag":
             if self.__rosbag_path != "":
                 res_list.append(self.__rosbag_path)
@@ -138,10 +141,15 @@ class ROSController(object):
         elif domain == "localization":
             if self.__vehicle_info != "":
                 res_list.append(self.__vehicle_info)
+            if self.__sim_mode != "":
+                res_list.append(self.__sim_mode)
         elif domain == "mission":
             if self.__waypoints_path != "":
                 res_list.append(self.__waypoints_path)
-        elif domain == "allActivation":
+        elif domain == "motion":
+            if self.__sim_mode != "":
+                res_list.append(self.__sim_mode)
+        elif domain == "allActivationRosbag":
             res_list.append(self.__rosbag_file_path)
             res_list.append(self.__map_file_path)
             res_list.append(self.__sensing_file_path)
@@ -167,6 +175,42 @@ class ROSController(object):
                 res_list.append(self.__vehicle_info)
             if self.__waypoints_path != "":
                 res_list.append(self.__waypoints_path)
+        elif domain == "allActivationSimulator":
+            res_list.append(self.__map_file_path)
+            res_list.append(self.__sensing_file_path)
+            res_list.append(self.__localization_file_path)
+            res_list.append(self.__mission_file_path)
+            res_list.append(self.__motion_file_path)
+
+            if self.__pointsmap_paths != "":
+                res_list.append(self.__pointsmap_paths)
+            if self.__vectormap_paths != "":
+                res_list.append(self.__vectormap_paths)
+            if self.__tf != "":
+                res_list.append(self.__tf)
+            if self.__vehicle_info != "":
+                res_list.append(self.__vehicle_info)
+            if self.__waypoints_path != "":
+                res_list.append(self.__waypoints_path)
+            if self.__sim_mode != "":
+                res_list.append(self.__sim_mode)
+        elif domain == "allActivationDrive":
+            res_list.append(self.__map_file_path)
+            res_list.append(self.__sensing_file_path)
+            res_list.append(self.__localization_file_path)
+            res_list.append(self.__mission_file_path)
+            res_list.append(self.__motion_file_path)
+
+            if self.__pointsmap_paths != "":
+                res_list.append(self.__pointsmap_paths)
+            if self.__vectormap_paths != "":
+                res_list.append(self.__vectormap_paths)
+            if self.__tf != "":
+                res_list.append(self.__tf)
+            if self.__vehicle_info != "":
+                res_list.append(self.__vehicle_info)
+            if self.__waypoints_path != "":
+                res_list.append(self.__waypoints_path)
         else:
             pass
         return res_list
@@ -186,9 +230,8 @@ class ROSController(object):
     def all_launch(self, domain="map", target="map", mode="on"):
         launch_id = "/".join([domain, target])
         if mode == "on":
-            launch_list = ["roslaunch", self.__path + "/res/allActivation.launch".format(domain, target)]
-            launch_list = self.set_roslaunch_argument(domain, launch_list)
-            print(launch_list)
+            launch_list = ["roslaunch", self.__path + CONST["MODE"][self.__autoware_mode]["allActivation"]]
+            launch_list = self.set_roslaunch_argument(CONST["MODE"][self.__autoware_mode]["domain"], launch_list)
             self.__launchers[launch_id] = Popen(launch_list)
         else:
             if launch_id in self.__launches or launch_id in self.__launchers:
@@ -237,6 +280,17 @@ class ROSController(object):
     def gateway_off(self):
         self.launch(domain="gateway", target="off")
 
+    def modeSet(self, message):
+        self.__autoware_mode = message
+
+        self.__sim_mode = ""
+        if self.__autoware_mode == "rosbagMode":
+            pass
+        elif self.__autoware_mode == "simulatorMode":
+            self.__sim_mode = "sim_mode:=True"
+
+        return "ok"
+
     def settingSave(self, message):
         filename = self.__path + CONST["SETTING"]["PATH"] + message
         try:
@@ -265,28 +319,30 @@ class ROSController(object):
     def get_params(self):
         for loc in self.__parameter_info["settingParams"]["display_data"]["location"]["location_list"]:
             self.__parameter_info["settingParams"]["display_data"]["rosbag"]["rosbag_list"][loc] = \
-                listdir(self.__path + CONST["DATAPATH"] + "/" + loc + "/" + CONST["ROSBAG"]["BASEPATH"])
+                listdir(self.__path + CONST["MAPDATAPATH"] + "/" + loc + "/" + CONST["ROSBAG"]["BASEPATH"])
         for loc in self.__parameter_info["settingParams"]["display_data"]["location"]["location_list"]:
             self.__parameter_info["settingParams"]["display_data"]["waypoints"]["waypoints_list"][loc] = \
-                listdir(self.__path + CONST["DATAPATH"] + "/" + loc + "/" + CONST["WAYPOINTSPATH"]["BASEPATH"])
+                listdir(self.__path + CONST["MAPDATAPATH"] + "/" + loc + "/" + CONST["WAYPOINTSPATH"]["BASEPATH"])
         self.__parameter_info["settingParams"]["display_data"]["setting"]["save_file_list"] = listdir(self.__path + CONST["SETTING"]["PATH"])
 
         return self.__parameter_info
 
     # Set first locationi in location_lit as initial location
     def set_init_parameter(self):
-        files = listdir(self.__path + CONST["DATAPATH"])
+        files = listdir(self.__path + CONST["MAPDATAPATH"])
         self.__parameter_info["settingParams"]["display_data"]["location"]["location_list"] = \
-            [f for f in files if isdir(join(self.__path + CONST["DATAPATH"], f))]
+            [f for f in files if isdir(join(self.__path + CONST["MAPDATAPATH"], f))]
         for loc in self.__parameter_info["settingParams"]["display_data"]["location"]["location_list"]:
             self.__parameter_info["settingParams"]["display_data"]["rosbag"]["rosbag_list"][loc] = \
-                listdir(self.__path + CONST["DATAPATH"] + loc + CONST["ROSBAG"]["BASEPATH"])
+                listdir(self.__path + CONST["MAPDATAPATH"] + loc + CONST["ROSBAG"]["BASEPATH"])
 
         for loc in self.__parameter_info["settingParams"]["display_data"]["location"]["location_list"]:
             self.__parameter_info["settingParams"]["display_data"]["waypoints"]["waypoints_list"][loc] = \
-                listdir(self.__path + CONST["DATAPATH"] + loc + CONST["WAYPOINTSPATH"]["BASEPATH"])
+                listdir(self.__path + CONST["MAPDATAPATH"] + loc + CONST["WAYPOINTSPATH"]["BASEPATH"])
         self.__parameter_info["settingParams"]["display_data"]["setting"]["save_file_list"] = \
             listdir(self.__path + CONST["SETTING"]["PATH"])
+        self.__parameter_info["settingParams"]["display_data"]["vehicle_model"]["vehicle_model_list"] = \
+            listdir(self.__path + CONST["VEHICLEMODELPATH"])
 
         init_param = self.__parameter_info["settingParams"]
 
@@ -331,7 +387,7 @@ class ROSController(object):
     def set_vehicle_model(self, model_param):
         if model_param["data"] == "" or not model_param["flag"]:
             return True
-        model_path = CONST["VEHICLEMODELPATH"][model_param["data"]]
+        model_path = self.__path + CONST["VEHICLEMODELPATH"] + model_param["data"]
         self.launch_parameter("parameter", "vehicleModel", {"model_path": model_path})
         return True
 
@@ -342,17 +398,16 @@ class ROSController(object):
         self.__location = location
         self.__pointsmap_paths = ""
         self.__vectormap_paths = ""
-        points_base_path = self.__path + CONST["DATAPATH"] + location + CONST["MAPPATH"]["POINTSMAP"] + "*"
+        points_base_path = self.__path + CONST["MAPDATAPATH"] + location + CONST["MAPPATH"]["POINTSMAP"] + "*"
         for path in glob(points_base_path):
             self.__pointsmap_paths += path + " "
-        vector_base_path = self.__path + CONST["DATAPATH"] + location + CONST["MAPPATH"]["VECTORMAP"] + "*"
+        vector_base_path = self.__path + CONST["MAPDATAPATH"] + location + CONST["MAPPATH"]["VECTORMAP"] + "*"
         for path in glob(vector_base_path):
             self.__vectormap_paths += path + " "
         self.__pointsmap_paths = "pointsmap_path:=" + self.__pointsmap_paths
         self.__vectormap_paths = "vectormap_path:=" + self.__vectormap_paths
-        self.__tf = "tf_path:=" + self.__path + CONST["DATAPATH"] + location + CONST["MAPPATH"]["TF"]
-        self.__vehicle_info = "vehicle_info:=" + self.__path + CONST["DATAPATH"] + \
-                              self.__location + CONST["VEHICLE_INFO_PATH"]
+        self.__tf = "tf_path:=" + self.__path + CONST["MAPDATAPATH"] + location + CONST["MAPPATH"]["TF"]
+        self.__vehicle_info = "vehicle_info:=" + self.__path + CONST["VEHICLEINFOPATH"]
 
         return True
 
@@ -360,7 +415,7 @@ class ROSController(object):
         if not rosbag_param["flag"]:
             return True
 
-        self.__rosbag_path = "rosbag_path:=" + self.__path + CONST["DATAPATH"] + self.__location + \
+        self.__rosbag_path = "rosbag_path:=" + self.__path + CONST["MAPDATAPATH"] + self.__location + \
                              CONST["ROSBAG"]["BASEPATH"] + rosbag_param["rosbag_name"]
 
         self.__rosbag_start_time = "start_time:=" + str(rosbag_param["start_time"])
@@ -373,7 +428,7 @@ class ROSController(object):
         if not waypoints_param["flag"]:
             return True
 
-        self.__waypoints_path = "waypoints_path:=" + self.__path + CONST["DATAPATH"] + self.__location + \
+        self.__waypoints_path = "waypoints_path:=" + self.__path + CONST["MAPDATAPATH"] + self.__location + \
                                 CONST["WAYPOINTSPATH"]["BASEPATH"] + waypoints_param["waypoints_name"]
         return True
 
@@ -387,7 +442,7 @@ class ROSController(object):
             with codecs.open(file_path, "w", "utf-8") as f:
                 yaml.safe_dump(rviz_setting, f, encoding='utf-8', allow_unicode=True)
 
-            self.__rviz_setting_path = file_path
+            self.__rviz_setting_path = "rviz_setting_path:=" + file_path
             return True
         except IOError:
             sys.stderr.write("Error:Fail to save rviz setting file!")

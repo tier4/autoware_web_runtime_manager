@@ -137,31 +137,9 @@ export default class ButtonRGL extends React.Component {
     }
 
     componentWillMount() {
-        this.initializeButtonRGLState();
+        this.setInitializeButtonRGLState();
         this.setSaveLoadCallback();
-
-        //mqtt callback method creating
-        const mqttClient = this.props.mqttClient;
-
-        let buttonMethod = function (message) {
-            //console.log(message.payloadString);
-            const topic_factor = message.destinationName.split("/");
-            const message_factor = topic_factor[2].split(".");
-            const index = this.props.structure.nodes.findIndex(node => node.label === message_factor[2]);
-            //console.log(index);
-
-            if (message.payloadString === "ok") {
-                this.props.structure.nodes[index].span = (<span>{this.props.structure.nodes[index].display}</span>);
-            } else {
-                this.props.structure.nodes[index].span = (<span>error</span>);
-            }
-            this.props.updateStructure(this.props.structure);
-        };
-
-        for (const node of this.props.structure.nodes) {
-            mqttClient.setCallback(node.label, buttonMethod.bind(this));
-        }
-
+        this.setButtonCallback();
 
     }
 
@@ -190,7 +168,7 @@ export default class ButtonRGL extends React.Component {
         );
     }
 
-    initializeButtonRGLState() {
+    setInitializeButtonRGLState() {
         //const date = new Date();
         //const url = WEB_UI_URL+"/getRTMStatus?date="+date.getTime().toString();
 
@@ -264,6 +242,27 @@ export default class ButtonRGL extends React.Component {
 
     }
 
+    setButtonCallback(){
+        let buttonMethod = function (message) {
+            //console.log(message.payloadString);
+            const topic_factor = message.destinationName.split("/");
+            const message_factor = topic_factor[2].split(".");
+            const index = this.props.structure.nodes.findIndex(node => node.label === message_factor[2]);
+            //console.log(index);
+
+            if (message.payloadString === "ok") {
+                this.props.structure.nodes[index].span = (<span>{this.props.structure.nodes[index].display}</span>);
+            } else {
+                this.props.structure.nodes[index].span = (<span>error</span>);
+            }
+            this.props.updateStructure(this.props.structure);
+        };
+
+        for (const node of this.props.structure.nodes) {
+            this.props.mqttClient.setCallback(node.label, buttonMethod.bind(this));
+        }
+    }
+
     onClickButton(nodeID) {
         const index = this.props.structure.nodes.findIndex(node => node.id === nodeID);
         if (this.props.structure.nodes[index].enabled) {
@@ -278,6 +277,18 @@ export default class ButtonRGL extends React.Component {
                 }
             }else if(structure.nodes[index].label === CONST.REDISPLAY.LABEL){
                 location.reload(true);
+            }else if(structure.nodes[index].label === CONST.ROSBAG_MODE.LABEL ||
+                structure.nodes[index].label === CONST.SIM_MODE.LABEL ||
+                structure.nodes[index].label === CONST.DRIVE_MODE.LABEL){
+                const label = structure.nodes[index].label;
+                const message = {
+                    mode: structure.nodes[index].label,
+                    on: structure.nodes[index].on
+                };
+                const json_message = JSON.stringify(message);
+
+                this.props.mqttClient.onPublish(label, json_message);
+                structure.nodes[index].span = (<span>{(structure.nodes[index].on ? "loading.." : "killing..")}</span>);
             }else{
                 // set callback handlers
                 const label = structure.nodes[index].label;
@@ -297,6 +308,13 @@ export default class ButtonRGL extends React.Component {
             this.setOnNode(nodes, index);
         }
         this.setEnable(nodes);
+        if (nodes[nodes.findIndex(node => node.label === CONST.ROSBAG_MODE.LABEL)].on === false &&
+        nodes[nodes.findIndex(node => node.label === CONST.SIM_MODE.LABEL)].on === false &&
+        nodes[nodes.findIndex(node => node.label === CONST.DRIVE_MODE.LABEL)].on === false){
+            nodes[nodes.findIndex(node => node.label === CONST.BUTTON.INITIALIZATION.LABEL)].enabled = false;
+        }else{
+            nodes[nodes.findIndex(node => node.label === CONST.BUTTON.INITIALIZATION.LABEL)].enabled = true;
+        }
         if (nodes[nodes.findIndex(node => node.label === CONST.BUTTON.ALL_ACTIVATION.LABEL)].on === false) {
             for (const id of nodes[nodes.findIndex(node => node.label === CONST.BUTTON.ALL_ACTIVATION.LABEL)].required.forDisable.on) {
                 if (nodes[nodes.findIndex(node => node.id === id)].on === true) {

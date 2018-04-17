@@ -98,8 +98,12 @@ const CONST = {
         LABEL: "rosbagMode",
     },
     SIM_MODE: {
-        DOMAIN: "simulationMode",
-        LABEL: "simulationMode",
+        DOMAIN: "simulatorMode",
+        LABEL: "simulatorMode",
+    },
+    DRIVE_MODE: {
+        DOMAIN: "driveMode",
+        LABEL: "driveMode",
     },
     REDISPLAY: {
         DOMAIN: "redisplay",

@@ -47,6 +47,19 @@ export default class SettingDetails extends React.Component {
         return res_list
     }
 
+    getVehicleModelList(){
+        let settingParams = this.props.settingParams;
+        let vehicle_model_list = settingParams.display_data.vehicle_model.vehicle_model_list;
+        let res_list = [];
+
+        for (const [key, vehicle_model] of vehicle_model_list.entries()) {
+            res_list.push(
+                (<option key={key} value={vehicle_model}>{vehicle_model}</option>)
+            );
+        }
+        return res_list
+    }
+
     getLocationList() {
         let settingParams = this.props.settingParams;
         let location_list = settingParams.display_data.location.location_list;
@@ -114,7 +127,7 @@ export default class SettingDetails extends React.Component {
         let settingParams = this.props.settingParams;
         let file_name = this.state.setting.saveFileName;
         let overwrite_flag = true;
-        if (settingParams["display_data"]["setting"]["save_file_list"].indexOf(file_name) < 0){
+        if (settingParams["display_data"]["setting"]["save_file_list"].indexOf(file_name) >= 0){
             overwrite_flag = confirm("There is a file with same name.OverWrite?");
         }
 
@@ -205,7 +218,7 @@ export default class SettingDetails extends React.Component {
         let file = e.target.files[0];
 
         if(!file.name.match('.rviz$')) {
-            alert('Cannot set except rviz file.');
+            alert('You cannot set except rviz file.');
             return;
         }
 
@@ -348,9 +361,7 @@ export default class SettingDetails extends React.Component {
                             disabled={!this.state.vehicleModel.checked}>
                         <option
                             value={this.props.settingParams.vehicleModel.data}>{this.props.settingParams.vehicleModel.data}</option>
-                        <option value="milee">milee</option>
-                        <option value="prius">prius</option>
-                        <option value="estime">estime</option>
+                        {this.getVehicleModelList()}
                     </select>
                     <br/>
                 </form>

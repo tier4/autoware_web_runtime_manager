@@ -93,10 +93,15 @@
       "domain": "rosbagMode",
       "label": "rosbagMode"
     },
-    "simulationMode": {
-      "topic": "modeSet.simulationMode.simulationMode",
-      "domain": "simulationMode",
-      "label": "simulationMode"
+    "simulatorMode": {
+      "topic": "modeSet.simulatorMode.simulatorMode",
+      "domain": "simulatorMode",
+      "label": "simulatorMode"
+    },
+    "driveMode": {
+      "topic": "modeSet.driveMode.driveMode",
+      "domain": "driveMode",
+      "label": "driveMode"
     },
     "ImageRaw": {
       "type": "image",

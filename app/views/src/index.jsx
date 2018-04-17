@@ -136,7 +136,7 @@ class Index extends React.Component {
                         required: {
                             forOn: {on: [14]},
                             forOff: {},
-                            forEnable: {on: [1], off: [11, 14], enable: [1], disable: []},
+                            forEnable: {on: [1], off: [11, 14, 16, 17], enable: [1], disable: []},
                             forDisable: {}
                         },
                         domain: "rosbag", label: 'rosbag', display: "ROSBAG", span: (<span>ROSBAG</span>)
@@ -147,7 +147,7 @@ class Index extends React.Component {
                         required: {
                             forOn: {on: []},
                             forOff: {},
-                            forEnable: {on: [8], off: [11], enable: [], disable: []},
+                            forEnable: {on: [8], off: [11, 16, 17], enable: [], disable: []},
                             forDisable: {}
                         },
                         domain: "rosbag", label: 'play', display: "Play", span: (<span>play</span>)
@@ -158,7 +158,7 @@ class Index extends React.Component {
                         required: {
                             forOn: {on: []},
                             forOff: {},
-                            forEnable: {on: [5], off: [11], enable: [], disable: []},
+                            forEnable: {on: [5], off: [11, 15, 16], enable: [], disable: []},
                             forDisable: {}
                         },
                         domain: "gateway", label: 'gateway', display: "Gateway", span: (<span>Gateway</span>)
@@ -222,8 +222,8 @@ class Index extends React.Component {
                         required: {
                             forOn: {on: []},
                             forOff: {},
-                            forEnable: {on: [], off: [], enable: [], disable: [17]},
-                            forDisable: {on: [16]}
+                            forEnable: {on: [], off: [1, 16, 17], enable: [], disable: []},
+                            forDisable: {}
                         },
                         domain: CONST.ROSBAG_MODE.DOMAIN,
                         label: CONST.ROSBAG_MODE.LABEL,
@@ -236,8 +236,8 @@ class Index extends React.Component {
                         required: {
                             forOn: {on: []},
                             forOff: {},
-                            forEnable: {on: [], off: [], enable: [], disable: [17]},
-                            forDisable: {on: [15]}
+                            forEnable: {on: [], off: [1, 15, 17], enable: [], disable: []},
+                            forDisable: {}
                         },
                         domain: CONST.SIM_MODE.DOMAIN,
                         label: CONST.SIM_MODE.LABEL,
@@ -246,6 +246,20 @@ class Index extends React.Component {
                     },
                    {
                         id: 17, x: 8, y: 0, w: 4, h: 3,
+                        enabled: false, on: false, isLoading: false, isKilling: false,
+                        required: {
+                            forOn: {on: []},
+                            forOff: {},
+                            forEnable: {on: [], off: [1, 15, 16], enable: [], disable: []},
+                            forDisable: {}
+                        },
+                        domain: CONST.DRIVE_MODE.DOMAIN,
+                        label: CONST.DRIVE_MODE.LABEL,
+                        display: "Drive Mode",
+                        span: (<span>Drive Mode</span>)
+                    },
+                   {
+                        id: 18, x: 12, y: 0, w: 4, h: 3,
                         enabled: true, on: false, isLoading: false, isKilling: false,
                         required: {
                             forOn: {on: []},
@@ -435,6 +449,9 @@ class Index extends React.Component {
                 },
             },
             settingParams: {
+                mode: {
+                    mode: ""
+                },
                 TFBaseToVelodyne: {
                     tf_x: 0,
                     tf_y: 0,
@@ -479,6 +496,9 @@ class Index extends React.Component {
                     },
                     setting: {
                         save_file_list: []
+                    },
+                    vehicle_model: {
+                        vehicle_model_list: []
                     },
                     flag: false
                 }

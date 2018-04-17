@@ -31,7 +31,7 @@ export default class MqttWrapper {
                     "label": CONST.BUTTON_INIT.LABEL,
                     "type": "buttonInit",
                     "topic": "",
-                    "erroePublishMessage": "buttonInit topic can not publish.",
+                    "errorPublishMessage": "buttonInit topic can not publish.",
                     "callback": function () {
                     }
                 },
@@ -40,7 +40,7 @@ export default class MqttWrapper {
                     "label": CONST.SETTING_SAVE.LABEL,
                     "type": "settingSaveLoad",
                     "topic": "",
-                    "erroePublishMessage": "settingSaveLoad topic can not publish.",
+                    "errorPublishMessage": "settingSaveLoad topic can not publish.",
                     "callback": function () {
                     }
                 },
@@ -49,7 +49,7 @@ export default class MqttWrapper {
                     "label": CONST.SETTING_LOAD.LABEL,
                     "type": "settingSaveLoad",
                     "topic": "",
-                    "erroePublishMessage": "settingSaveLoad topic can not publish.",
+                    "errorPublishMessage": "settingSaveLoad topic can not publish.",
                     "callback": function () {
                     }
                 },
@@ -58,7 +58,7 @@ export default class MqttWrapper {
                     "label": CONST.BUTTON.INITIALIZATION.LABEL,
                     "type": "button",
                     "topic": "",
-                    "erroePublishMessage": "initialization topic can not publish.",
+                    "errorPublishMessage": "initialization topic can not publish.",
                     "callback": function () {
                     }
                 },
@@ -67,7 +67,7 @@ export default class MqttWrapper {
                     "label": CONST.BUTTON.MAP.LABEL,
                     "type": "button",
                     "topic": "",
-                    "erroePublishMessage": "map topic can not publish.",
+                    "errorPublishMessage": "map topic can not publish.",
                     "callback": function () {
                     }
                 },
@@ -76,7 +76,7 @@ export default class MqttWrapper {
                     "label": CONST.BUTTON.LOCALIZATION.LABEL,
                     "type": "button",
                     "topic": "",
-                    "erroePublishMessage": "localization topic can not publish.",
+                    "errorPublishMessage": "localization topic can not publish.",
                     "callback": function () {
                     }
                 },
@@ -85,7 +85,7 @@ export default class MqttWrapper {
                     "label": CONST.BUTTON.MISSION.LABEL,
                     "type": "button",
                     "topic": "",
-                    "erroePublishMessage": "mission topic can not publish.",
+                    "errorPublishMessage": "mission topic can not publish.",
                     "callback": function () {
                     }
                 },
@@ -94,7 +94,7 @@ export default class MqttWrapper {
                     "label": CONST.BUTTON.MOTION.LABEL,
                     "type": "button",
                     "topic": "",
-                    "erroePublishMessage": "motion topic can not publish.",
+                    "errorPublishMessage": "motion topic can not publish.",
                     "callback": function () {
                     },
                 },
@@ -103,7 +103,7 @@ export default class MqttWrapper {
                     "label": CONST.BUTTON.SENSING.LABEL,
                     "type": "button",
                     "topic": "",
-                    "erroePublishMessage": "sensing topic can not publish.",
+                    "errorPublishMessage": "sensing topic can not publish.",
                     "callback": function () {
                     }
                 },
@@ -112,7 +112,7 @@ export default class MqttWrapper {
                     "label": CONST.BUTTON.DETECTION.LABEL,
                     "type": "button",
                     "topic": "",
-                    "erroePublishMessage": "detection topic can not publish.",
+                    "errorPublishMessage": "detection topic can not publish.",
                     "callback": function () {
                     }
                 },
@@ -121,7 +121,7 @@ export default class MqttWrapper {
                     "label": CONST.BUTTON.ROSBAG.LABEL,
                     "type": "button",
                     "topic": "",
-                    "erroePublishMessage": "rosbag topic can not publish.",
+                    "errorPublishMessage": "rosbag topic can not publish.",
                     "callback": function () {
                     }
                 },
@@ -130,7 +130,7 @@ export default class MqttWrapper {
                     "label": CONST.BUTTON.ROSBAG_PLAY.LABEL,
                     "type": "button",
                     "topic": "",
-                    "erroePublishMessage": "rosbag_play topic can not publish.",
+                    "errorPublishMessage": "rosbag_play topic can not publish.",
                     "callback": function () {
                     }
                 },
@@ -139,7 +139,7 @@ export default class MqttWrapper {
                     "label": CONST.BUTTON.GATEWAY.LABEL,
                     "type": "button",
                     "topic": "",
-                    "erroePublishMessage": "gateway topic can not publish.",
+                    "errorPublishMessage": "gateway topic can not publish.",
                     "callback": function () {
                     }
                 },
@@ -148,7 +148,7 @@ export default class MqttWrapper {
                     "label": CONST.BUTTON.GATEWAY_ON.LABEL,
                     "type": "button",
                     "topic": "",
-                    "erroePublishMessage": "gateway_on topic can not publish.",
+                    "errorPublishMessage": "gateway_on topic can not publish.",
                     "callback": function () {
                     }
                 },
@@ -157,7 +157,7 @@ export default class MqttWrapper {
                     "label": CONST.BUTTON.RVIZ.LABEL,
                     "type": "button",
                     "topic": "",
-                    "erroePublishMessage": "rviz topic can not publish.",
+                    "errorPublishMessage": "rviz topic can not publish.",
                     "callback": function () {
                     }
                 },
@@ -166,7 +166,7 @@ export default class MqttWrapper {
                     "label": CONST.BUTTON.SETTING.LABEL,
                     "type": "button",
                     "topic": "",
-                    "erroePublishMessage": "setting topic can not publish.",
+                    "errorPublishMessage": "setting topic can not publish.",
                     "callback": function () {
                     }
                 },
@@ -175,7 +175,7 @@ export default class MqttWrapper {
                     "label": CONST.BUTTON.ALL_ACTIVATION.LABEL,
                     "type": "allActivation",
                     "topic": "",
-                    "erroePublishMessage": "All Activation topic can not publish.",
+                    "errorPublishMessage": "All Activation topic can not publish.",
                     "callback": function () {
                     }
                 },
@@ -184,16 +184,25 @@ export default class MqttWrapper {
                     "label": CONST.ROSBAG_MODE.LABEL,
                     "type": "modeSet",
                     "topic": "",
-                    "erroePublishMessage": "All Activation topic can not publish.",
+                    "errorPublishMessage": "Rosbag mode topic can not publish.",
                     "callback": function () {
                     }
                 },
-                "simulationMode": {
+                "simulatorMode": {
                     "domain": CONST.SIM_MODE.DOMAIN,
                     "label": CONST.SIM_MODE.LABEL,
                     "type": "modeSet",
                     "topic": "",
-                    "erroePublishMessage": "All Activation topic can not publish.",
+                    "errorPublishMessage": "Simulation mode topic can not publish.",
+                    "callback": function () {
+                    }
+                },
+                "driveMode": {
+                    "domain": CONST.DRIVE_MODE.DOMAIN,
+                    "label": CONST.DRIVE_MODE.LABEL,
+                    "type": "modeSet",
+                    "topic": "",
+                    "errorPublishMessage": "Drive mode topic can not publish.",
                     "callback": function () {
                     }
                 },
@@ -415,6 +424,6 @@ export default class MqttWrapper {
 
     disConnect() {
         console.log("disconnect");
-        this.mqttClient.disonnet();
+        this.mqttClient.disconnect();
     }
 }
