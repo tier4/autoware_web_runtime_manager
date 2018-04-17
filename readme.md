@@ -4,9 +4,11 @@
 
 ```
 Web Server
-$ python app/setup.py
+$ cd app
+$ python setup.py
 
 Autoware PC
+$ cd autoware_app
 $ python autoware_app/setup.py
 
 ```
@@ -14,8 +16,6 @@ $ python autoware_app/setup.py
 ## Mosquitto Install and Settings
 
 ```angular2html
-$ sudo apt-get install mosquitto mosquitto-clients
-
 $ sudo vim /etc/mosquitto/mosquitto.conf
 
 Add the following lines
@@ -24,6 +24,8 @@ listener 1883
 
 listener 9091 localhost
 protocol websockets
+
+$ sudo service mosquitto restart
 
 ```
 
@@ -46,12 +48,15 @@ $ rosdep install mqtt_bridge
 ```
 
 
-
 ## Running
 
 ```
-$ sh app/run.sh
-$ sh autoware_app/run.sh
+$ cd app
+$ sh run.sh
+
+Open new terminal
+$ cd autoware_app
+$ sh run.sh
 ```
 
 ## Access
