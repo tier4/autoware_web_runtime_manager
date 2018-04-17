@@ -136,7 +136,7 @@ class Index extends React.Component {
                         required: {
                             forOn: {on: [14]},
                             forOff: {},
-                            forEnable: {on: [1], off: [11, 14, 16, 17], enable: [1], disable: []},
+                            forEnable: {on: [1], off: [11, 16, 17], enable: [1], disable: []},
                             forDisable: {}
                         },
                         domain: "rosbag", label: 'rosbag', display: "ROSBAG", span: (<span>ROSBAG</span>)

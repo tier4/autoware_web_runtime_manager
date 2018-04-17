@@ -88,6 +88,7 @@ class ROSController(object):
         self.__launchers = {}
 
         # parameter
+        self.__use_sim_time_flag = ""
         self.__location = ""
         self.__pointsmap_paths = ""
         self.__vectormap_paths = ""
@@ -119,6 +120,9 @@ class ROSController(object):
 
     def set_roslaunch_argument(self, domain, launch_list):
         res_list = launch_list
+        if domain == "initialization":
+            if self.__use_sim_time_flag != "":
+                res_list.append(self.__use_sim_time_flag)
         if domain == "map":
             if self.__pointsmap_paths != "":
                 res_list.append(self.__pointsmap_paths)
@@ -285,10 +289,9 @@ class ROSController(object):
 
         self.__sim_mode = ""
         if self.__autoware_mode == "rosbagMode":
-            pass
+            self.__use_sim_time_flag = "use_sim_time_flag:=True"
         elif self.__autoware_mode == "simulatorMode":
             self.__sim_mode = "sim_mode:=True"
-
         return "ok"
 
     def settingSave(self, message):
