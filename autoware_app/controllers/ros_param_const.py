@@ -3,19 +3,9 @@
 
 
 CONST = {
-    "VEHICLE": {
-        "milee": "milee",
-        "estime": "estima",
-        "prius": "prius",
-        "default": "default"
-    },
-    "VEHICLEMODELPATH": {
-        "milee": "Autoware/ros/src/.config/model/milee.urdf",
-        "estime": "Autoware/ros/src/.config/model/estima_white.urdf",
-        "prius": "Autoware/ros/src/.config/model/prius.urdf",
-        "default": "Autoware/ros/src/.config/model/default.urdf"
-    },
-    "DATAPATH": "/res/data/",
+    "MAPDATAPATH": "/res/data/map/",
+    "VEHICLEINFOPATH": "/res/data/vehicle/vehicle_info/vehicle_info.yaml",
+    "VEHICLEMODELPATH": "/res/data/vehicle/vehicle_model/",
     "MAPPATH": {
         "POINTSMAP": "/points/",
         "VECTORMAP": "/vectors/",
@@ -34,5 +24,29 @@ CONST = {
     },
     "SETTING": {
         "PATH": "/res/parameter/save/"
+    },
+    "LAUNCHPATH": {
+        "INITIALIZATION": "/res/initialization/initialization.launch",
+        "ROSBAG": "/res/rosbag/rosbag.launch",
+        "MAP": "/res/map/map.launch",
+        "SENSING": "/res/sensing/sensing.launch",
+        "LOCALIZATION": "/res/localization/localization.launch",
+        "MISSION": "/res/mission/mission.launch",
+        "MOTION": "/res/motion/motion.launch",
+    },
+    "MODE": {
+        "rosbagMode": {
+            "allActivation": "/res/allActivation/allActivationRosbag.launch",
+            "domain": "allActivationRosbag"
+        },
+        "simulatorMode": {
+            "allActivation": "/res/allActivation/allActivationSimulator.launch",
+            "domain": "allActivationSimulator"
+        },
+        "driveMode": {
+            "allActivation": "/res/allActivation/allActivationDrive.launch",
+            "domain": "allActivationDrive"
+        }
     }
+
 }

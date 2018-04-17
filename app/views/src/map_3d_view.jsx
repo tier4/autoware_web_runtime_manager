@@ -24,12 +24,13 @@ export default class Map3DView extends React.Component {
         viewInstance.height = parseInt(props.height);
         viewInstance.visualizationObjects = props.visualizationObjects;
         viewInstance.prepare();
+        viewInstance.setLocation(this.props.settingParams.map.location);
+
         if(visualizationObjectIDs.includes(CONST.VISUALIZATION_OBJECT.VEHICLE)) {
             viewInstance.onGetVehiclePose();
         }
         else {
             if(visualizationObjectIDs.includes(CONST.VISUALIZATION_OBJECT.POINTS_MAP)) {
-                viewInstance.setLocation(this.props.settingParams.map.location);
                 viewInstance.onGetPointsMap();
             }
         }

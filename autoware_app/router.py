@@ -1,8 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
+
 from copy import deepcopy
-from os import listdir
-from os.path import realpath, abspath, dirname
 from config.env import env
 from controllers.ros_controller import ROSController
 import traceback
@@ -32,7 +31,7 @@ class MqttRosLauncher:
         },
         # button launch signal and status,response
         "initialization": {
-            "enable": True,
+            "enable": False,
             "mode": "off",
             "topic": "",
             "subscribe": True
@@ -110,10 +109,31 @@ class MqttRosLauncher:
             "subscribe": True
         },
         "allActivation": {
-            "enable": True,
+            "enable": False,
             "mode": "off",
             "topic": "",
             "subscribe": True
+        },
+        "rosbagMode": {
+            "enable": True,
+            "mode": "off",
+            "topic": "",
+            "subscribe": True,
+            "type": "modeSet"
+        },
+        "simulatorMode": {
+            "enable": True,
+            "mode": "off",
+            "topic": "",
+            "subscribe": True,
+            "type": "modeSet"
+        },
+        "driveMode": {
+            "enable": True,
+            "mode": "off",
+            "topic": "",
+            "subscribe": True,
+            "type": "modeSet"
         },
         # get rosparam
         "get_param": {
@@ -180,6 +200,11 @@ class MqttRosLauncher:
     def __init__(self):
         self.rosController = ROSController(env)
         self.client = mqtt.Client(protocol=mqtt.MQTTv311)
+        self.__userid = ""
+        self.__carid = ""
+        self.__toAutoware = ""
+        self.__fromAutoware = ""
+        self.rtm_status = {}
 
     def TopicGet(self):
         url = "http://" + env["AUTOWARE_WEB_UI_HOST"] + ":" + env["AUTOWARE_WEB_UI_PORT"] + "/topicData"
@@ -203,7 +228,6 @@ class MqttRosLauncher:
             json.dump(json_data, sf)
 
             self.rtm_status = deepcopy(self.__initial_rtm_status)
-            print(self.rtm_status)
             return True
         except urllib2.HTTPError, e:
             print e.code, e.reason
@@ -241,6 +265,30 @@ class MqttRosLauncher:
         }
         return json.dumps(res)
 
+    def __modeSet(self, domain, message):
+        print("modeSet")
+        mode_message = json.loads(message)
+        mode = mode_message["mode"]
+        on = mode_message["on"]
+        for key,value in self.rtm_status.items():
+            if "type" in value.keys():
+                if on:
+                    if key == domain:
+                        self.rtm_status[key]["enable"] = True
+                        self.rtm_status[key]["mode"] = "on"
+                    else:
+                        self.rtm_status[key]["enable"] = False
+                        self.rtm_status[key]["mode"] = "off"
+                else:
+                    if key == domain:
+                        self.rtm_status[key]["enable"] = True
+                        self.rtm_status[key]["mode"] = "off"
+                    else:
+                        self.rtm_status[key]["enable"] = True
+                        self.rtm_status[key]["mode"] = "off"
+
+        return self.rosController.modeSet(mode)
+
     def __settingSaveLoad(self, label, message):
         if label == "settingSave":
             return self.rosController.settingSave(message)
@@ -274,6 +322,15 @@ class MqttRosLauncher:
             traceback.print_exc()
             return "error"
 
+    def __allLaunch(self, domain, label, message):
+        self.rtm_status[label]["mode"] = message
+        try:
+            self.rosController.all_launch(domain, label, message)
+            return "ok"
+        except:
+            traceback.print_exc()
+            return "error"
+
     def __settingParams(self, message):
         params = json.loads(message)
         if self.rosController.set_param(params):
@@ -287,10 +344,14 @@ class MqttRosLauncher:
 
         if topic_type == "buttonInit":
             return self.__getRTMStatus()
+        elif topic_type == "modeSet":
+            return self.__modeSet(domain, msg.payload)
         elif topic_type == "settingSaveLoad":
             return self.__settingSaveLoad(label, msg.payload)
         elif topic_type == "button":
             return self.__roslaunch(domain, label, msg.payload)
+        elif topic_type == "allActivation":
+            return self.__allLaunch(domain, label, msg.payload)
         elif topic_type == "settingParams":
             return self.__settingParams(msg.payload)
 

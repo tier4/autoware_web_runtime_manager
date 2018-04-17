@@ -83,6 +83,26 @@
       "domain": "setting",
       "label": "setting"
     },
+    "allActivation": {
+      "topic": "allActivation.allActivation.allActivation",
+      "domain": "allActivation",
+      "label": "allActivation"
+    },
+    "rosbagMode": {
+      "topic": "modeSet.rosbagMode.rosbagMode",
+      "domain": "rosbagMode",
+      "label": "rosbagMode"
+    },
+    "simulatorMode": {
+      "topic": "modeSet.simulatorMode.simulatorMode",
+      "domain": "simulatorMode",
+      "label": "simulatorMode"
+    },
+    "driveMode": {
+      "topic": "modeSet.driveMode.driveMode",
+      "domain": "driveMode",
+      "label": "driveMode"
+    },
     "ImageRaw": {
       "type": "image",
       "topic": "image.ImageRaw.ImageRaw",
