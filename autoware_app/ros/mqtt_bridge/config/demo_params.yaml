@@ -30,6 +30,7 @@ bridge:
     msg_type: tf2_msgs.msg:TFMessage
     topic_from: /tf
     topic_to: tf
+    frequency: 0.5
   # vector_map  
   - factory: mqtt_bridge.bridge:RosToMqttBridge
     msg_type: visualization_msgs.msg:MarkerArray

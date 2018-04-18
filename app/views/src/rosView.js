@@ -578,17 +578,17 @@ export default class RosView {
 
     getTFBaseLinkToVelodyne(topic) {
         let that = this;
-        var getTFMethod = function (msg) {
-            var message = JSON.parse(msg.payloadString)
+        let getTFMethod = function (msg) {
+            let message = JSON.parse(msg.payloadString);
 
             for (const transform of message.transforms) {
                 if (transform.header.frame_id == "/base_link" && transform.child_frame_id == "/velodyne") {
                     console.log("base_link:");
                     console.log(transform.transform);
                     that.tfBaseLinkToVelodyne = transform.transform;
-                    //console.log("tf value:");
-                    //console.log(message);
-                    that.mqttClient.unSubscribeTopic("tf");
+                    // console.log("tf value:");
+                    // console.log(message);
+                    // that.mqttClient.unSubscribeTopic("tf");
                 }
             }
         };
@@ -749,10 +749,10 @@ export default class RosView {
 
         let that = this;
         var getNextTargetMethod = function (msg) {
-            var message = JSON.parse(msg.payloadString)
+            var message = JSON.parse(msg.payloadString);
 
             const mesh = that.drawSphere(0x00FF00, message.pose.position);
-            mesh.name = "nextTarget"
+            mesh.name = "nextTarget";
             that.sceneData.nextTarget = {
                 threeJSObject: mesh,
                 isAdded: false,

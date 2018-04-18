@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
+import rosparam
 from copy import deepcopy
 from config.env import env
 from controllers.ros_controller import ROSController
@@ -108,35 +109,6 @@ class MqttRosLauncher:
             "topic": "",
             "subscribe": True
         },
-        """
-        "allActivation": {
-            "enable": False,
-            "mode": "off",
-            "topic": "",
-            "subscribe": True
-        },
-        "rosbagMode": {
-            "enable": True,
-            "mode": "off",
-            "topic": "",
-            "subscribe": True,
-            "type": "modeSet"
-        },
-        "simulatorMode": {
-            "enable": True,
-            "mode": "off",
-            "topic": "",
-            "subscribe": True,
-            "type": "modeSet"
-        },
-        "driveMode": {
-            "enable": True,
-            "mode": "off",
-            "topic": "",
-            "subscribe": True,
-            "type": "modeSet"
-        },
-        """
         # get rosparam
         "get_param": {
             "topic": "",
@@ -199,6 +171,36 @@ class MqttRosLauncher:
         }
     }
 
+    """
+    "allActivation": {
+        "enable": False,
+        "mode": "off",
+        "topic": "",
+        "subscribe": True
+    },
+    "rosbagMode": {
+        "enable": True,
+        "mode": "off",
+        "topic": "",
+        "subscribe": True,
+        "type": "modeSet"
+    },
+    "simulatorMode": {
+        "enable": True,
+        "mode": "off",
+        "topic": "",
+        "subscribe": True,
+        "type": "modeSet"
+    },
+    "driveMode": {
+        "enable": True,
+        "mode": "off",
+        "topic": "",
+        "subscribe": True,
+        "type": "modeSet"
+    },
+    """
+
     def __init__(self):
         self.rosController = ROSController(env)
         self.client = mqtt.Client(protocol=mqtt.MQTTv311)
@@ -224,7 +226,6 @@ class MqttRosLauncher:
             for key, value in json_data["topicdata"].items():
                 if key in self.__initial_rtm_status:
                     self.__initial_rtm_status[key]["topic"] = value["topic"]
-                    print(value["topic"])
 
             sf = open('./mqtt_setting/config.json', 'w')
             json.dump(json_data, sf)
@@ -268,7 +269,6 @@ class MqttRosLauncher:
         return json.dumps(res)
 
     def __modeSet(self, domain, message):
-        print("modeSet")
         mode_message = json.loads(message)
         mode = mode_message["mode"]
         on = mode_message["on"]
@@ -340,6 +340,9 @@ class MqttRosLauncher:
         else:
             return "error"
 
+    def __getParam(self, message):
+        return str(rosparam.get_param(message))
+
     def __execution(self, msg):
         space, header, body, direction = msg.topic.split("/")
         topic_type, domain, label = body.split(".")
@@ -356,6 +359,8 @@ class MqttRosLauncher:
             return self.__allLaunch(domain, label, msg.payload)
         elif topic_type == "settingParams":
             return self.__settingParams(msg.payload)
+        elif topic_type == "getParam":
+            return self.__getParam(msg.payload)
 
     def __on_connect(self, client, userdata, flags, respons_code):
         print('status {0}'.format(respons_code))
@@ -372,7 +377,6 @@ class MqttRosLauncher:
                 self.client.subscribe(topic)
 
     def __on_message(self, client, userdata, msg):
-        print(msg.topic + ' ' + str(msg.payload))
         res = self.__execution(msg)
 
         space, header, body, direction = msg.topic.split("/")

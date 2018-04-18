@@ -36,7 +36,7 @@ def topicGetter():
         topic_init["fixeddata"]["carid"]="test"
         return api_response(200, topic_init)
     else:
-        return api_response(500, "")
+        return api_response(500, "error")
 
 
 @flask.route("/.config/model/<path:path>", methods=["GET"])
