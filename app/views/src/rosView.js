@@ -658,7 +658,7 @@ export default class RosView {
             that.sceneData.pointsRaw.threeJSObject.position.x = that.vehiclePose.position.x;
             that.sceneData.pointsRaw.threeJSObject.position.y = that.vehiclePose.position.y;
             that.sceneData.pointsRaw.threeJSObject.position.z = that.vehiclePose.position.z;
-            that.sceneData.pointsRaw.threeJSObject.setRotationFromQuaternion(that.vehiclePose.orientation)
+            that.sceneData.pointsRaw.threeJSObject.setRotationFromQuaternion(that.vehiclePose.orientation);
             if (that.tfBaseLinkToVelodyne !== null) {
                 that.sceneData.pointsRaw.threeJSObject.position.x = that.vehiclePose.position.x + that.tfBaseLinkToVelodyne.translation.x;
                 that.sceneData.pointsRaw.threeJSObject.position.y = that.vehiclePose.position.y + that.tfBaseLinkToVelodyne.translation.y;
@@ -806,9 +806,9 @@ export default class RosView {
         let geometry = new THREE.SphereGeometry(0.5);
         let material = new THREE.MeshBasicMaterial({color: color});
         let mesh = new THREE.Mesh(geometry, material);
-        mesh.position.x = position.x
-        mesh.position.y = position.y
-        mesh.position.z = position.z
+        mesh.position.x = position.x;
+        mesh.position.y = position.y;
+        mesh.position.z = position.z;
         return mesh;
     }
 
@@ -818,9 +818,9 @@ export default class RosView {
         let mesh = new THREE.Mesh(geometry, material);
 //        console.log(mesh);
         mesh.quaternion.setFromAxisAngle(new THREE.Vector3(1, 0, 0), Math.PI * 0.5);
-        mesh.position.x = pose.position.x
-        mesh.position.y = pose.position.y
-        mesh.position.z = pose.position.z
+        mesh.position.x = pose.position.x;
+        mesh.position.y = pose.position.y;
+        mesh.position.z = pose.position.z;
         return mesh
     }
 
