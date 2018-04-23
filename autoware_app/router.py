@@ -31,7 +31,7 @@ class MqttRosLauncher:
         },
         # button launch signal and status,response
         "initialization": {
-            "enable": False,
+            "enable": True,
             "mode": "off",
             "topic": "",
             "subscribe": True
@@ -113,27 +113,6 @@ class MqttRosLauncher:
             "mode": "off",
             "topic": "",
             "subscribe": True
-        },
-        "rosbagMode": {
-            "enable": True,
-            "mode": "off",
-            "topic": "",
-            "subscribe": True,
-            "type": "modeSet"
-        },
-        "simulatorMode": {
-            "enable": True,
-            "mode": "off",
-            "topic": "",
-            "subscribe": True,
-            "type": "modeSet"
-        },
-        "driveMode": {
-            "enable": True,
-            "mode": "off",
-            "topic": "",
-            "subscribe": True,
-            "type": "modeSet"
         },
         # get rosparam
         "get_param": {
@@ -323,9 +302,12 @@ class MqttRosLauncher:
             return "error"
 
     def __allLaunch(self, domain, label, message):
-        self.rtm_status[label]["mode"] = message
+        all_activation = json.loads(message)
+        on_flag = all_activation["on"]
+        self.rtm_status[label]["mode"] = on_flag
+        launch_mode = all_activation["settingParams"]["mode"]["mode"]
         try:
-            self.rosController.all_launch(domain, label, message)
+            self.rosController.all_launch(domain, label, on_flag, launch_mode)
             return "ok"
         except:
             traceback.print_exc()
@@ -344,8 +326,6 @@ class MqttRosLauncher:
 
         if topic_type == "buttonInit":
             return self.__getRTMStatus()
-        elif topic_type == "modeSet":
-            return self.__modeSet(domain, msg.payload)
         elif topic_type == "settingSaveLoad":
             return self.__settingSaveLoad(label, msg.payload)
         elif topic_type == "button":
@@ -370,7 +350,6 @@ class MqttRosLauncher:
                 self.client.subscribe(topic)
 
     def __on_message(self, client, userdata, msg):
-        print(msg.topic + ' ' + str(msg.payload))
         res = self.__execution(msg)
 
         space, header, body, direction = msg.topic.split("/")

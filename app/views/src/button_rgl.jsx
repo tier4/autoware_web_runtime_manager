@@ -38,12 +38,18 @@ class GridSizeWrapper extends React.Component {
 export default class ButtonRGL extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {modalIsOpen: false};
+        this.state = {
+            modalIsOpen: false,
+            nodeID: -1
+        };
 
     }
 
-    openModal() {
-        this.setState({modalIsOpen: true});
+    openModal(nodeID) {
+        this.setState({
+            modalIsOpen: true,
+            nodeID: nodeID
+        });
     }
 
     saveSettingModal(file_name) {
@@ -54,37 +60,45 @@ export default class ButtonRGL extends React.Component {
         this.props.mqttClient.onPublish(CONST.SETTING_LOAD.LABEL, file_name);
     }
 
-    submitModal() {
-
+    submitModeModal(nodeID) {
+        console.log("mode submit", nodeID);
         const structure = this.props.structure;
-
-        this.setState({modalIsOpen: false});
-
-        const index = structure.nodes.findIndex(node => node.label === CONST.BUTTON.SETTING.LABEL);
-        const message = JSON.stringify(this.props.settingParams);
-        this.props.mqttClient.onPublish(CONST.BUTTON.SETTING.LABEL, message);
+        const index = structure.nodes.findIndex(node => node.id === nodeID);
         structure.nodes = this.getUpdatedNodes(
             structure.nodes[index].id,
             !structure.nodes[index].on,
             structure.nodes);
-        // structure.nodes[index].span = (<span>{"setting..."}</span>);
+        const message = JSON.stringify({
+            on: structure.nodes[index].on ? "on" : "off",
+            settingParams: this.props.settingParams
+        });
+        this.props.mqttClient.onPublish(structure.nodes[index].label, message);
+        structure.nodes[index].span = (<span>{(structure.nodes[index].on ? "loading.." : "killing..")}</span>);
+        this.setState({
+            modalIsOpen: false,
+            nodeID: -1
+        });
+        this.props.updateStructure(structure);
+    }
 
+    submitSettingModal(nodeID) {
+        console.log("mode submit", nodeID);
+        const structure = this.props.structure;
+        const index = structure.nodes.findIndex(node => node.id === nodeID);
+        const message = JSON.stringify(this.props.settingParams);
+        this.props.mqttClient.onPublish(structure.nodes[index].label, message);
+        this.setState({
+            modalIsOpen: false,
+            nodeID: -1
+        });
         this.props.updateStructure(structure);
     }
 
     closeModal() {
-
-        const structure = this.props.structure;
-
-        this.setState({modalIsOpen: false});
-
-        const index = structure.nodes.findIndex(node => node.label === CONST.BUTTON.SETTING.LABEL);
-
-        structure.nodes = this.getUpdatedNodes(
-            structure.nodes[index].id,
-            !structure.nodes[index].on,
-            structure.nodes);
-        this.props.updateStructure(structure);
+        this.setState({
+            modalIsOpen: false,
+            nodeID: -1
+        });
     }
 
     getLayout() {
@@ -149,11 +163,14 @@ export default class ButtonRGL extends React.Component {
                 <SettingModal
                     isActive={this.state.modalIsOpen}
                     onClose={this.closeModal.bind(this)}
-                    onSubmit={this.submitModal.bind(this)}
+                    onModeSubmit={this.submitModeModal.bind(this)}
+                    onSettingSubmit={this.submitSettingModal.bind(this)}
                     onSaveSetting={this.saveSettingModal.bind(this)}
                     onLoadSetting={this.loadSettingModal.bind(this)}
                     updateSettingParamsStructure={this.props.updateSettingParamsStructure}
                     settingParams={this.props.settingParams}
+                    nodeID={this.state.nodeID}
+                    structure={this.props.structure}
                 />
 
                 <ResponsiveReactGridLayout
@@ -242,7 +259,7 @@ export default class ButtonRGL extends React.Component {
 
     }
 
-    setButtonCallback(){
+    setButtonCallback() {
         let buttonMethod = function (message) {
             //console.log(message.payloadString);
             const topic_factor = message.destinationName.split("/");
@@ -267,29 +284,35 @@ export default class ButtonRGL extends React.Component {
         const index = this.props.structure.nodes.findIndex(node => node.id === nodeID);
         if (this.props.structure.nodes[index].enabled) {
             const structure = this.props.structure;
-            structure.nodes = this.getUpdatedNodes(
-                nodeID,
-                !this.props.structure.nodes[index].on,
-                this.props.structure.nodes);
             if (structure.nodes[index].label === CONST.BUTTON.SETTING.LABEL) {
-                if (structure.nodes[index].on) {
-                    this.openModal();
+                if (!structure.nodes[index].on) {
+                    this.openModal(nodeID);
                 }
-            }else if(structure.nodes[index].label === CONST.REDISPLAY.LABEL){
-                location.reload(true);
-            }else if(structure.nodes[index].label === CONST.ROSBAG_MODE.LABEL ||
-                structure.nodes[index].label === CONST.SIM_MODE.LABEL ||
-                structure.nodes[index].label === CONST.DRIVE_MODE.LABEL){
-                const label = structure.nodes[index].label;
-                const message = {
-                    mode: structure.nodes[index].label,
-                    on: structure.nodes[index].on
-                };
-                const json_message = JSON.stringify(message);
+            } else if (structure.nodes[index].label === CONST.BUTTON.ALL_ACTIVATION.LABEL) {
+                if (!structure.nodes[index].on) {
+                    this.openModal(nodeID);
+                } else {
+                    structure.nodes = this.getUpdatedNodes(
+                        nodeID,
+                        !structure.nodes[index].on,
+                        structure.nodes);
+                    const label = structure.nodes[index].label;
+                    const message = JSON.stringify({
+                        on: structure.nodes[index].on ? "on" : "off",
+                        settingParams: this.props.settingParams
+                    });
 
-                this.props.mqttClient.onPublish(label, json_message);
-                structure.nodes[index].span = (<span>{(structure.nodes[index].on ? "loading.." : "killing..")}</span>);
-            }else{
+                    this.props.mqttClient.onPublish(label, message);
+                    structure.nodes[index].span = (
+                        <span>{(structure.nodes[index].on ? "loading.." : "killing..")}</span>);
+                }
+            } else if (structure.nodes[index].label === CONST.REDISPLAY.LABEL) {
+                location.reload(true);
+            } else {
+                structure.nodes = this.getUpdatedNodes(
+                    nodeID,
+                    !structure.nodes[index].on,
+                    structure.nodes);
                 // set callback handlers
                 const label = structure.nodes[index].label;
                 const message = structure.nodes[index].on ? "on" : "off";
@@ -308,17 +331,19 @@ export default class ButtonRGL extends React.Component {
             this.setOnNode(nodes, index);
         }
         this.setEnable(nodes);
+        /*
         if (nodes[nodes.findIndex(node => node.label === CONST.ROSBAG_MODE.LABEL)].on === false &&
         nodes[nodes.findIndex(node => node.label === CONST.SIM_MODE.LABEL)].on === false &&
         nodes[nodes.findIndex(node => node.label === CONST.DRIVE_MODE.LABEL)].on === false){
-            nodes[nodes.findIndex(node => node.label === CONST.BUTTON.INITIALIZATION.LABEL)].enabled = false;
+            nodes[nodes.findIndex(node => node.label === CONST.BUTTON.INITIALIZATION.LABEL)].enabled = true;
         }else{
             nodes[nodes.findIndex(node => node.label === CONST.BUTTON.INITIALIZATION.LABEL)].enabled = true;
         }
+        */
         if (nodes[nodes.findIndex(node => node.label === CONST.BUTTON.ALL_ACTIVATION.LABEL)].on === false) {
             for (const id of nodes[nodes.findIndex(node => node.label === CONST.BUTTON.ALL_ACTIVATION.LABEL)].required.forDisable.on) {
                 if (nodes[nodes.findIndex(node => node.id === id)].on === true) {
-                    nodes[nodes.findIndex(node => node.label === CONST.BUTTON.ALL_ACTIVATION.LABEL)].enabled = false;
+                    nodes[nodes.findIndex(node => node.label === CONST.BUTTON.ALL_ACTIVATION.LABEL)].enabled = true;
                 }
             }
         }

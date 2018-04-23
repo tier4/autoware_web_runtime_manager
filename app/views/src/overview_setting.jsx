@@ -1,7 +1,7 @@
 import React from 'react';
 import * as jsyaml from "js-yaml";
 
-export default class SettingDetails extends React.Component {
+export default class OverviewSetting extends React.Component {
 
 
     constructor(props) {

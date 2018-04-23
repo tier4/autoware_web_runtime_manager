@@ -215,7 +215,7 @@ export default class RosView {
                 if (!this.sceneData.vehicleCollada.isAdded) {
 //                    console.log("scene.add vehicleCollada");
                     this.scene.add(this.sceneData.vehicleCollada.threeJSObject);
-                    this.updateCameraPosition()
+                    this.updateCameraPosition();
                     this.sceneData.vehicleCollada.isAdded = true;
                 }
             }

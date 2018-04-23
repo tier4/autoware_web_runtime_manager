@@ -21,6 +21,10 @@ class ROSController(object):
 
     __initial_parameter_info = {
         "settingParams": {
+            "mode": {
+                "mode": "",
+                "flag": False
+            },
             "TFBaseToVelodyne": {
                 "tf_x": 0,
                 "tf_y": 0,
@@ -100,7 +104,7 @@ class ROSController(object):
         self.__vehicle_info = ""
         self.__waypoints_path = ""
         self.__rviz_setting_path = ""
-        self.__autoware_mode = ""
+        self.__autoware_mode = "rosbagMode"
         self.__sim_mode = ""
 
         # launch file path
@@ -231,11 +235,11 @@ class ROSController(object):
 
         return True
 
-    def all_launch(self, domain="map", target="map", mode="on"):
+    def all_launch(self, domain="map", target="map", mode="on", launch_mode="rosbagMode"):
         launch_id = "/".join([domain, target])
         if mode == "on":
-            launch_list = ["roslaunch", self.__path + CONST["MODE"][self.__autoware_mode]["allActivation"]]
-            launch_list = self.set_roslaunch_argument(CONST["MODE"][self.__autoware_mode]["domain"], launch_list)
+            launch_list = ["roslaunch", self.__path + CONST["MODE"][launch_mode]["allActivation"]]
+            launch_list = self.set_roslaunch_argument(CONST["MODE"][launch_mode]["domain"], launch_list)
             self.__launchers[launch_id] = Popen(launch_list)
         else:
             if launch_id in self.__launches or launch_id in self.__launchers:

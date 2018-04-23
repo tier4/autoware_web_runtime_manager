@@ -179,33 +179,6 @@ export default class MqttWrapper {
                     "callback": function () {
                     }
                 },
-                "rosbagMode": {
-                    "domain": CONST.ROSBAG_MODE.DOMAIN,
-                    "label": CONST.ROSBAG_MODE.LABEL,
-                    "type": "modeSet",
-                    "topic": "",
-                    "errorPublishMessage": "Rosbag mode topic can not publish.",
-                    "callback": function () {
-                    }
-                },
-                "simulatorMode": {
-                    "domain": CONST.SIM_MODE.DOMAIN,
-                    "label": CONST.SIM_MODE.LABEL,
-                    "type": "modeSet",
-                    "topic": "",
-                    "errorPublishMessage": "Simulation mode topic can not publish.",
-                    "callback": function () {
-                    }
-                },
-                "driveMode": {
-                    "domain": CONST.DRIVE_MODE.DOMAIN,
-                    "label": CONST.DRIVE_MODE.LABEL,
-                    "type": "modeSet",
-                    "topic": "",
-                    "errorPublishMessage": "Drive mode topic can not publish.",
-                    "callback": function () {
-                    }
-                },
                 "ImageRaw": {
                     "domain": CONST.VISUALIZATION_OBJECT.IMAGE_RAW,
                     "label": CONST.VISUALIZATION_OBJECT.IMAGE_RAW,
@@ -342,7 +315,7 @@ export default class MqttWrapper {
     onPublish(label, msg){
         // console.log(label,msg);
         try {
-            var message = new Paho.MQTT.Message(msg);
+            let message = new Paho.MQTT.Message(msg);
             message.destinationName = this.getPublishTopicName(label);
             this.mqttClient.send(message);
 

@@ -25,3 +25,11 @@ input[type=checkbox] {
     transform: translateY(4px);/*下に動く*/
     border-bottom: none;/*線を消す*/
 }
+
+.modeRadio {
+    transform: scale(1.5);
+}
+
+.modeRadioChar {
+    font-size: 30px;
+}

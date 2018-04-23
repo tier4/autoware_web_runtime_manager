@@ -29,7 +29,7 @@ class Index extends React.Component {
                 rowHeight: 7,
                 nodes: [
                     {
-                        id: 1, x: 0, y: 3, w: 4, h: 3,
+                        id: 1, x: 0, y: 0, w: 4, h: 3,
                         enabled: false, on: false, isLoading: false, isKilling: false,
                         required: {
                             forOn: {on: []},
@@ -43,7 +43,7 @@ class Index extends React.Component {
                         span: (<span>Initialization</span>)
                     },
                     {
-                        id: 2, x: 0, y: 6, w: 4, h: 3,
+                        id: 2, x: 4, y: 0, w: 4, h: 3,
                         enabled: false, on: false, isLoading: false, isKilling: false,
                         required: {
                             forOn: {on: [14]},
@@ -58,7 +58,7 @@ class Index extends React.Component {
                     {
                         id: 3,
                         x: 8,
-                        y: 6,
+                        y: 0,
                         w: 4,
                         h: 3,
                         enabled: false,
@@ -79,7 +79,7 @@ class Index extends React.Component {
                     {
                         id: 4,
                         x: 12,
-                        y: 6,
+                        y: 0,
                         w: 4,
                         h: 3,
                         enabled: false,
@@ -98,7 +98,7 @@ class Index extends React.Component {
                         span: (<span>Mission</span>)
                     },
                     {
-                        id: 5, x: 16, y: 6, w: 4, h: 3,
+                        id: 5, x: 16, y: 0, w: 4, h: 3,
                         enabled: false, on: false, isLoading: false, isKilling: false,
                         required: {
                             forOn: {on: [14]},
@@ -109,7 +109,7 @@ class Index extends React.Component {
                         domain: "motion", label: 'motion', display: "Motion", span: (<span>Motion</span>)
                     },
                     {
-                        id: 6, x: 4, y: 6, w: 4, h: 3,
+                        id: 6, x: 4, y: 3, w: 4, h: 3,
                         enabled: false, on: false, isLoading: false, isKilling: false,
                         required: {
                             forOn: {on: [14]},
@@ -120,7 +120,7 @@ class Index extends React.Component {
                         domain: "sensing", label: 'sensing', display: "Sensing", span: (<span>Sensing</span>)
                     },
                     {
-                        id: 7, x: 12, y: 9, w: 4, h: 3,
+                        id: 7, x: 12, y: 3, w: 4, h: 3,
                         enabled: false, on: false, isLoading: false, isKilling: false,
                         required: {
                             forOn: {on: []},
@@ -131,40 +131,40 @@ class Index extends React.Component {
                         domain: "detection", label: 'detection', display: "Detection", span: (<span>Detection</span>)
                     },
                     {
-                        id: 8, x: 0, y: 9, w: 2, h: 3,
+                        id: 8, x: 0, y: 3, w: 2, h: 3,
                         enabled: false, on: false, isLoading: false, isKilling: false,
                         required: {
                             forOn: {on: [14]},
                             forOff: {},
-                            forEnable: {on: [1], off: [11, 16, 17], enable: [1], disable: []},
+                            forEnable: {on: [1], off: [11], enable: [1], disable: []},
                             forDisable: {}
                         },
                         domain: "rosbag", label: 'rosbag', display: "ROSBAG", span: (<span>ROSBAG</span>)
                     },
                     {
-                        id: 9, x: 2, y: 9, w: 2, h: 3,
+                        id: 9, x: 2, y: 3, w: 2, h: 3,
                         enabled: false, on: false, isLoading: false, isKilling: false,
                         required: {
                             forOn: {on: []},
                             forOff: {},
-                            forEnable: {on: [8], off: [11, 16, 17], enable: [], disable: []},
+                            forEnable: {on: [8], off: [11], enable: [], disable: []},
                             forDisable: {}
                         },
                         domain: "rosbag", label: 'play', display: "Play", span: (<span>play</span>)
                     },
                     {
-                        id: 10, x: 16, y: 9, w: 2, h: 3,
+                        id: 10, x: 16, y: 3, w: 2, h: 3,
                         enabled: false, on: false, isLoading: false, isKilling: false,
                         required: {
                             forOn: {on: []},
                             forOff: {},
-                            forEnable: {on: [5], off: [11, 15, 16], enable: [], disable: []},
+                            forEnable: {on: [5], off: [11], enable: [], disable: []},
                             forDisable: {}
                         },
                         domain: "gateway", label: 'gateway', display: "Gateway", span: (<span>Gateway</span>)
                     },
                     {
-                        id: 11, x: 18, y: 9, w: 2, h: 3,
+                        id: 11, x: 18, y: 3, w: 2, h: 3,
                         enabled: false, on: false, isLoading: false, isKilling: false,
                         required: {
                             forOn: {on: []},
@@ -175,7 +175,7 @@ class Index extends React.Component {
                         domain: "gateway", label: 'on', display: "On", span: (<span>On</span>)
                     },
                     {
-                        id: 12, x: 0, y: 12, w: 4, h: 3,
+                        id: 12, x: 0, y: 6, w: 4, h: 3,
                         enabled: false, on: false, isLoading: false, isKilling: false,
                         required: {
                             forOn: {on: []},
@@ -189,7 +189,7 @@ class Index extends React.Component {
                         span: (<span>Rviz</span>)
                     },
                     {
-                        id: 13, x: 4, y: 12, w: 4, h: 3,
+                        id: 13, x: 4, y: 6, w: 4, h: 3,
                         enabled: false, on: false, isLoading: false, isKilling: false,
                         required: {
                             forOn: {on: []},
@@ -203,7 +203,7 @@ class Index extends React.Component {
                         span: (<span>Setting</span>)
                     },
                     {
-                        id: 14, x: 4, y: 3, w: 4, h: 3,
+                        id: 14, x: 8, y: 6, w: 4, h: 3,
                         enabled: false, on: false, isLoading: false, isKilling: false,
                         required: {
                             forOn: {on: []},
@@ -217,49 +217,7 @@ class Index extends React.Component {
                         span: (<span>ALL Activation</span>)
                     },
                    {
-                        id: 15, x: 0, y: 0, w: 4, h: 3,
-                        enabled: false, on: false, isLoading: false, isKilling: false,
-                        required: {
-                            forOn: {on: []},
-                            forOff: {},
-                            forEnable: {on: [], off: [1, 16, 17], enable: [], disable: []},
-                            forDisable: {}
-                        },
-                        domain: CONST.ROSBAG_MODE.DOMAIN,
-                        label: CONST.ROSBAG_MODE.LABEL,
-                        display: "Robag Mode",
-                        span: (<span>Robag Mode</span>)
-                    },
-                   {
-                        id: 16, x: 4, y: 0, w: 4, h: 3,
-                        enabled: false, on: false, isLoading: false, isKilling: false,
-                        required: {
-                            forOn: {on: []},
-                            forOff: {},
-                            forEnable: {on: [], off: [1, 15, 17], enable: [], disable: []},
-                            forDisable: {}
-                        },
-                        domain: CONST.SIM_MODE.DOMAIN,
-                        label: CONST.SIM_MODE.LABEL,
-                        display: "Sim Mode",
-                        span: (<span>Sim Mode</span>)
-                    },
-                   {
-                        id: 17, x: 8, y: 0, w: 4, h: 3,
-                        enabled: false, on: false, isLoading: false, isKilling: false,
-                        required: {
-                            forOn: {on: []},
-                            forOff: {},
-                            forEnable: {on: [], off: [1, 15, 16], enable: [], disable: []},
-                            forDisable: {}
-                        },
-                        domain: CONST.DRIVE_MODE.DOMAIN,
-                        label: CONST.DRIVE_MODE.LABEL,
-                        display: "Drive Mode",
-                        span: (<span>Drive Mode</span>)
-                    },
-                   {
-                        id: 18, x: 12, y: 0, w: 4, h: 3,
+                        id: 18, x: 16, y: 6, w: 4, h: 3,
                         enabled: true, on: false, isLoading: false, isKilling: false,
                         required: {
                             forOn: {on: []},
@@ -450,7 +408,8 @@ class Index extends React.Component {
             },
             settingParams: {
                 mode: {
-                    mode: ""
+                    mode: "",
+                    flag: false
                 },
                 TFBaseToVelodyne: {
                     tf_x: 0,
