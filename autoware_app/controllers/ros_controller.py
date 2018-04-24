@@ -88,6 +88,8 @@ class ROSController(object):
         self.__launchers = {}
 
         # parameter
+        self.__ros_bridge_params = ""
+        self.__image_bridge_params = ""
         self.__use_sim_time_flag = ""
         self.__location = ""
         self.__pointsmap_paths = ""
@@ -284,15 +286,9 @@ class ROSController(object):
     def gateway_off(self):
         self.launch(domain="gateway", target="off")
 
-    def modeSet(self, message):
-        self.__autoware_mode = message
-
-        self.__sim_mode = ""
-        if self.__autoware_mode == "rosbagMode":
-            self.__use_sim_time_flag = "use_sim_time_flag:=True"
-        elif self.__autoware_mode == "simulatorMode":
-            self.__sim_mode = "sim_mode:=True"
-        return "ok"
+    def setRosBridgeData(self, ros_bridge_params, image_bridge_params):
+        self.__ros_bridge_params = ros_bridge_params
+        self.__image_bridge_params = image_bridge_params
 
     def settingSave(self, message):
         filename = self.__path + CONST["SETTING"]["PATH"] + message

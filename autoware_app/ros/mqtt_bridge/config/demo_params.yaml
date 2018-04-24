@@ -8,7 +8,6 @@ mqtt:
   private_path: device/001
 serializer: json:dumps
 deserializer: json:loads
-wrm: ${HOME}/autoware_web_runtime_manager_local/autoware_app/mqtt_setting/config.json
 bridge:
   # ndt_pose
   - factory: mqtt_bridge.bridge:RosToMqttBridge

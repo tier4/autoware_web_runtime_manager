@@ -15,22 +15,21 @@ export default class MqttWrapper {
         this.host = MQTT_HOST_NAME;
         this.port = parseInt(MQTT_PORT);
 
-        //label is unique.
-        //fixeddata : header and footer
-        //topicdata :
+        //label is unique
         this.topics = {
             "fixeddata": {
-                "userid": "",
-                "carid": "",
-                "toAutoware": "",
-                "fromAutoware": ""
+                "userID": "",
+                "vehicleID": "",
+                "node1": "",
+                "node2": ""
             },
             "topicdata": {
                 "buttonInit": {
                     "domain": CONST.BUTTON_INIT.DOMAIN,
                     "label": CONST.BUTTON_INIT.LABEL,
                     "type": "buttonInit",
-                    "topic": "",
+                    "topic_send": "",
+                    "topic_receive": "",
                     "errorPublishMessage": "buttonInit topic can not publish.",
                     "callback": function () {
                     }
@@ -39,7 +38,8 @@ export default class MqttWrapper {
                     "domain": CONST.SETTING_SAVE.DOMAIN,
                     "label": CONST.SETTING_SAVE.LABEL,
                     "type": "settingSaveLoad",
-                    "topic": "",
+                    "topic_send": "",
+                    "topic_receive": "",
                     "errorPublishMessage": "settingSaveLoad topic can not publish.",
                     "callback": function () {
                     }
@@ -48,7 +48,8 @@ export default class MqttWrapper {
                     "domain": CONST.SETTING_LOAD.DOMAIN,
                     "label": CONST.SETTING_LOAD.LABEL,
                     "type": "settingSaveLoad",
-                    "topic": "",
+                    "topic_send": "",
+                    "topic_receive": "",
                     "errorPublishMessage": "settingSaveLoad topic can not publish.",
                     "callback": function () {
                     }
@@ -57,7 +58,8 @@ export default class MqttWrapper {
                     "domain": CONST.BUTTON.INITIALIZATION.DOMAIN,
                     "label": CONST.BUTTON.INITIALIZATION.LABEL,
                     "type": "button",
-                    "topic": "",
+                    "topic_send": "",
+                    "topic_receive": "",
                     "errorPublishMessage": "initialization topic can not publish.",
                     "callback": function () {
                     }
@@ -66,7 +68,8 @@ export default class MqttWrapper {
                     "domain": CONST.BUTTON.MAP.DOMAIN,
                     "label": CONST.BUTTON.MAP.LABEL,
                     "type": "button",
-                    "topic": "",
+                    "topic_send": "",
+                    "topic_receive": "",
                     "errorPublishMessage": "map topic can not publish.",
                     "callback": function () {
                     }
@@ -75,7 +78,8 @@ export default class MqttWrapper {
                     "domain": CONST.BUTTON.LOCALIZATION.DOMAIN,
                     "label": CONST.BUTTON.LOCALIZATION.LABEL,
                     "type": "button",
-                    "topic": "",
+                    "topic_send": "",
+                    "topic_receive": "",
                     "errorPublishMessage": "localization topic can not publish.",
                     "callback": function () {
                     }
@@ -84,7 +88,8 @@ export default class MqttWrapper {
                     "domain": CONST.BUTTON.MISSION.DOMAIN,
                     "label": CONST.BUTTON.MISSION.LABEL,
                     "type": "button",
-                    "topic": "",
+                    "topic_send": "",
+                    "topic_receive": "",
                     "errorPublishMessage": "mission topic can not publish.",
                     "callback": function () {
                     }
@@ -93,7 +98,8 @@ export default class MqttWrapper {
                     "domain": CONST.BUTTON.MOTION.DOMAIN,
                     "label": CONST.BUTTON.MOTION.LABEL,
                     "type": "button",
-                    "topic": "",
+                    "topic_send": "",
+                    "topic_receive": "",
                     "errorPublishMessage": "motion topic can not publish.",
                     "callback": function () {
                     },
@@ -102,7 +108,8 @@ export default class MqttWrapper {
                     "domain": CONST.BUTTON.SENSING.DOMAIN,
                     "label": CONST.BUTTON.SENSING.LABEL,
                     "type": "button",
-                    "topic": "",
+                    "topic_send": "",
+                    "topic_receive": "",
                     "errorPublishMessage": "sensing topic can not publish.",
                     "callback": function () {
                     }
@@ -111,7 +118,8 @@ export default class MqttWrapper {
                     "domain": CONST.BUTTON.DETECTION.DOMAIN,
                     "label": CONST.BUTTON.DETECTION.LABEL,
                     "type": "button",
-                    "topic": "",
+                    "topic_send": "",
+                    "topic_receive": "",
                     "errorPublishMessage": "detection topic can not publish.",
                     "callback": function () {
                     }
@@ -120,7 +128,8 @@ export default class MqttWrapper {
                     "domain": CONST.BUTTON.ROSBAG.DOMAIN,
                     "label": CONST.BUTTON.ROSBAG.LABEL,
                     "type": "button",
-                    "topic": "",
+                    "topic_send": "",
+                    "topic_receive": "",
                     "errorPublishMessage": "rosbag topic can not publish.",
                     "callback": function () {
                     }
@@ -129,7 +138,8 @@ export default class MqttWrapper {
                     "domain": CONST.BUTTON.ROSBAG.DOMAIN,
                     "label": CONST.BUTTON.ROSBAG_PLAY.LABEL,
                     "type": "button",
-                    "topic": "",
+                    "topic_send": "",
+                    "topic_receive": "",
                     "errorPublishMessage": "rosbag_play topic can not publish.",
                     "callback": function () {
                     }
@@ -138,7 +148,8 @@ export default class MqttWrapper {
                     "domain": CONST.BUTTON.GATEWAY.DOMAIN,
                     "label": CONST.BUTTON.GATEWAY.LABEL,
                     "type": "button",
-                    "topic": "",
+                    "topic_send": "",
+                    "topic_receive": "",
                     "errorPublishMessage": "gateway topic can not publish.",
                     "callback": function () {
                     }
@@ -147,7 +158,8 @@ export default class MqttWrapper {
                     "domain": CONST.BUTTON.GATEWAY.DOMAIN,
                     "label": CONST.BUTTON.GATEWAY_ON.LABEL,
                     "type": "button",
-                    "topic": "",
+                    "topic_send": "",
+                    "topic_receive": "",
                     "errorPublishMessage": "gateway_on topic can not publish.",
                     "callback": function () {
                     }
@@ -156,7 +168,8 @@ export default class MqttWrapper {
                     "domain": CONST.BUTTON.RVIZ.DOMAIN,
                     "label": CONST.BUTTON.RVIZ.LABEL,
                     "type": "button",
-                    "topic": "",
+                    "topic_send": "",
+                    "topic_receive": "",
                     "errorPublishMessage": "rviz topic can not publish.",
                     "callback": function () {
                     }
@@ -165,7 +178,8 @@ export default class MqttWrapper {
                     "domain": CONST.BUTTON.SETTING.DOMAIN,
                     "label": CONST.BUTTON.SETTING.LABEL,
                     "type": "button",
-                    "topic": "",
+                    "topic_send": "",
+                    "topic_receive": "",
                     "errorPublishMessage": "setting topic can not publish.",
                     "callback": function () {
                     }
@@ -174,35 +188,9 @@ export default class MqttWrapper {
                     "domain": CONST.BUTTON.ALL_ACTIVATION.DOMAIN,
                     "label": CONST.BUTTON.ALL_ACTIVATION.LABEL,
                     "type": "allActivation",
-                    "topic": "",
+                    "topic_send": "",
+                    "topic_receive": "",
                     "errorPublishMessage": "All Activation topic can not publish.",
-                    "callback": function () {
-                    }
-                },
-                "rosbagMode": {
-                    "domain": CONST.ROSBAG_MODE.DOMAIN,
-                    "label": CONST.ROSBAG_MODE.LABEL,
-                    "type": "modeSet",
-                    "topic": "",
-                    "errorPublishMessage": "Rosbag mode topic can not publish.",
-                    "callback": function () {
-                    }
-                },
-                "simulatorMode": {
-                    "domain": CONST.SIM_MODE.DOMAIN,
-                    "label": CONST.SIM_MODE.LABEL,
-                    "type": "modeSet",
-                    "topic": "",
-                    "errorPublishMessage": "Simulation mode topic can not publish.",
-                    "callback": function () {
-                    }
-                },
-                "driveMode": {
-                    "domain": CONST.DRIVE_MODE.DOMAIN,
-                    "label": CONST.DRIVE_MODE.LABEL,
-                    "type": "modeSet",
-                    "topic": "",
-                    "errorPublishMessage": "Drive mode topic can not publish.",
                     "callback": function () {
                     }
                 },
@@ -210,62 +198,74 @@ export default class MqttWrapper {
                     "domain": CONST.VISUALIZATION_OBJECT.IMAGE_RAW,
                     "label": CONST.VISUALIZATION_OBJECT.IMAGE_RAW,
                     "type": "image",
-                    "topic": "",
+                    "topic_send": "",
+                    "topic_receive": "",
                     "callback": function () {
                     }
                 },
                 "points_raw": {
-                    "topic": "",
+                    "topic_send": "",
+                    "topic_receive": "",
                     "callback": function () {
                     }
                 },
                 "ndt_pose": {
-                    "topic": "",
+                    "topic_send": "",
+                    "topic_receive": "",
                     "callback": function () {
                     }
                 },
                 "tf": {
-                    "topic": "",
+                    "topic_send": "",
+                    "topic_receive": "",
                     "callback": function () {
                     }
                 },
                 "vector_map": {
-                    "topic": "",
+                    "topic_send": "",
+                    "topic_receive": "",
                     "callback": function () {
                     }
                 },
                 "lane_waypoints_array": {
-                    "topic": "",
+                    "topic_send": "",
+                    "topic_receive": "",
                     "callback": function () {
                     }
                 },
                 "downsampled_next_target_mark": {
-                    "topic": "",
+                    "topic_send": "",
+                    "topic_receive": "",
                     "callback": function () {
                     }
                 },
                 "downsampled_trajectory_circle_mark": {
-                    "topic": "",
+                    "topic_send": "",
+                    "topic_receive": "",
                     "callback": function () {
                     }
                 },
                 "map_pose": {
-                    "topic": "",
+                    "topic_send": "",
+                    "topic_receive": "",
                     "callback": function () {
                     }
                 },
                 "get_param": {
-                    "topic": "",
+                    "topic_send": "",
+                    "topic_receive": "",
                     "callback": function () {
                     }
                 },
                 "clock": {
-                    "topic": "",
+                    "topic_send": "",
+                    "topic_receive": "",
                     "callback": function () {
                     }
                 },
                 "initialpose": {
-                    "topic": "",
+                    "topic_send": "",
+                    "topic_receive": "",
                     "callback": function () {
                     }
                 }
@@ -325,9 +325,16 @@ export default class MqttWrapper {
                 this.topics["fixeddata"]["carid"] = json["fixeddata"]["carid"];
                 this.topics["fixeddata"]["toAutoware"] = json["fixeddata"]["toAutoware"];
                 this.topics["fixeddata"]["fromAutoware"] = json["fixeddata"]["fromAutoware"];
+                let user_id = json["fixeddata"]["userID"];
+                let vehicle_id = json["fixeddata"]["vehicleID"];
+                let Autoware = json["fixeddata"]["Autoware"];
+                let User = json["fixeddata"]["User"];
                 for (const key in this.topics["topicdata"]) {
                     //console.log(key);
-                    this.topics["topicdata"][key]["topic"] = json["topicdata"][key]["topic"];
+                    this.topics["topicdata"][key]["topic_send"] = "/" + user_id + "/" + vehicle_id + "/" + type + "/"
+                        + domain + "/" + label + "/" + User+ "/" + Autoware;
+                    this.topics["topicdata"][key]["topic_send"] = "/" + user_id + "/" + vehicle_id + "/" + type + "/"
+                        + domain + "/" + label + "/" + Autoware + "/" + User;
                 }
 
                 // connect the client
@@ -398,11 +405,7 @@ export default class MqttWrapper {
     //body is topic of this.topics.topicdata
     getPublishTopicName(label) {
         try {
-            const head = this.topics["fixeddata"]
-            const header = "/" + head["userid"] + "." + head["carid"];
-            const direction = "/" + head["toAutoware"];
-            const body = "/" + this.topics["topicdata"][label]["topic"];
-            return header + body + direction;
+            return this.topics["topicdata"][label]["topic_send"];
         } catch (error) {
             return "";
         }
@@ -412,11 +415,7 @@ export default class MqttWrapper {
     //body is topic of this.topics.topicdata
     getSubscribeTopicName(label) {
         try {
-            const head = this.topics["fixeddata"]
-            const header = "/" + head["userid"] + "." + head["carid"];
-            const direction = "/" + head["fromAutoware"];
-            const body = "/" + this.topics["topicdata"][label]["topic"];
-            return header + body + direction;
+            return this.topics["topicdata"][label]["topic_receive"];
         } catch (error) {
             return "";
         }
