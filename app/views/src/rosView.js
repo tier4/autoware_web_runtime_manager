@@ -748,8 +748,8 @@ export default class RosView {
     getNextTarget(topic) {
 
         let that = this;
-        var getNextTargetMethod = function (msg) {
-            var message = JSON.parse(msg.payloadString);
+        let getNextTargetMethod = function (msg) {
+            let message = JSON.parse(msg.payloadString);
 
             const mesh = that.drawSphere(0x00FF00, message.pose.position);
             mesh.name = "nextTarget";

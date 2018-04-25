@@ -281,23 +281,20 @@ class MqttRosLauncher:
                                 "factory": "mqtt_bridge.bridge:RosToMqttBridge",
                                 "msg_type": value["msg_type"],
                                 "topic_from": value["ros_topic"],
-                                "topic_to": topics["topic_receive"]
+                                "topic_to": topics["topic_send"]
                             }
                             ros_bridge_params["bridge"].append(bridge_data)
                         elif value["mqtt_to_ros"]:
                             bridge_data = {
                                 "factory": "mqtt_bridge.bridge:MqttToRosBridge",
                                 "msg_type": value["msg_type"],
-                                "topic_from": topics["topic_send"],
+                                "topic_from": topics["topic_receive"],
                                 "topic_to": value["ros_topic"]
                             }
                             ros_bridge_params["bridge"].append(bridge_data)
                     if type == "image":
                         image_bridge_params["topic_send"] = topics["topic_send"]
                         image_bridge_params["topic_receive"] = topics["topic_receive"]
-
-                    print(self.__initial_rtm_status[key]["topic_receive"])
-                    print(self.__initial_rtm_status[key]["topic_send"])
 
             self.rosController.setRosBridgeData(ros_bridge_params, image_bridge_params)
 
@@ -418,7 +415,6 @@ class MqttRosLauncher:
         for key, value in self.rtm_status.items():
             if value["subscribe"]:
                 topic = value["topic_receive"]
-                print(topic)
                 self.client.subscribe(topic)
 
     def __on_message(self, client, userdata, msg):
