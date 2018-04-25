@@ -1,0 +1,230 @@
+{
+  "fixeddata": {
+    "userID": "test",
+    "vehicleID": "test",
+    "Autoware": "Autoware",
+    "User": "User"
+  },
+  "ros_bridge_data": {
+    "protocol": 4,
+    "keepalive": 60
+  },
+  "topicdata": {
+    "buttonInit": {
+      "type": "buttonInit",
+      "domain": "buttonInit",
+      "label": "buttonInit",
+      "topic": "buttonInit.buttonInit.buttonInit"
+    },
+    "settingSave": {
+      "type": "settingSaveLoad",
+      "domain": "settingSave",
+      "label": "settingSave",
+      "topic": "settingSaveLoad.settingSave.settingSave"
+    },
+    "settingLoad": {
+      "type": "settingSaveLoad",
+      "domain": "settingLoad",
+      "label": "settingLoad",
+      "topic": "settingSaveLoad.settingLoad.settingLoad"
+    },
+    "initialization": {
+      "type": "button",
+      "domain": "initialization",
+      "label": "initialization",
+      "topic": "button.initialization.initialization"
+    },
+    "map": {
+      "type": "button",
+      "domain": "map",
+      "label": "map",
+      "topic": "button.map.map"
+    },
+    "localization": {
+      "type": "button",
+      "domain": "localization",
+      "label": "localization",
+      "topic": "button.localization.localization"
+    },
+    "mission": {
+      "type": "button",
+      "domain": "mission",
+      "label": "mission",
+      "topic": "button.mission.mission"
+    },
+    "motion": {
+      "type": "button",
+      "domain": "motion",
+      "label": "motion",
+      "topic": "button.motion.motion"
+    },
+    "sensing": {
+      "type": "button",
+      "domain": "sensing",
+      "label": "sensing",
+      "topic": "button.sensing.sensing"
+    },
+    "detection": {
+      "type": "button",
+      "domain": "detection",
+      "label": "detection",
+      "topic": "button.detection.detection"
+    },
+    "rosbag": {
+      "type": "button",
+      "domain": "rosbag",
+      "label": "rosbag",
+      "topic": "button.rosbag.rosbag"
+    },
+    "play": {
+      "type": "button",
+      "domain": "rosbag",
+      "label": "play",
+      "topic": "button.rosbag.play"
+    },
+    "gateway": {
+      "type": "button",
+      "domain": "gateway",
+      "label": "gateway",
+      "topic": "button.gateway.gateway"
+    },
+    "on": {
+      "type": "button",
+      "domain": "gateway",
+      "label": "on",
+      "topic": "button.gateway.on"
+    },
+    "rviz": {
+      "type": "button",
+      "domain": "rviz",
+      "label": "rviz",
+      "topic": "button.rviz.rviz"
+    },
+    "setting": {
+      "type": "settingParams",
+      "domain": "setting",
+      "label": "setting",
+      "topic": "settingParams.setting.setting"
+    },
+    "allActivation": {
+      "type": "allActivation",
+      "domain": "allActivation",
+      "label": "allActivation",
+      "topic": "allActivation.allActivation.allActivation"
+    },
+    "get_param": {
+      "type": "getParam",
+      "domain": "get_param",
+      "label": "get_param",
+      "topic": "getParam.get_param.get_param"
+    },
+    "ImageRaw": {
+      "type": "image",
+      "domain": "ImageRaw",
+      "label": "ImageRaw",
+      "topic": "image.ImageRaw.ImageRaw"
+    },
+    "points_raw": {
+      "type": "rostopic",
+      "domain": "points_raw",
+      "label": "points_raw",
+      "topic": "rostopic.points_raw.points_raw",
+      "msg_type": "sensor_msgs.msg:PointCloud2",
+      "ros_topic": "/downsampled_points_raw",
+      "ros_to_mqtt": true,
+      "mqtt_to_ros": false
+    },
+    "ndt_pose": {
+      "type": "rostopic",
+      "domain": "ndt_pose",
+      "label": "ndt_pose",
+      "topic": "rostopic.ndt_pose.ndt_pose",
+      "msg_type": "geometry_msgs.msg:PoseStamped",
+      "ros_topic": "/current_pose",
+      "ros_to_mqtt": true,
+      "mqtt_to_ros": false
+    },
+    "tf": {
+      "type": "rostopic",
+      "domain": "tf",
+      "label": "tf",
+      "topic": "rostopic.tf.tf",
+      "msg_type": "tf2_msgs.msg:TFMessage",
+      "ros_topic": "/tf",
+      "ros_to_mqtt": true,
+      "mqtt_to_ros": false
+    },
+    "vector_map": {
+      "type": "rostopic",
+      "domain": "vector_map",
+      "label": "vector_map",
+      "topic": "rostopic.vector_map.vector_map",
+      "msg_type": "visualization_msgs.msg:MarkerArray",
+      "ros_topic": "/vector_map",
+      "ros_to_mqtt": true,
+      "mqtt_to_ros": false
+    },
+    "lane_waypoints_array": {
+      "type": "rostopic",
+      "domain": "lane_waypoints_array",
+      "label": "lane_waypoints_array",
+      "topic": "rostopic.lane_waypoints_array.lane_waypoints_array",
+      "msg_type": "autoware_msgs.msg:LaneArray",
+      "ros_topic": "/lane_waypoints_array",
+      "ros_to_mqtt": true,
+      "mqtt_to_ros": false
+    },
+    "downsampled_next_target_mark": {
+      "type": "rostopic",
+      "domain": "downsampled_next_target_mark",
+      "label": "downsampled_next_target_mark",
+      "topic": "rostopic.downsampled_next_target_mark.downsampled_next_target_mark",
+      "msg_type": "visualization_msgs.msg:Marker",
+      "ros_topic": "/downsampled_next_target_mark",
+      "ros_to_mqtt": true,
+      "mqtt_to_ros": false
+    },
+    "downsampled_trajectory_circle_mark": {
+      "type": "rostopic",
+      "domain": "downsampled_trajectory_circle_mark",
+      "label": "downsampled_trajectory_circle_mark",
+      "topic": "rostopic.downsampled_trajectory_circle_mark.downsampled_trajectory_circle_mark",
+      "msg_type": "visualization_msgs.msg:Marker",
+      "ros_topic": "/downsampled_trajectory_circle_mark",
+      "ros_to_mqtt": true,
+      "mqtt_to_ros": false
+    },
+    "map_pose": {
+      "type": "rostopic",
+      "domain": "map_pose",
+      "label": "map_pose",
+      "topic": "rostopic.map_pose.map_pose",
+      "msg_type": "geometry_msgs.msg:PoseStamped",
+      "ros_topic": "/current_pose",
+      "ros_to_mqtt": true,
+      "mqtt_to_ros": false
+    },
+    "clock": {
+      "type": "rostopic",
+      "domain": "clock",
+      "label": "clock",
+      "topic": "rostopic.clock.clock",
+      "msg_type": "rosgraph_msgs.msg:Clock",
+      "ros_topic": "/Clock",
+      "ros_to_mqtt": true,
+      "mqtt_to_ros": false
+    },
+    "initialpose": {
+      "type": "rostopic",
+      "domain": "initialpose",
+      "label": "initialpose",
+      "topic": "rostopic.initialpose.initialpose",
+      "msg_type": "geometry_msgs.msg:PoseWithCovarianceStamped",
+      "ros_topic": "/initialpose",
+      "ros_to_mqtt": false,
+      "mqtt_to_ros": true
+    }
+  }
+}
+
+
