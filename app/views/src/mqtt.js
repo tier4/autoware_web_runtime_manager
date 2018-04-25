@@ -17,12 +17,6 @@ export default class MqttWrapper {
 
         //label is unique
         this.topics = {
-            "fixeddata": {
-                "userID": "",
-                "vehicleID": "",
-                "node1": "",
-                "node2": ""
-            },
             "topicdata": {
                 "buttonInit": {
                     "domain": CONST.BUTTON_INIT.DOMAIN,
@@ -291,10 +285,8 @@ export default class MqttWrapper {
 
         function onMessageArrived(message) {
 
-            const topic_factor = message.destinationName.split("/");
-            const message_factor = topic_factor[2].split(".");
-            const index = message_factor[2];
-            this.topics["topicdata"][index].callback(message);
+            let parsed_topic = MqttWrapper.parse_topic(message.destinationName);
+            this.topics["topicdata"][parsed_topic["label"]].callback(message);
         }
 
         // called when the client loses its connection
@@ -321,20 +313,22 @@ export default class MqttWrapper {
                 return response.json();
             })
             .then((json) => {
-                this.topics["fixeddata"]["userid"] = json["fixeddata"]["userid"];
-                this.topics["fixeddata"]["carid"] = json["fixeddata"]["carid"];
-                this.topics["fixeddata"]["toAutoware"] = json["fixeddata"]["toAutoware"];
-                this.topics["fixeddata"]["fromAutoware"] = json["fixeddata"]["fromAutoware"];
                 let user_id = json["fixeddata"]["userID"];
                 let vehicle_id = json["fixeddata"]["vehicleID"];
                 let Autoware = json["fixeddata"]["Autoware"];
                 let User = json["fixeddata"]["User"];
+
                 for (const key in this.topics["topicdata"]) {
-                    //console.log(key);
+                    let type = json["topicdata"][key]["type"];
+                    let domain = json["topicdata"][key]["domain"];
+                    let label = json["topicdata"][key]["label"];
+
                     this.topics["topicdata"][key]["topic_send"] = "/" + user_id + "/" + vehicle_id + "/" + type + "/"
                         + domain + "/" + label + "/" + User+ "/" + Autoware;
-                    this.topics["topicdata"][key]["topic_send"] = "/" + user_id + "/" + vehicle_id + "/" + type + "/"
+                    this.topics["topicdata"][key]["topic_receive"] = "/" + user_id + "/" + vehicle_id + "/" + type + "/"
                         + domain + "/" + label + "/" + Autoware + "/" + User;
+                    console.log(this.topics["topicdata"][key]["topic_send"]);
+                    console.log(this.topics["topicdata"][key]["topic_receive"]);
                 }
 
                 // connect the client
@@ -345,11 +339,24 @@ export default class MqttWrapper {
             });
     }
 
+    static parse_topic(topic) {
+        let parsed_topic = topic.split("/");
+        return {
+            userID: parsed_topic[1],
+            vehicleID: parsed_topic[2],
+            type: parsed_topic[3],
+            domain: parsed_topic[4],
+            label: parsed_topic[5],
+            Autoware: parsed_topic[6],
+            User: parsed_topic[7]
+        }
+    }
+
     //arg label:set key of this.topics.topicdata
     onPublish(label, msg){
         // console.log(label,msg);
         try {
-            var message = new Paho.MQTT.Message(msg);
+            let message = new Paho.MQTT.Message(msg);
             message.destinationName = this.getPublishTopicName(label);
             this.mqttClient.send(message);
 
@@ -392,8 +399,8 @@ export default class MqttWrapper {
 
     //arg label:set key of this.topics.topicdata
     setCallback(label, callback) {
-        //console.log(label + " callback set");
-        //console.log(callback);
+        // console.log(label + " callback set");
+        // console.log(callback);
         try {
             this.topics["topicdata"][label]["callback"] = callback;
         } catch (error) {

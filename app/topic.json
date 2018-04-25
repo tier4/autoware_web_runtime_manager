@@ -1,7 +1,7 @@
 {
   "fixeddata": {
-    "userID": "",
-    "vehicleID": "",
+    "userID": "test",
+    "vehicleID": "test",
     "Autoware": "Autoware",
     "User": "User"
   },
@@ -208,7 +208,7 @@
       "type": "rostopic",
       "domain": "clock",
       "label": "clock",
-      "topic": "rostopic.clock.clock"
+      "topic": "rostopic.clock.clock",
       "msg_type": "rosgraph_msgs.msg:Clock",
       "ros_topic": "/Clock",
       "ros_to_mqtt": true,

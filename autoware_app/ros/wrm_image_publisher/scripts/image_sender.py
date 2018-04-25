@@ -10,7 +10,6 @@ import paho.mqtt.client as mqtt
 import base64
 import signal
 import json
-from config.env import env
 
 
 # from __future__ import print_function
@@ -27,27 +26,14 @@ class ImageMqttPublisher:
     def __init__(self):
         rospy.init_node('wrm_image_publisher', anonymous=True)
 
-        print("wrm image publisher")
-        topic_params = rospy.get_param("~topic_params", {})
-        print(json.loads(topic_params))
+        topic_params_string = rospy.get_param("~topic_params", {})
+        topic_params = json.loads(topic_params_string)
 
-        sf = open(env["PATH_WRM_DIR"] + "/config.json", "r")
-        json_data = json.load(sf)
+        self.__host = topic_params["host"]
+        self.__port = topic_params["port"]
+        self.mqttPubTopic = topic_params["topic_send"]
+        self.mqttSubTopic = topic_params["topic_receive"]
 
-        self.__userid = json_data["fixeddata"]["userid"]
-        self.__carid = json_data["fixeddata"]["carid"]
-        self.__toAutoware = json_data["fixeddata"]["toAutoware"]
-        self.__fromAutoware = json_data["fixeddata"]["fromAutoware"]
-        self.__topic = json_data["topicdata"]["ImageRaw"]["topic"]
-        self.__host = env["MQTT_HOST"]
-        self.__port = env["MQTT_PYTHON_PORT"]
-
-        header = "/" + self.__userid + "." + self.__carid
-        body = "/" + self.__topic
-        pubDirection = "/" + self.__fromAutoware
-        subDirection = "/" + self.__toAutoware
-        self.mqttPubTopic = header + body + pubDirection
-        self.mqttSubTopic = header + body + subDirection
         self.bridge = CvBridge()
 
     def onStartMqtt(self):

@@ -9,7 +9,6 @@ from .bridge import create_bridge
 from .mqtt_client import create_private_path_extractor
 from .util import lookup_object
 
-from config.env import env
 import json
 
 def create_config(mqtt_client, serializer, deserializer, mqtt_private_path):
@@ -31,7 +30,8 @@ def mqtt_bridge_node():
     rospy.init_node('mqtt_bridge_node')
 
     # load parameters
-    topic_params = rospy.get_param("~topic_params", {})
+    topic_params_string = rospy.get_param("~topic_params", {})
+    topic_params = json.loads(topic_params_string)
 
     host = topic_params["host"]
     port = topic_params["port"]
@@ -50,18 +50,7 @@ def mqtt_bridge_node():
     }
     conn_params = mqtt_params["connection"]
     mqtt_private_path = "device/001"
-    bridge_params = []
-
-    for key, value in topic_params["bridge"].items():
-        bridge_params.append(value)
-
-    """
-    params = rospy.get_param("~", {})
-    mqtt_params = params.pop("mqtt", {})
-    conn_params = mqtt_params.pop("connection")
-    mqtt_private_path = "device/001"
-    bridge_params = params.get("bridge", [])
-    """
+    bridge_params = topic_params["bridge"]
 
     # create mqtt client
     mqtt_client_factory_name = rospy.get_param(

@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # coding: utf-8
 
+import rosparam
+
 from copy import deepcopy
 from config.env import env
 from controllers.ros_controller import ROSController
@@ -212,15 +214,16 @@ class MqttRosLauncher:
         self.rtm_status = {}
 
     @staticmethod
-    def make_topic(user_id, vehicle_id, type, domain, label, Autoware, User):
+    def make_topic(user_id, vehicle_id, topic_type, domain, label, autoware, user):
         return {
-            "send": "/" + user_id + "/" + vehicle_id + "/" + type + "/" + domain + "/" +
-                    label + "/" + Autoware + "/" + User,
-            "receive": "/" + user_id + "/" + vehicle_id + "/" + type + "/" + domain + "/" +
-                       label + "/" + User + "/" + Autoware
+            "topic_send": "/" + user_id + "/" + vehicle_id + "/" + topic_type +
+                          "/" + domain + "/" + label + "/" + autoware + "/" + user,
+            "topic_receive": "/" + user_id + "/" + vehicle_id + "/" + topic_type +
+                             "/" + domain + "/" + label + "/" + user + "/" + autoware
         }
 
-    def parse_topic(self, topic):
+    @staticmethod
+    def parse_topic(topic):
         parsed_topic = topic.split("/")
 
         return {
@@ -233,7 +236,7 @@ class MqttRosLauncher:
             "User": parsed_topic[7]
         }
 
-    def TopicGetandCreate(self):
+    def TopicGetAndCreate(self):
         url = "http://" + env["AUTOWARE_WEB_UI_HOST"] + ":" + env["AUTOWARE_WEB_UI_PORT"] + "/topicData"
         # url = "http://localhost:5000/topicData"
         try:
@@ -259,8 +262,8 @@ class MqttRosLauncher:
             image_bridge_params = {
                 "host": env["MQTT_HOST"],
                 "port": int(env["MQTT_PYTHON_PORT"]),
-                "topic_to": "",
-                "topic_from": ""
+                "topic_send": "",
+                "topic_receive": ""
             }
 
             for key, value in json_data["topicdata"].items():
@@ -289,11 +292,12 @@ class MqttRosLauncher:
                                 "topic_to": value["ros_topic"]
                             }
                             ros_bridge_params["bridge"].append(bridge_data)
-                    if type == "ImageRaw":
-                        image_bridge_params["topic_to"] = topics["topic_send"]
+                    if type == "image":
+                        image_bridge_params["topic_send"] = topics["topic_send"]
                         image_bridge_params["topic_receive"] = topics["topic_receive"]
 
-                    print(value)
+                    print(self.__initial_rtm_status[key]["topic_receive"])
+                    print(self.__initial_rtm_status[key]["topic_send"])
 
             self.rosController.setRosBridgeData(ros_bridge_params, image_bridge_params)
 
@@ -334,30 +338,6 @@ class MqttRosLauncher:
             "parameter_info": self.rosController.get_params()
         }
         return json.dumps(res)
-
-    def __modeSet(self, domain, message):
-        print("modeSet")
-        mode_message = json.loads(message)
-        mode = mode_message["mode"]
-        on = mode_message["on"]
-        for key,value in self.rtm_status.items():
-            if "type" in value.keys():
-                if on:
-                    if key == domain:
-                        self.rtm_status[key]["enable"] = True
-                        self.rtm_status[key]["mode"] = "on"
-                    else:
-                        self.rtm_status[key]["enable"] = False
-                        self.rtm_status[key]["mode"] = "off"
-                else:
-                    if key == domain:
-                        self.rtm_status[key]["enable"] = True
-                        self.rtm_status[key]["mode"] = "off"
-                    else:
-                        self.rtm_status[key]["enable"] = True
-                        self.rtm_status[key]["mode"] = "off"
-
-        return self.rosController.modeSet(mode)
 
     def __settingSaveLoad(self, label, message):
         if label == "settingSave":
@@ -411,6 +391,9 @@ class MqttRosLauncher:
         else:
             return "error"
 
+    def __getParam(self, message):
+        return str(rosparam.get_param(message))
+
     def __execution(self, parsed_topic, payload):
         topic_type = parsed_topic["type"]
         domain = parsed_topic["domain"]
@@ -426,6 +409,8 @@ class MqttRosLauncher:
             return self.__allLaunch(domain, label, payload)
         elif topic_type == "settingParams":
             return self.__settingParams(payload)
+        elif topic_type == "getParam":
+            return self.__getParam(payload)
 
     def __on_connect(self, client, userdata, flags, respons_code):
         print('status {0}'.format(respons_code))
@@ -461,5 +446,5 @@ def handler(signal, frame):
 if __name__ == '__main__':
     signal.signal(signal.SIGINT, handler)
 
-    if mqtt_roslauncher.TopicGetandCreate():
+    if mqtt_roslauncher.TopicGetAndCreate():
         mqtt_roslauncher.mqttStart()

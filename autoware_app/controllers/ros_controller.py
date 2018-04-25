@@ -125,6 +125,10 @@ class ROSController(object):
         if domain == "initialization":
             if self.__use_sim_time_flag != "":
                 res_list.append(self.__use_sim_time_flag)
+            if self.__ros_bridge_params:
+                res_list.append(self.__ros_bridge_params)
+            if self.__image_bridge_params:
+                res_list.append(self.__image_bridge_params)
         if domain == "map":
             if self.__pointsmap_paths != "":
                 res_list.append(self.__pointsmap_paths)
@@ -287,8 +291,8 @@ class ROSController(object):
         self.launch(domain="gateway", target="off")
 
     def setRosBridgeData(self, ros_bridge_params, image_bridge_params):
-        self.__ros_bridge_params = ros_bridge_params
-        self.__image_bridge_params = image_bridge_params
+        self.__ros_bridge_params = "ros_bridge_params:=" + json.dumps(ros_bridge_params)
+        self.__image_bridge_params = "image_bridge_params:=" + json.dumps(image_bridge_params)
 
     def settingSave(self, message):
         filename = self.__path + CONST["SETTING"]["PATH"] + message

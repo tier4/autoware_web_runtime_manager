@@ -4,6 +4,7 @@ import Responsive, {WidthProvider} from 'react-grid-layout';
 import Button from "./button";
 import {CONST} from "./const";
 import SettingModal from "./setting_modal";
+import MqttWrapper from "./mqtt";
 
 
 const ResponsiveReactGridLayout = WidthProvider(Responsive);
@@ -245,10 +246,8 @@ export default class ButtonRGL extends React.Component {
     setButtonCallback(){
         let buttonMethod = function (message) {
             //console.log(message.payloadString);
-            const topic_factor = message.destinationName.split("/");
-            const message_factor = topic_factor[2].split(".");
-            const index = this.props.structure.nodes.findIndex(node => node.label === message_factor[2]);
-            //console.log(index);
+            let parsed_topic = MqttWrapper.parse_topic(message.destinationName);
+            const index = this.props.structure.nodes.findIndex(node => node.label === parsed_topic["label"]);
 
             if (message.payloadString === "ok") {
                 this.props.structure.nodes[index].span = (<span>{this.props.structure.nodes[index].display}</span>);
