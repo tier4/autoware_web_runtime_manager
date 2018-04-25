@@ -170,9 +170,9 @@ export default class GoogleMapsView {
 
     publishInitialPose(args) {
 
-        let that = this
+        let that = this;
         var getParamMethod = function (msg) {
-            var useSimTime = msg.payloadString
+            var useSimTime = msg.payloadString;
 
             console.log("use_sim_time:", useSimTime);
             if (useSimTime === "true") {
@@ -244,7 +244,7 @@ export default class GoogleMapsView {
             }
         };
 
-        var getParamSuccessMethod = function () {
+        let getParamSuccessMethod = function () {
             console.log("use_sim_time");
             const param_name = "use_sim_time";
             that.mqttClient.onPublish("get_param", param_name);

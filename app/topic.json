@@ -1,156 +1,228 @@
 {
   "fixeddata": {
-    "userid": "",
-    "carid": "",
-    "toAutoware": "UtoA",
-    "fromAutoware": "AtoU"
+    "userID": "test",
+    "vehicleID": "test",
+    "Autoware": "Autoware",
+    "User": "User"
+  },
+  "ros_bridge_data": {
+    "protocol": 4,
+    "keepalive": 60
   },
   "topicdata": {
     "buttonInit": {
       "type": "buttonInit",
+      "domain": "buttonInit",
+      "label": "buttonInit",
       "topic": "buttonInit.buttonInit.buttonInit"
     },
     "settingSave": {
       "type": "settingSaveLoad",
+      "domain": "settingSave",
+      "label": "settingSave",
       "topic": "settingSaveLoad.settingSave.settingSave"
     },
     "settingLoad": {
       "type": "settingSaveLoad",
+      "domain": "settingLoad",
+      "label": "settingLoad",
       "topic": "settingSaveLoad.settingLoad.settingLoad"
     },
     "initialization": {
-      "topic": "button.initialization.initialization",
+      "type": "button",
       "domain": "initialization",
-      "label": "initialization"
+      "label": "initialization",
+      "topic": "button.initialization.initialization"
     },
     "map": {
-      "topic": "button.map.map",
+      "type": "button",
       "domain": "map",
-      "label": "map"
+      "label": "map",
+      "topic": "button.map.map"
     },
     "localization": {
-      "topic": "button.localization.localization",
+      "type": "button",
       "domain": "localization",
-      "label": "localization"
+      "label": "localization",
+      "topic": "button.localization.localization"
     },
     "mission": {
-      "topic": "button.mission.mission",
+      "type": "button",
       "domain": "mission",
-      "label": "mission"
+      "label": "mission",
+      "topic": "button.mission.mission"
     },
     "motion": {
-      "topic": "button.motion.motion",
+      "type": "button",
       "domain": "motion",
-      "label": "motion"
+      "label": "motion",
+      "topic": "button.motion.motion"
     },
     "sensing": {
-      "topic": "button.sensing.sensing",
+      "type": "button",
       "domain": "sensing",
-      "label": "sensing"
+      "label": "sensing",
+      "topic": "button.sensing.sensing"
     },
     "detection": {
-      "topic": "button.detection.detection",
+      "type": "button",
       "domain": "detection",
-      "label": "detection"
+      "label": "detection",
+      "topic": "button.detection.detection"
     },
     "rosbag": {
-      "topic": "button.rosbag.rosbag",
+      "type": "button",
       "domain": "rosbag",
-      "label": "rosbag"
+      "label": "rosbag",
+      "topic": "button.rosbag.rosbag"
     },
     "play": {
-      "topic": "button.rosbag.play",
+      "type": "button",
       "domain": "rosbag",
-      "label": "play"
+      "label": "play",
+      "topic": "button.rosbag.play"
     },
     "gateway": {
-      "topic": "button.gateway.gateway",
+      "type": "button",
       "domain": "gateway",
-      "label": "gateway"
+      "label": "gateway",
+      "topic": "button.gateway.gateway"
     },
     "on": {
-      "topic": "button.gateway.on",
+      "type": "button",
       "domain": "gateway",
-      "label": "on"
+      "label": "on",
+      "topic": "button.gateway.on"
     },
     "rviz": {
-      "topic": "button.rviz.rviz",
+      "type": "button",
       "domain": "rviz",
-      "label": "rviz"
+      "label": "rviz",
+      "topic": "button.rviz.rviz"
     },
     "setting": {
-      "topic": "settingParams.setting.setting",
+      "type": "settingParams",
       "domain": "setting",
-      "label": "setting"
+      "label": "setting",
+      "topic": "settingParams.setting.setting"
     },
     "allActivation": {
-      "topic": "allActivation.allActivation.allActivation",
+      "type": "allActivation",
       "domain": "allActivation",
-      "label": "allActivation"
+      "label": "allActivation",
+      "topic": "allActivation.allActivation.allActivation"
     },
-    "rosbagMode": {
-      "topic": "modeSet.rosbagMode.rosbagMode",
-      "domain": "rosbagMode",
-      "label": "rosbagMode"
-    },
-    "simulatorMode": {
-      "topic": "modeSet.simulatorMode.simulatorMode",
-      "domain": "simulatorMode",
-      "label": "simulatorMode"
-    },
-    "driveMode": {
-      "topic": "modeSet.driveMode.driveMode",
-      "domain": "driveMode",
-      "label": "driveMode"
+    "get_param": {
+      "type": "getParam",
+      "domain": "get_param",
+      "label": "get_param",
+      "topic": "getParam.get_param.get_param"
     },
     "ImageRaw": {
       "type": "image",
-      "topic": "image.ImageRaw.ImageRaw",
-      "label": "ImageRaw"
+      "domain": "ImageRaw",
+      "label": "ImageRaw",
+      "topic": "image.ImageRaw.ImageRaw"
     },
     "points_raw": {
+      "type": "rostopic",
+      "domain": "points_raw",
+      "label": "points_raw",
       "topic": "rostopic.points_raw.points_raw",
-      "type": "rostopic"
+      "msg_type": "sensor_msgs.msg:PointCloud2",
+      "ros_topic": "/downsampled_points_raw",
+      "ros_to_mqtt": true,
+      "mqtt_to_ros": false
     },
     "ndt_pose": {
+      "type": "rostopic",
+      "domain": "ndt_pose",
+      "label": "ndt_pose",
       "topic": "rostopic.ndt_pose.ndt_pose",
-      "type": "rostopic"
+      "msg_type": "geometry_msgs.msg:PoseStamped",
+      "ros_topic": "/current_pose",
+      "ros_to_mqtt": true,
+      "mqtt_to_ros": false
     },
     "tf": {
+      "type": "rostopic",
+      "domain": "tf",
+      "label": "tf",
       "topic": "rostopic.tf.tf",
-      "type": "rostopic"
+      "msg_type": "tf2_msgs.msg:TFMessage",
+      "ros_topic": "/tf",
+      "ros_to_mqtt": true,
+      "mqtt_to_ros": false
     },
     "vector_map": {
+      "type": "rostopic",
+      "domain": "vector_map",
+      "label": "vector_map",
       "topic": "rostopic.vector_map.vector_map",
-      "type": "rostopic"
+      "msg_type": "visualization_msgs.msg:MarkerArray",
+      "ros_topic": "/vector_map",
+      "ros_to_mqtt": true,
+      "mqtt_to_ros": false
     },
     "lane_waypoints_array": {
+      "type": "rostopic",
+      "domain": "lane_waypoints_array",
+      "label": "lane_waypoints_array",
       "topic": "rostopic.lane_waypoints_array.lane_waypoints_array",
-      "type": "rostopic"
+      "msg_type": "autoware_msgs.msg:LaneArray",
+      "ros_topic": "/lane_waypoints_array",
+      "ros_to_mqtt": true,
+      "mqtt_to_ros": false
     },
     "downsampled_next_target_mark": {
+      "type": "rostopic",
+      "domain": "downsampled_next_target_mark",
+      "label": "downsampled_next_target_mark",
       "topic": "rostopic.downsampled_next_target_mark.downsampled_next_target_mark",
-      "type": "rostopic"
+      "msg_type": "visualization_msgs.msg:Marker",
+      "ros_topic": "/downsampled_next_target_mark",
+      "ros_to_mqtt": true,
+      "mqtt_to_ros": false
     },
     "downsampled_trajectory_circle_mark": {
+      "type": "rostopic",
+      "domain": "downsampled_trajectory_circle_mark",
+      "label": "downsampled_trajectory_circle_mark",
       "topic": "rostopic.downsampled_trajectory_circle_mark.downsampled_trajectory_circle_mark",
-      "type": "rostopic"
+      "msg_type": "visualization_msgs.msg:Marker",
+      "ros_topic": "/downsampled_trajectory_circle_mark",
+      "ros_to_mqtt": true,
+      "mqtt_to_ros": false
     },
     "map_pose": {
+      "type": "rostopic",
+      "domain": "map_pose",
+      "label": "map_pose",
       "topic": "rostopic.map_pose.map_pose",
-      "type": "rostopic"
-    },
-    "get_param": {
-      "topic": "getParam.get_param.get_param",
-      "type": "rostopic"
+      "msg_type": "geometry_msgs.msg:PoseStamped",
+      "ros_topic": "/current_pose",
+      "ros_to_mqtt": true,
+      "mqtt_to_ros": false
     },
     "clock": {
+      "type": "rostopic",
+      "domain": "clock",
+      "label": "clock",
       "topic": "rostopic.clock.clock",
-      "type": "rostopic"
+      "msg_type": "rosgraph_msgs.msg:Clock",
+      "ros_topic": "/Clock",
+      "ros_to_mqtt": true,
+      "mqtt_to_ros": false
     },
     "initialpose": {
+      "type": "rostopic",
+      "domain": "initialpose",
+      "label": "initialpose",
       "topic": "rostopic.initialpose.initialpose",
-      "type": "rostopic"
+      "msg_type": "geometry_msgs.msg:PoseWithCovarianceStamped",
+      "ros_topic": "/initialpose",
+      "ros_to_mqtt": false,
+      "mqtt_to_ros": true
     }
   }
 }

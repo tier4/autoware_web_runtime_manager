@@ -9,7 +9,6 @@ from .bridge import create_bridge
 from .mqtt_client import create_private_path_extractor
 from .util import lookup_object
 
-from config.env import env
 import json
 
 def create_config(mqtt_client, serializer, deserializer, mqtt_private_path):
@@ -31,39 +30,28 @@ def mqtt_bridge_node():
     rospy.init_node('mqtt_bridge_node')
 
     # load parameters
-    params = rospy.get_param("~", {})
-    mqtt_params = params.pop("mqtt", {})
-    conn_params = mqtt_params.pop("connection")
-    mqtt_private_path = mqtt_params.pop("private_path", "")
-    bridge_params = params.get("bridge", [])
+    topic_params_string = rospy.get_param("~topic_params", {})
+    topic_params = json.loads(topic_params_string)
 
-    # load wrm parameters
-    wrm_path = params.pop("wrm")
-    sf = open(env["PATH_WRM_DIR"] + "/config.json", "r")
-    json_data = json.load(sf)
-    
-    __userid = json_data["fixeddata"]["userid"]
-    __carid = json_data["fixeddata"]["carid"]
-    __toAutoware = json_data["fixeddata"]["toAutoware"]
-    __fromAutoware = json_data["fixeddata"]["fromAutoware"]
-    __topic = json_data["topicdata"]["ImageRaw"]["topic"]
-    conn_params["host"] = env["MQTT_HOST"]
-    conn_params["port"] = env["MQTT_PYTHON_PORT"]
+    host = topic_params["host"]
+    port = topic_params["port"]
+    keepalive = topic_params["keepalive"]
+    protocol = topic_params["protocol"]
 
-    header = "/" + __userid + "." + __carid
-    fromdirection  = "/" + __fromAutoware
-    todirection  = "/" + __toAutoware
-    
-    for i,value in enumerate(bridge_params):
-        if value["factory"] == "mqtt_bridge.bridge:RosToMqttBridge":
-            key = value["topic_to"]
-            body = "/" + json_data["topicdata"][key]["topic"]
-            bridge_params[i]["topic_to"] = header + body + fromdirection
-        elif value["factory"] == "mqtt_bridge.bridge:MqttToRosBridge":
-            key = value["topic_from"]
-            body = "/" + json_data["topicdata"][key]["topic"]
-            bridge_params[i]["topic_from"] = header + body + todirection
-    
+    mqtt_params = {
+        "client": {
+            "protocol": protocol
+        },
+        "connection": {
+            "host": host,
+            "port": port,
+            "keepalive": keepalive
+        }
+    }
+    conn_params = mqtt_params["connection"]
+    mqtt_private_path = "device/001"
+    bridge_params = topic_params["bridge"]
+
     # create mqtt client
     mqtt_client_factory_name = rospy.get_param(
         "~mqtt_client_factory", ".mqtt_client:default_mqtt_client_factory")
@@ -71,8 +59,8 @@ def mqtt_bridge_node():
     mqtt_client = mqtt_client_factory(mqtt_params)
 
     # load serializer and deserializer
-    serializer = params.get('serializer', 'json:dumps')
-    deserializer = params.get('deserializer', 'json:loads')
+    serializer = "json:dumps"
+    deserializer = "json:loads"
 
     # dependency injection
     config = create_config(
