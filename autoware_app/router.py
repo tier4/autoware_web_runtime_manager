@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
+import rosparam
 from copy import deepcopy
 from config.env import env
 from controllers.ros_controller import ROSController
@@ -17,95 +18,118 @@ class MqttRosLauncher:
     __initial_rtm_status = {
         # get ros launch status for button on/off of web page
         "buttonInit": {
-            "topic": "",
+            "topic_send": "",
+            "topic_receive": "",
             "subscribe": True
         },
         # setting save/load
         "settingSave": {
-            "topic": "",
+            "topic_send": "",
+            "topic_receive": "",
             "subscribe": True
         },
         "settingLoad": {
-            "topic": "",
+            "topic_send": "",
+            "topic_receive": "",
             "subscribe": True
         },
         # button launch signal and status,response
         "initialization": {
             "enable": True,
             "mode": "off",
-            "topic": "",
+            "topic_send": "",
+            "topic_receive": "",
             "subscribe": True
         },
         "map": {
             "enable": False,
             "mode": "off",
-            "topic": "",
+            "topic_send": "",
+            "topic_receive": "",
             "subscribe": True
         },
         "localization": {
             "enable": False,
             "mode": "off",
-            "topic": "",
+            "topic_send": "",
+            "topic_receive": "",
             "subscribe": True
         },
         "mission": {
             "enable": False,
             "mode": "off",
-            "topic": "",
+            "topic_send": "",
+            "topic_receive": "",
             "subscribe": True
         },
         "motion": {
             "enable": False,
             "mode": "off",
-            "topic": "",
+            "topic_send": "",
+            "topic_receive": "",
             "subscribe": True
         },
         "sensing": {
             "enable": False,
             "mode": "off",
-            "topic": "",
+            "topic_send": "",
+            "topic_receive": "",
             "subscribe": True
         },
         "detection": {
             "enable": False,
             "mode": "off",
-            "topic": "",
+            "topic_send": "",
+            "topic_receive": "",
             "subscribe": True
         },
         "rosbag": {
             "enable": False,
             "mode": "off",
-            "topic": "",
+            "topic_send": "",
+            "topic_receive": "",
             "subscribe": True
         },
         "play": {
             "enable": False,
             "mode": "off",
-            "topic": "",
+            "topic_send": "",
+            "topic_receive": "",
             "subscribe": True
         },
         "gateway": {
             "enable": False,
             "mode": "off",
-            "topic": "",
+            "topic_send": "",
+            "topic_receive": "",
             "subscribe": True
         },
         "on": {
             "enable": False,
             "mode": "off",
-            "topic": "",
+            "topic_send": "",
+            "topic_receive": "",
             "subscribe": True
         },
         "rviz": {
             "enable": False,
             "mode": "off",
-            "topic": "",
+            "topic_send": "",
+            "topic_receive": "",
             "subscribe": True
         },
         "setting": {
             "enable": False,
             "mode": "off",
-            "topic": "",
+            "topic_send": "",
+            "topic_receive": "",
+            "subscribe": True
+        },
+        "allActivation": {
+            "enable": False,
+            "mode": "off",
+            "topic_send": "",
+            "topic_receive": "",
             "subscribe": True
         },
         "allActivation": {
@@ -116,61 +140,73 @@ class MqttRosLauncher:
         },
         # get rosparam
         "get_param": {
-            "topic": "",
+            "topic_send": "",
+            "topic_receive": "",
             "subscribe": True
         },
         "ImageRaw": {
-            "topic": "",
+            "topic_send": "",
+            "topic_receive": "",
             "subscribe": False,
             "mqttparam": True
         },
         "points_raw": {
-            "topic": "",
+            "topic_send": "",
+            "topic_receive": "",
             "subscribe": False,
             "mqttparam": True
         },
         "ndt_pose": {
-            "topic": "",
+            "topic_send": "",
+            "topic_receive": "",
             "subscribe": False,
             "mqttparam": True
         },
         "tf": {
-            "topic": "",
+            "topic_send": "",
+            "topic_receive": "",
             "subscribe": False,
             "mqttparam": True
         },
         "vector_map": {
-            "topic": "",
+            "topic_send": "",
+            "topic_receive": "",
             "subscribe": False,
             "mqttparam": True
         },
         "lane_waypoints_array": {
-            "topic": "",
+            "topic_send": "",
+            "topic_receive": "",
             "subscribe": False,
             "mqttparam": True
         },
         "downsampled_next_target_mark": {
-            "topic": "",
+            "topic_send": "",
+            "topic_receive": "",
             "subscribe": False,
             "mqttparam": True
         },
         "downsampled_trajectory_circle_mark": {
-            "topic": "",
+            "topic_send": "",
+            "topic_receive": "",
             "subscribe": False,
             "mqttparam": True
         },
         "map_pose": {
-            "topic": "",
+            "topic_send": "",
+            "topic_receive": "",
             "subscribe": False,
             "mqttparam": True
         },
         "clock": {
-            "topic": "",
+            "topic_send": "",
+            "topic_receive": "",
             "subscribe": False,
             "mqttparam": True
         },
         "initialpose": {
-            "topic": "",
+            "topic_send": "",
+            "topic_receive": "",
             "subscribe": False,
             "mqttparam": True
         }
@@ -179,13 +215,34 @@ class MqttRosLauncher:
     def __init__(self):
         self.rosController = ROSController(env)
         self.client = mqtt.Client(protocol=mqtt.MQTTv311)
-        self.__userid = ""
-        self.__carid = ""
-        self.__toAutoware = ""
-        self.__fromAutoware = ""
+        self.__ros_bridge_params = {}
+        self.__image_bridge_params = {}
         self.rtm_status = {}
 
-    def TopicGet(self):
+    @staticmethod
+    def make_topic(user_id, vehicle_id, topic_type, domain, label, autoware, user):
+        return {
+            "topic_send": "/" + user_id + "/" + vehicle_id + "/" + topic_type +
+                          "/" + domain + "/" + label + "/" + autoware + "/" + user,
+            "topic_receive": "/" + user_id + "/" + vehicle_id + "/" + topic_type +
+                             "/" + domain + "/" + label + "/" + user + "/" + autoware
+        }
+
+    @staticmethod
+    def parse_topic(topic):
+        parsed_topic = topic.split("/")
+
+        return {
+            "userID": parsed_topic[1],
+            "vehicleID": parsed_topic[2],
+            "type": parsed_topic[3],
+            "domain": parsed_topic[4],
+            "label": parsed_topic[5],
+            "Autoware": parsed_topic[6],
+            "User": parsed_topic[7]
+        }
+
+    def TopicGetAndCreate(self):
         url = "http://" + env["AUTOWARE_WEB_UI_HOST"] + ":" + env["AUTOWARE_WEB_UI_PORT"] + "/topicData"
         # url = "http://localhost:5000/topicData"
         try:
@@ -194,17 +251,58 @@ class MqttRosLauncher:
             res = urllib2.urlopen(req)
             json_data = json.loads(res.read())
             # set fixed data to variable and ros param.
-            self.__userid = json_data["fixeddata"]["userid"]
-            self.__carid = json_data["fixeddata"]["carid"]
-            self.__toAutoware = json_data["fixeddata"]["toAutoware"]
-            self.__fromAutoware = json_data["fixeddata"]["fromAutoware"]
+
+            user_id = json_data["fixeddata"]["userID"]
+            vehicle_id = json_data["fixeddata"]["vehicleID"]
+            autoware = json_data["fixeddata"]["Autoware"]
+            user = json_data["fixeddata"]["User"]
+
+            self.__ros_bridge_params = {
+                "host": env["MQTT_HOST"],
+                "port": int(env["MQTT_PYTHON_PORT"]),
+                "keepalive": json_data["ros_bridge_data"]["keepalive"],
+                "protocol": json_data["ros_bridge_data"]["protocol"],
+                "bridge": []
+            }
+
+            self.__image_bridge_params = {
+                "host": env["MQTT_HOST"],
+                "port": int(env["MQTT_PYTHON_PORT"]),
+                "topic_send": "",
+                "topic_receive": ""
+            }
+
             for key, value in json_data["topicdata"].items():
                 if key in self.__initial_rtm_status:
-                    self.__initial_rtm_status[key]["topic"] = value["topic"]
-                    print(value["topic"])
+                    type = value["type"]
+                    domain = value["domain"]
+                    label = value["label"]
+                    topics = \
+                        self.make_topic(user_id, vehicle_id, type, domain, label, autoware, user)
+                    self.__initial_rtm_status[key]["topic_send"] = topics["topic_send"]
+                    self.__initial_rtm_status[key]["topic_receive"] = topics["topic_receive"]
+                    if type == "rostopic":
+                        if value["ros_to_mqtt"]:
+                            bridge_data = {
+                                "factory": "mqtt_bridge.bridge:RosToMqttBridge",
+                                "msg_type": value["msg_type"],
+                                "topic_from": value["ros_topic"],
+                                "topic_to": topics["topic_send"]
+                            }
+                            self.__ros_bridge_params["bridge"].append(bridge_data)
+                        elif value["mqtt_to_ros"]:
+                            bridge_data = {
+                                "factory": "mqtt_bridge.bridge:MqttToRosBridge",
+                                "msg_type": value["msg_type"],
+                                "topic_from": topics["topic_receive"],
+                                "topic_to": value["ros_topic"]
+                            }
+                            self.__ros_bridge_params["bridge"].append(bridge_data)
+                    if type == "image":
+                        self.__image_bridge_params["topic_send"] = topics["topic_send"]
+                        self.__image_bridge_params["topic_receive"] = topics["topic_receive"]
 
-            sf = open('./mqtt_setting/config.json', 'w')
-            json.dump(json_data, sf)
+            self.rosController.setRosBridgeData(self.__ros_bridge_params, self.__image_bridge_params)
 
             self.rtm_status = deepcopy(self.__initial_rtm_status)
             return True
@@ -231,6 +329,7 @@ class MqttRosLauncher:
         self.rosController.killall()
         del self.rosController
         self.rosController = ROSController(env)
+        self.rosController.setRosBridgeData(self.__ros_bridge_params, self.__image_bridge_params)
         return "ok"
 
     def __initializeRtmStatus(self):
@@ -243,30 +342,6 @@ class MqttRosLauncher:
             "parameter_info": self.rosController.get_params()
         }
         return json.dumps(res)
-
-    def __modeSet(self, domain, message):
-        print("modeSet")
-        mode_message = json.loads(message)
-        mode = mode_message["mode"]
-        on = mode_message["on"]
-        for key,value in self.rtm_status.items():
-            if "type" in value.keys():
-                if on:
-                    if key == domain:
-                        self.rtm_status[key]["enable"] = True
-                        self.rtm_status[key]["mode"] = "on"
-                    else:
-                        self.rtm_status[key]["enable"] = False
-                        self.rtm_status[key]["mode"] = "off"
-                else:
-                    if key == domain:
-                        self.rtm_status[key]["enable"] = True
-                        self.rtm_status[key]["mode"] = "off"
-                    else:
-                        self.rtm_status[key]["enable"] = True
-                        self.rtm_status[key]["mode"] = "off"
-
-        return self.rosController.modeSet(mode)
 
     def __settingSaveLoad(self, label, message):
         if label == "settingSave":
@@ -320,40 +395,41 @@ class MqttRosLauncher:
         else:
             return "error"
 
-    def __execution(self, msg):
-        space, header, body, direction = msg.topic.split("/")
-        topic_type, domain, label = body.split(".")
+    def __getParam(self, message):
+        return str(rosparam.get_param(message))
+
+    def __execution(self, parsed_topic, payload):
+        topic_type = parsed_topic["type"]
+        domain = parsed_topic["domain"]
+        label = parsed_topic["label"]
 
         if topic_type == "buttonInit":
             return self.__getRTMStatus()
         elif topic_type == "settingSaveLoad":
-            return self.__settingSaveLoad(label, msg.payload)
+            return self.__settingSaveLoad(label, payload)
         elif topic_type == "button":
-            return self.__roslaunch(domain, label, msg.payload)
+            return self.__roslaunch(domain, label, payload)
         elif topic_type == "allActivation":
-            return self.__allLaunch(domain, label, msg.payload)
+            return self.__allLaunch(domain, label, payload)
         elif topic_type == "settingParams":
-            return self.__settingParams(msg.payload)
+            return self.__settingParams(payload)
+        elif topic_type == "getParam":
+            return self.__getParam(payload)
 
     def __on_connect(self, client, userdata, flags, respons_code):
         print('status {0}'.format(respons_code))
 
-        # topic name making and subscriber start
-        header = "/" + self.__userid + "." + self.__carid
-        direction = "/" + self.__toAutoware
-
         for key, value in self.rtm_status.items():
             if value["subscribe"]:
-                body = "/" + value["topic"]
-                topic = header + body + direction
-                print(topic)
+                topic = value["topic_receive"]
                 self.client.subscribe(topic)
 
     def __on_message(self, client, userdata, msg):
-        res = self.__execution(msg)
 
-        space, header, body, direction = msg.topic.split("/")
-        topic = "/" + header + "/" + body + "/" + self.__fromAutoware
+        parsed_topic = self.parse_topic(msg.topic)
+        res = self.__execution(parsed_topic, msg.payload)
+
+        topic = self.rtm_status[parsed_topic["label"]]["topic_send"]
         self.client.publish(topic, str(res))
 
     def __on_disconnect(self, client, userdata, rc):
@@ -373,5 +449,5 @@ def handler(signal, frame):
 if __name__ == '__main__':
     signal.signal(signal.SIGINT, handler)
 
-    if mqtt_roslauncher.TopicGet():
+    if mqtt_roslauncher.TopicGetAndCreate():
         mqtt_roslauncher.mqttStart()
