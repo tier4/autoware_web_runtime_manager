@@ -210,7 +210,8 @@ class MqttRosLauncher:
     def __init__(self):
         self.rosController = ROSController(env)
         self.client = mqtt.Client(protocol=mqtt.MQTTv311)
-
+        self.__ros_bridge_params = {}
+        self.__image_bridge_params = {}
         self.rtm_status = {}
 
     @staticmethod
@@ -251,7 +252,7 @@ class MqttRosLauncher:
             autoware = json_data["fixeddata"]["Autoware"]
             user = json_data["fixeddata"]["User"]
 
-            ros_bridge_params = {
+            self.__ros_bridge_params = {
                 "host": env["MQTT_HOST"],
                 "port": int(env["MQTT_PYTHON_PORT"]),
                 "keepalive": json_data["ros_bridge_data"]["keepalive"],
@@ -259,7 +260,7 @@ class MqttRosLauncher:
                 "bridge": []
             }
 
-            image_bridge_params = {
+            self.__image_bridge_params = {
                 "host": env["MQTT_HOST"],
                 "port": int(env["MQTT_PYTHON_PORT"]),
                 "topic_send": "",
@@ -283,7 +284,7 @@ class MqttRosLauncher:
                                 "topic_from": value["ros_topic"],
                                 "topic_to": topics["topic_send"]
                             }
-                            ros_bridge_params["bridge"].append(bridge_data)
+                            self.__ros_bridge_params["bridge"].append(bridge_data)
                         elif value["mqtt_to_ros"]:
                             bridge_data = {
                                 "factory": "mqtt_bridge.bridge:MqttToRosBridge",
@@ -291,12 +292,12 @@ class MqttRosLauncher:
                                 "topic_from": topics["topic_receive"],
                                 "topic_to": value["ros_topic"]
                             }
-                            ros_bridge_params["bridge"].append(bridge_data)
+                            self.__ros_bridge_params["bridge"].append(bridge_data)
                     if type == "image":
-                        image_bridge_params["topic_send"] = topics["topic_send"]
-                        image_bridge_params["topic_receive"] = topics["topic_receive"]
+                        self.__image_bridge_params["topic_send"] = topics["topic_send"]
+                        self.__image_bridge_params["topic_receive"] = topics["topic_receive"]
 
-            self.rosController.setRosBridgeData(ros_bridge_params, image_bridge_params)
+            self.rosController.setRosBridgeData(self.__ros_bridge_params, self.__image_bridge_params)
 
             self.rtm_status = deepcopy(self.__initial_rtm_status)
             return True
@@ -323,6 +324,7 @@ class MqttRosLauncher:
         self.rosController.killall()
         del self.rosController
         self.rosController = ROSController(env)
+        self.rosController.setRosBridgeData(self.__ros_bridge_params, self.__image_bridge_params)
         return "ok"
 
     def __initializeRtmStatus(self):

@@ -15,13 +15,6 @@ import json
 # from __future__ import print_function
 
 class ImageMqttPublisher:
-    __userid = ""
-    __carid = ""
-    __toAutoware = ""
-    __fromAutoware = ""
-    __topic = ""
-    __host = ""
-    __port = ""
 
     def __init__(self):
         rospy.init_node('wrm_image_publisher', anonymous=True)
@@ -36,8 +29,9 @@ class ImageMqttPublisher:
 
         self.bridge = CvBridge()
 
-    def onStartMqtt(self):
         self.client = mqtt.Client(protocol=mqtt.MQTTv311)
+
+    def onStartMqtt(self):
         self.client.on_connect = self.__onConnect
         self.client.on_message = self.__onMessage
         self.client.on_disconnect = self.__onDisconnect
