@@ -18,8 +18,9 @@ import MqttWrapper from './mqtt';
 class Index extends React.Component {
     constructor() {
         super();
+
         const rosView = new RosView();
-        // console.log(CONST);
+        console.log("index constructor");
         this.mqttClient = new MqttWrapper();
         this.state = {
             buttonRGL: {
@@ -438,6 +439,7 @@ class Index extends React.Component {
         this.state.viewRGL.contents[CONST.VIEW_CONTENT.RADAR].viewInstance.setMqttClient(this.mqttClient);
         this.state.viewRGL.contents[CONST.VIEW_CONTENT.MAP3D].viewInstance.setMqttClient(this.mqttClient);
         this.state.viewRGL.contents["2d"].viewInstance.setMqttClient(this.mqttClient);
+
     }
 
     render() {
@@ -503,6 +505,7 @@ class Index extends React.Component {
     componentWillUnmount() {
         this.mqttClient.disConnect();
         delete(this.mqttClient);
+        delete(this.rosView);
     }
 
 }

@@ -274,8 +274,6 @@ export default class MqttWrapper {
         this.mqttClient.onMessageArrived = onMessageArrived.bind(this);
 
         function onConnect() {
-            //console.log("mqtt onConnect");
-            // Once a connection has been made, make a subscription.
             for (const key of Object.keys(this.topics["topicdata"])) {
                 this.onSubscribeTopic(key);
             }
@@ -284,16 +282,14 @@ export default class MqttWrapper {
         }
 
         function onMessageArrived(message) {
-
             let parsed_topic = MqttWrapper.parse_topic(message.destinationName);
             this.topics["topicdata"][parsed_topic["label"]].callback(message);
         }
 
-        // called when the client loses its connection
         function onConnectionLost(responseObject) {
+            this.connection_flag = false;
             if (responseObject.errorCode !== 0) {
                 console.log("onConnectionLost:" + responseObject.errorMessage);
-
                 alert("disconnect mqtt");
             }
         }
@@ -327,8 +323,6 @@ export default class MqttWrapper {
                         + domain + "/" + label + "/" + User+ "/" + Autoware;
                     this.topics["topicdata"][key]["topic_receive"] = "/" + user_id + "/" + vehicle_id + "/" + type + "/"
                         + domain + "/" + label + "/" + Autoware + "/" + User;
-                    console.log(this.topics["topicdata"][key]["topic_send"]);
-                    console.log(this.topics["topicdata"][key]["topic_receive"]);
                 }
 
                 // connect the client

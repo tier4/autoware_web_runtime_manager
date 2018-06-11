@@ -52,7 +52,7 @@ export default class RosView {
         this.mqttClient = client;
     }
 
-    setLocation(loc){
+    setLocation(loc) {
         this.location = loc
     }
 
@@ -64,6 +64,7 @@ export default class RosView {
         delete this.controls;
         delete this.scene;
         delete this.sceneData;
+        delete this.pcdFileNames;
 
         this.container = null;
         this.camera = null;
@@ -72,6 +73,7 @@ export default class RosView {
         this.controls = null;
         this.stats = null;
         this.sceneData = {};
+        this.pcdFileNames = null;
     }
 
     prepare() {
@@ -305,11 +307,10 @@ export default class RosView {
     }
 
     onGetPointsMap() {
-//        console.log("onGetPointsMap");
+        // console.log("onGetPointsMap");
 
         let sceneDataIDs = Object.keys(this.sceneData);
         if (!sceneDataIDs.includes("pointsMap") && this.visualizationObjectIDs.includes("PointsMap")) {
-//            console.log("getPointsMap");
 
             let that = this;
             let updateCameraPositionFlag = true;
@@ -415,12 +416,10 @@ export default class RosView {
                 that.getPointsRaw(that.topics.pointsRaw.instance);
             }
             if (!sceneDataIDs.includes("nextTarget") && that.visualizationObjectIDs.includes(CONST.VISUALIZATION_OBJECT.TARGETS)) {
-                console.log("nextTarget call");
                 that.sceneData.nextTarget = CONST.OBJECT_IS_LOADING;
                 that.getNextTarget(that.topics.nextTarget.instance);
             }
             if (!sceneDataIDs.includes("trajectoryCircle") && that.visualizationObjectIDs.includes(CONST.VISUALIZATION_OBJECT.TARGETS)) {
-                console.log("trajectoryCircle call");
                 that.sceneData.trajectoryCircle = CONST.OBJECT_IS_LOADING;
                 that.getTrajectoryCircle(that.topics.trajectoryCircle.instance);
             }
@@ -447,11 +446,10 @@ export default class RosView {
     getPointsMap(pointSize = 0.1, callback = (args) => {
         return null
     }) {
-//        console.log("getPointsMap");
         let that = this;
         const xhttpPCDs = new XMLHttpRequest();
         xhttpPCDs.onreadystatechange = function () {
-            if (this.readyState == 4 && this.status == 200) {
+            if (this.readyState === 4 && this.status === 200) {
                 if (that.pcdFileNames === null) {
                     that.pcdFileNames = JSON.parse(this.responseText).fileNames;
                     let loader = new THREE.PCDLoader();
@@ -468,7 +466,7 @@ export default class RosView {
                                         isAdded: false,
                                     };
                                     callback(mesh);
-                                    },
+                                },
                                 // called when loading is in progresses
                                 function (xhr) {
                                     //console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' );
@@ -582,12 +580,8 @@ export default class RosView {
             let message = JSON.parse(msg.payloadString);
 
             for (const transform of message.transforms) {
-                if (transform.header.frame_id == "/base_link" && transform.child_frame_id == "/velodyne") {
-                    console.log("base_link:");
-                    console.log(transform.transform);
+                if (transform.header.frame_id === "/base_link" && transform.child_frame_id === "/velodyne") {
                     that.tfBaseLinkToVelodyne = transform.transform;
-                    // console.log("tf value:");
-                    // console.log(message);
                     // that.mqttClient.unSubscribeTopic("tf");
                 }
             }
@@ -693,17 +687,15 @@ export default class RosView {
             text: {},
         };
 
-        var getWayPointMethod = function (msg) {
+        let getWayPointMethod = function (msg) {
             let message = JSON.parse(msg.payloadString);
 
-            console.log("waypoint sub");
-            console.log(message);
             // arrow
             for (let i = 1; i < message.lanes[0].waypoints.length; i++) {
                 const pos_1 = message.lanes[0].waypoints[i - 1].pose.pose.position;
                 const pos = message.lanes[0].waypoints[i].pose.pose.position;
-                var from = new THREE.Vector3(pos_1.x, pos_1.y, pos_1.z);
-                var to = new THREE.Vector3(pos.x, pos.y, pos.z);
+                let from = new THREE.Vector3(pos_1.x, pos_1.y, pos_1.z);
+                let to = new THREE.Vector3(pos.x, pos.y, pos.z);
                 const mesh = that.drawArrowHead(0xFF0000, [from, to]);
                 mesh.name = "arrow_" + mesh.uuid;
                 that.sceneData.waypoints.arrow[mesh.name] = {
@@ -806,9 +798,9 @@ export default class RosView {
         let geometry = new THREE.SphereGeometry(0.5);
         let material = new THREE.MeshBasicMaterial({color: color});
         let mesh = new THREE.Mesh(geometry, material);
-        mesh.position.x = position.x
-        mesh.position.y = position.y
-        mesh.position.z = position.z
+        mesh.position.x = position.x;
+        mesh.position.y = position.y;
+        mesh.position.z = position.z;
         return mesh;
     }
 
@@ -818,9 +810,9 @@ export default class RosView {
         let mesh = new THREE.Mesh(geometry, material);
 //        console.log(mesh);
         mesh.quaternion.setFromAxisAngle(new THREE.Vector3(1, 0, 0), Math.PI * 0.5);
-        mesh.position.x = pose.position.x
-        mesh.position.y = pose.position.y
-        mesh.position.z = pose.position.z
+        mesh.position.x = pose.position.x;
+        mesh.position.y = pose.position.y;
+        mesh.position.z = pose.position.z;
         return mesh
     }
 
